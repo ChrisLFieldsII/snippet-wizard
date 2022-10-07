@@ -15325,6 +15325,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"immer@npm:^9.0.15":
+  version: 9.0.15
+  resolution: "immer@npm:9.0.15"
+  checksum: 3b54cc71e6153e75498fef496587b75f3fc601ad9868fa612df716112698bb752d1488af178790e019d8566e9347f976f65e79fd5014498b622ac9f1c6e04f8e
+  languageName: node
+  linkType: hard
+
 "immutable@npm:~3.7.6":
   version: 3.7.6
   resolution: "immutable@npm:3.7.6"
@@ -24577,6 +24584,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"use-sync-external-store@npm:1.2.0":
+  version: 1.2.0
+  resolution: "use-sync-external-store@npm:1.2.0"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: ac4814e5592524f242921157e791b022efe36e451fe0d4fd4d204322d5433a4fc300d63b0ade5185f8e0735ded044c70bcf6d2352db0f74d097a238cebd2da02
+  languageName: node
+  linkType: hard
+
 "use@npm:^3.1.0":
   version: 3.1.1
   resolution: "use@npm:3.1.1"
@@ -24938,9 +24954,11 @@ __metadata:
     "@redwoodjs/router": 3.1.1
     "@redwoodjs/web": 3.1.1
     framer-motion: ^6
+    immer: ^9.0.15
     prop-types: 15.8.1
     react: 17.0.2
     react-dom: 17.0.2
+    zustand: ^4.1.1
   languageName: unknown
   linkType: soft
 
@@ -25813,6 +25831,23 @@ __metadata:
     compress-commons: ^4.1.0
     readable-stream: ^3.6.0
   checksum: ed9eb9387953576c43bdf7678705e8b0ff4e9149cf92b39fa845ddd5413b08daf68655b1ee8311e2dd7c88ddeb95908a785e8e48473016b2595870b0adf588d4
+  languageName: node
+  linkType: hard
+
+"zustand@npm:^4.1.1":
+  version: 4.1.1
+  resolution: "zustand@npm:4.1.1"
+  dependencies:
+    use-sync-external-store: 1.2.0
+  peerDependencies:
+    immer: ">=9.0"
+    react: ">=16.8"
+  peerDependenciesMeta:
+    immer:
+      optional: true
+    react:
+      optional: true
+  checksum: ed581e580e3fbae68325dae7d46e46ada76f7c644e73605a360cbc7aa3dd0a11a641ed4902af811ccd2e1916295d87ff4d3fb54aafdcd22ecda28b0226c5bb7d
   languageName: node
   linkType: hard
 

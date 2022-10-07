@@ -1,3 +1,5 @@
+import { useEffect } from 'react'
+
 import { ChakraProvider, ColorModeScript } from '@chakra-ui/react'
 
 import { FatalErrorBoundary, RedwoodProvider } from '@redwoodjs/web'
@@ -7,19 +9,28 @@ import FatalErrorPage from 'src/pages/FatalErrorPage'
 import Routes from 'src/Routes'
 
 import './index.css'
-import { theme } from './style'
+import { useStore } from './state'
+import { theme } from './styles'
 
-const App = () => (
-  <FatalErrorBoundary page={FatalErrorPage}>
-    <RedwoodProvider titleTemplate="%PageTitle | %AppTitle">
-      <ColorModeScript />
-      <ChakraProvider theme={theme}>
-        <RedwoodApolloProvider>
-          <Routes />
-        </RedwoodApolloProvider>
-      </ChakraProvider>
-    </RedwoodProvider>
-  </FatalErrorBoundary>
-)
+const App = () => {
+  const init = useStore((store) => store.init)
+
+  useEffect(() => {
+    init()
+  }, [])
+
+  return (
+    <FatalErrorBoundary page={FatalErrorPage}>
+      <RedwoodProvider titleTemplate="%PageTitle | %AppTitle">
+        <ColorModeScript />
+        <ChakraProvider theme={theme}>
+          <RedwoodApolloProvider>
+            <Routes />
+          </RedwoodApolloProvider>
+        </ChakraProvider>
+      </RedwoodProvider>
+    </FatalErrorBoundary>
+  )
+}
 
 export default App
