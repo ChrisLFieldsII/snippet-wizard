@@ -44,6 +44,7 @@ import {
   FiUsers,
 } from 'react-icons/fi'
 
+import { SERVICES_MAP, SERVICE_TAGS } from 'src/app-constants'
 import { useStore } from 'src/state'
 import { ServiceTag } from 'src/types'
 import { snippetPluginManager } from 'src/utils'
@@ -274,51 +275,17 @@ export const Sidebar = () => {
           <Stack spacing={{ base: '5', sm: '6' }} shouldWrapChildren>
             <Logo />
 
-            <ServiceInput tag="gitlab" icon={AiFillGitlab} />
-
-            <Stack spacing="1">
-              <NavButton label="Home" icon={FiHome} />
-              <NavButton
-                label="Dashboard"
-                icon={FiBarChart2}
-                aria-current="page"
-              />
-              <NavButton label="Tasks" icon={FiCheckSquare} />
-              <NavButton label="Bookmarks" icon={FiBookmark} />
-              <NavButton label="Users" icon={FiUsers} />
-            </Stack>
+            {SERVICE_TAGS.map((tag) => {
+              return (
+                <ServiceInput
+                  key={tag}
+                  tag={tag}
+                  icon={SERVICES_MAP[tag].icon}
+                />
+              )
+            })}
           </Stack>
           <Stack spacing={{ base: '5', sm: '6' }}>
-            <Stack spacing="1">
-              <NavButton label="Help" icon={FiHelpCircle} />
-              <NavButton label="Settings" icon={FiSettings} />
-            </Stack>
-            <Box bg="bg-subtle" px="4" py="5" borderRadius="lg">
-              <Stack spacing="4">
-                <Stack spacing="1">
-                  <Text fontSize="sm" fontWeight="medium">
-                    Almost there
-                  </Text>
-                  <Text fontSize="sm" color="muted">
-                    Fill in some more information about you and your person.
-                  </Text>
-                </Stack>
-                <Progress
-                  value={80}
-                  size="sm"
-                  aria-label="Profile Update Progress"
-                />
-                <HStack spacing="3">
-                  <Button variant="link" size="sm">
-                    Dismiss
-                  </Button>
-                  <Button variant="link" size="sm" colorScheme="blue">
-                    Update profile
-                  </Button>
-                </HStack>
-              </Stack>
-            </Box>
-
             <Divider />
 
             <Button

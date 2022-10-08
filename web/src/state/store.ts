@@ -1,17 +1,13 @@
 import produce from 'immer'
 import create from 'zustand'
 
+import { SERVICES_MAP } from 'src/app-constants'
 import { ServiceTag, ServicesMap } from 'src/types'
-
-const services: Record<ServiceTag, true> = {
-  github: true,
-  gitlab: true,
-}
 
 // const defaultServicesMap: ServicesMap =
 
 const createEmptyServicesMap = (): ServicesMap => {
-  const keys = Object.keys(services) as ServiceTag[]
+  const keys = Object.keys(SERVICES_MAP) as ServiceTag[]
   return keys.reduce((accum, svc) => {
     return {
       ...accum,

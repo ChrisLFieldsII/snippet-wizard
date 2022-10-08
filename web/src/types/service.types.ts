@@ -3,11 +3,11 @@ import { useStore as store } from 'src/state'
 /** tag for a snippet service */
 export type ServiceTag = 'gitlab' | 'github'
 
-export type ServiceConfig = {
+export type ServiceState = {
   token: string
 }
 
-export type ServicesMap = Record<ServiceTag, ServiceConfig>
+export type ServicesMap = Record<ServiceTag, ServiceState>
 
 export type SnippetMutationInput = {}
 

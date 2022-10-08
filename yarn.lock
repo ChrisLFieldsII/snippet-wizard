@@ -4450,6 +4450,58 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@octokit/endpoint@npm:^7.0.0":
+  version: 7.0.2
+  resolution: "@octokit/endpoint@npm:7.0.2"
+  dependencies:
+    "@octokit/types": ^7.0.0
+    is-plain-object: ^5.0.0
+    universal-user-agent: ^6.0.0
+  checksum: 0a74012756159f3269d55f331c0c0e3b1e79b6d8c4a3cd3c1216c5b3fd0efd0ee183f65407160103e8507ab8c9a3ad58ace050b5bea76e9a9eb8900f7c118637
+  languageName: node
+  linkType: hard
+
+"@octokit/openapi-types@npm:^13.11.0":
+  version: 13.13.1
+  resolution: "@octokit/openapi-types@npm:13.13.1"
+  checksum: a5ff1c499c5cdc2fc6239878f7e562ec7e948c809c7c54b911d96b6125a2b85b36c650df1add884a02714a09634658a332b197da3815d16b1b63bdbfffb754a4
+  languageName: node
+  linkType: hard
+
+"@octokit/request-error@npm:^3.0.0":
+  version: 3.0.1
+  resolution: "@octokit/request-error@npm:3.0.1"
+  dependencies:
+    "@octokit/types": ^7.0.0
+    deprecation: ^2.0.0
+    once: ^1.4.0
+  checksum: 73389dcc36dc0e5fcf58c6e2763a907d0b304953393884623bf2e37705b4cafeb142f9b6d2f5d394617b49568e93ac0cf1b40491695fe1b18e10a8785c609fb9
+  languageName: node
+  linkType: hard
+
+"@octokit/request@npm:^6.2.1":
+  version: 6.2.1
+  resolution: "@octokit/request@npm:6.2.1"
+  dependencies:
+    "@octokit/endpoint": ^7.0.0
+    "@octokit/request-error": ^3.0.0
+    "@octokit/types": ^7.0.0
+    is-plain-object: ^5.0.0
+    node-fetch: ^2.6.7
+    universal-user-agent: ^6.0.0
+  checksum: 61329ea64f032240a1ee6f77d94840f0aa1c24c2467acd747cad1ca78a49c4526116a09641f696f4e47cb5a82ffcd000555fcf6127f5b07d2f871285b9f5ee04
+  languageName: node
+  linkType: hard
+
+"@octokit/types@npm:^7.0.0":
+  version: 7.5.1
+  resolution: "@octokit/types@npm:7.5.1"
+  dependencies:
+    "@octokit/openapi-types": ^13.11.0
+  checksum: eeeb665a5a117a730b6f9bb8d880d521684e41203baec3ecc5fe57269a0930d19de27408009471f8cac4f729b22c73de933ace20752518c3a41ffb377fc9d3d9
+  languageName: node
+  linkType: hard
+
 "@open-draft/until@npm:^1.0.3":
   version: 1.0.3
   resolution: "@open-draft/until@npm:1.0.3"
@@ -11801,6 +11853,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"deprecation@npm:^2.0.0":
+  version: 2.3.1
+  resolution: "deprecation@npm:2.3.1"
+  checksum: 23d688ba66b74d09b908c40a76179418acbeeb0bfdf218c8075c58ad8d0c315130cb91aa3dffb623aa3a411a3569ce56c6460de6c8d69071c17fe6dd2442f032
+  languageName: node
+  linkType: hard
+
 "des.js@npm:^1.0.0":
   version: 1.0.1
   resolution: "des.js@npm:1.0.1"
@@ -15982,7 +16041,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"is-plain-object@npm:5.0.0":
+"is-plain-object@npm:5.0.0, is-plain-object@npm:^5.0.0":
   version: 5.0.0
   resolution: "is-plain-object@npm:5.0.0"
   checksum: 893e42bad832aae3511c71fd61c0bf61aa3a6d853061c62a307261842727d0d25f761ce9379f7ba7226d6179db2a3157efa918e7fe26360f3bf0842d9f28942c
@@ -24403,6 +24462,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"universal-user-agent@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "universal-user-agent@npm:6.0.0"
+  checksum: ebeb0206963666c13bcf9ebc86d0577c7daed5870c05cd34d4972ee7a43b9ef20679baf2a8c83bf1b71d899bae67243ac4982d84ddaf9ba0355ff76595819961
+  languageName: node
+  linkType: hard
+
 "universalify@npm:^0.2.0":
   version: 0.2.0
   resolution: "universalify@npm:0.2.0"
@@ -24950,6 +25016,7 @@ __metadata:
     "@emotion/react": ^11
     "@emotion/styled": ^11
     "@fontsource/inter": ^4.5.13
+    "@octokit/request": ^6.2.1
     "@redwoodjs/forms": 3.1.1
     "@redwoodjs/router": 3.1.1
     "@redwoodjs/web": 3.1.1

@@ -21,10 +21,12 @@ interface ISnippetPluginManager {
 class SnippetPluginManager implements ISnippetPluginManager {
   private tags: ServiceTag[] = []
   private plugins: SnippetPlugin[] = []
+
   constructor(plugins: SnippetPlugin[]) {
     this.tags = getKeys<ServiceTag>(plugins)
     this.plugins = plugins
   }
+
   async getSnippets(): Promise<SnippetMap> {
     const promises = await this.plugins.map((plugin) => plugin.getSnippets())
     const snippets = await Promise.all(promises)
@@ -36,6 +38,7 @@ class SnippetPluginManager implements ISnippetPluginManager {
       }
     }, {} as SnippetMap)
   }
+
   createSnippet(input: SnippetMutationInput): Promise<SnippetMap> {
     throw new Error('Method not implemented.')
   }
