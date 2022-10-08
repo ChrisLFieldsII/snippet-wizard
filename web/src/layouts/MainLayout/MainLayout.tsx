@@ -46,6 +46,7 @@ import {
 
 import { useStore } from 'src/state'
 import { ServiceTag } from 'src/types'
+import { snippetPluginManager } from 'src/utils'
 
 type MainLayoutProps = {
   children?: React.ReactNode
@@ -321,8 +322,10 @@ export const Sidebar = () => {
             <Divider />
 
             <Button
-              onClick={() => {
+              onClick={async () => {
                 console.log('services', services)
+
+                snippetPluginManager.getSnippets()
               }}
             >
               Get Snippets
@@ -407,6 +410,7 @@ const ServiceInput = ({ icon, tag, ...props }: ServiceInputProps) => {
         <Input
           {...props}
           placeholder={tag}
+          type="password"
           onChange={(e) => {
             setToken(tag, e.currentTarget.value)
           }}
