@@ -12305,6 +12305,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"emittery@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "emittery@npm:1.0.0"
+  checksum: ed746614199a07e55f31154ed7e3b56853b7181de4669951abd7232204c0a24c79541958265a776f39dda7205595e365a7bddb7bd92a629441f1c51cce1d133d
+  languageName: node
+  linkType: hard
+
 "emoji-regex@npm:^8.0.0":
   version: 8.0.0
   resolution: "emoji-regex@npm:8.0.0"
@@ -25020,6 +25027,7 @@ __metadata:
     "@redwoodjs/forms": 3.1.1
     "@redwoodjs/router": 3.1.1
     "@redwoodjs/web": 3.1.1
+    emittery: ^1.0.0
     framer-motion: ^6
     immer: ^9.0.15
     prop-types: 15.8.1

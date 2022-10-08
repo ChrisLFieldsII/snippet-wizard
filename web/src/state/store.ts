@@ -1,3 +1,5 @@
+import { useEffect } from 'react'
+
 import produce from 'immer'
 import create from 'zustand'
 
@@ -39,3 +41,11 @@ export const useStore = create<AppState>()((set, get) => ({
     )
   },
 }))
+
+export const useInitStore = () => {
+  const initStore = useStore((store) => store.init)
+
+  useEffect(() => {
+    initStore()
+  }, [])
+}

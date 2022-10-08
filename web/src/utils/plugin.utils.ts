@@ -1,15 +1,13 @@
-import {
-  SnippetPlugin,
-  Snippet,
-  SnippetMutationInput,
-  ServiceTag,
-} from 'src/types'
-
 import { githubSnippetPlugin } from './github.utils'
 import { gitlabSnippetPlugin } from './gitlab.utils'
 import { getKeys } from './utils.utils'
 
-type SnippetMap = Record<ServiceTag, Snippet>
+import {
+  SnippetPlugin,
+  SnippetMutationInput,
+  ServiceTag,
+  SnippetMap,
+} from '~/types'
 
 interface ISnippetPluginManager {
   getSnippets(): Promise<SnippetMap>
@@ -30,13 +28,15 @@ class SnippetPluginManager implements ISnippetPluginManager {
   async getSnippets(): Promise<SnippetMap> {
     const promises = await this.plugins.map((plugin) => plugin.getSnippets())
     const snippets = await Promise.all(promises)
-    console.log(snippets)
-    return this.tags.reduce((accum, tag, index) => {
+    const snippetMap = this.tags.reduce((accum, tag, index) => {
       return {
         ...accum,
         [tag]: snippets[index],
       }
     }, {} as SnippetMap)
+    console.log(snippetMap)
+
+    return snippetMap
   }
 
   createSnippet(input: SnippetMutationInput): Promise<SnippetMap> {

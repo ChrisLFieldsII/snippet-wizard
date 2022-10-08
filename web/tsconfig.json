@@ -14,6 +14,12 @@
       "../.redwood/types/mirror/api/src"
     ],
     "paths": {
+      "~/*": [
+        "./src/*",
+        "../.redwood/types/mirror/web/src/*",
+        "../api/src/*",
+        "../.redwood/types/mirror/api/src/*"
+      ],
       "src/*": [
         "./src/*",
         "../.redwood/types/mirror/web/src/*",

@@ -9,15 +9,11 @@ import FatalErrorPage from 'src/pages/FatalErrorPage'
 import Routes from 'src/Routes'
 
 import './index.css'
-import { useStore } from './state'
+import { useInitStore } from './state'
 import { theme } from './styles'
 
 const App = () => {
-  const init = useStore((store) => store.init)
-
-  useEffect(() => {
-    init()
-  }, [])
+  useInitStore()
 
   return (
     <FatalErrorBoundary page={FatalErrorPage}>

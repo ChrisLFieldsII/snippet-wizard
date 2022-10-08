@@ -1,1 +1,1 @@
-export * from './service.types'
+export * from './snippet.types'

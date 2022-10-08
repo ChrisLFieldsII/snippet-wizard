@@ -60,3 +60,5 @@ export abstract class SnippetPlugin implements ISnippetPlugin {
     return store.getState().services[this.tag]
   }
 }
+
+export type SnippetMap = Record<ServiceTag, Snippet[] | null>

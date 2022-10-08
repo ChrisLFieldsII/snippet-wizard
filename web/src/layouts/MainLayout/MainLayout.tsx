@@ -15,7 +15,6 @@ import {
   Input,
   InputGroup,
   InputLeftElement,
-  Progress,
   Stack,
   useColorModeValue,
   ButtonProps,
@@ -31,23 +30,12 @@ import {
   InputProps,
 } from '@chakra-ui/react'
 import { IconType } from 'react-icons'
-import { AiFillGitlab } from 'react-icons/ai'
-import {
-  FiBarChart2,
-  FiBookmark,
-  FiCheckSquare,
-  FiDownloadCloud,
-  FiHelpCircle,
-  FiHome,
-  FiSearch,
-  FiSettings,
-  FiUsers,
-} from 'react-icons/fi'
+import { FiDownloadCloud } from 'react-icons/fi'
 
 import { SERVICES_MAP, SERVICE_TAGS } from 'src/app-constants'
 import { useStore } from 'src/state'
 import { ServiceTag } from 'src/types'
-import { snippetPluginManager } from 'src/utils'
+import { emitter, snippetPluginManager } from 'src/utils'
 
 type MainLayoutProps = {
   children?: React.ReactNode
@@ -55,7 +43,6 @@ type MainLayoutProps = {
 
 const MainLayout = ({ children }: MainLayoutProps) => {
   const isDesktop = useBreakpointValue({ base: false, lg: true })
-  const [gitlab, setGitlab] = React.useState('')
 
   return (
     <Flex
@@ -291,8 +278,8 @@ export const Sidebar = () => {
             <Button
               onClick={async () => {
                 console.log('services', services)
-
-                snippetPluginManager.getSnippets()
+                const snippetMap = await snippetPluginManager.getSnippets()
+                emitter.emit('getSnippets', { snippetMap })
               }}
             >
               Get Snippets
