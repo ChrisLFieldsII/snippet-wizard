@@ -278,8 +278,7 @@ export const Sidebar = () => {
             <Button
               onClick={async () => {
                 console.log('services', services)
-                const snippetMap = await snippetPluginManager.getSnippets()
-                emitter.emit('getSnippets', { snippetMap })
+                emitter.emit('getSnippets')
               }}
             >
               Get Snippets

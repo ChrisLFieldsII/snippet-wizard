@@ -1,15 +1,11 @@
 import Emittery from 'emittery'
 
-import { SnippetMap } from '~/types'
-
-export const getKeys = <T>(obj: object) => {
-  return Object.keys(obj) as T[]
+export const getKeys = <T extends object>(obj: T) => {
+  return Object.keys(obj) as (keyof T)[]
 }
 
 type EventMap = {
-  getSnippets: {
-    snippetMap: SnippetMap
-  }
+  getSnippets: undefined
 }
 
 export const emitter = new Emittery<EventMap>()

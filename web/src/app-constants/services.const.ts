@@ -6,14 +6,25 @@ import { getKeys } from 'src/utils'
 
 type ServiceConfig = {
   icon: IconType
+  /** link to get personal access token */
+  patLink: string
+  name: string
 }
 
 export const SERVICES_MAP: Record<ServiceTag, ServiceConfig> = {
+  // GIT HUB
   github: {
     icon: AiFillGithub,
+    patLink:
+      'https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token',
+    name: 'GitHub',
   },
+  // GIT LAB
   gitlab: {
     icon: AiFillGitlab,
+    patLink:
+      'https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html',
+    name: 'GitLab',
   },
 }
-export const SERVICE_TAGS = getKeys<ServiceTag>(SERVICES_MAP)
+export const SERVICE_TAGS = getKeys(SERVICES_MAP)

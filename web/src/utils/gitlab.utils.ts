@@ -48,6 +48,7 @@ class GitLabSnippetPlugin extends SnippetPlugin {
         : 'public',
       title: rawSnippet.title,
       url: rawSnippet.web_url,
+      service: 'gitlab',
     }
   }
 

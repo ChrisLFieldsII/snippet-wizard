@@ -24,6 +24,13 @@ export type Snippet = {
   createdAt: Date
   updatedAt: Date
   filename: string
+  service: ServiceTag
+}
+
+/** Snippet shown in UI */
+export type UISnippet = Snippet & {
+  /** the services the snippet is in */
+  services: ServiceTag[]
 }
 
 export interface ISnippetPlugin {
@@ -61,4 +68,4 @@ export abstract class SnippetPlugin implements ISnippetPlugin {
   }
 }
 
-export type SnippetMap = Record<ServiceTag, Snippet[] | null>
+export type SnippetMap = Record<ServiceTag, Snippet[]>

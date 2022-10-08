@@ -22,12 +22,17 @@
     "@redwoodjs/forms": "3.1.1",
     "@redwoodjs/router": "3.1.1",
     "@redwoodjs/web": "3.1.1",
+    "@tanstack/react-query": "^4.10.3",
     "emittery": "^1.0.0",
     "framer-motion": "^6",
     "immer": "^9.0.15",
     "prop-types": "15.8.1",
     "react": "17.0.2",
+    "react-create-view": "^1.0.0",
     "react-dom": "17.0.2",
     "zustand": "^4.1.1"
+  },
+  "devDependencies": {
+    "babel-plugin-module-resolver": "^4.1.0"
   }
 }

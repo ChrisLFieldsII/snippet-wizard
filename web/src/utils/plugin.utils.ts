@@ -31,7 +31,7 @@ class SnippetPluginManager implements ISnippetPluginManager {
     const snippetMap = this.tags.reduce((accum, tag, index) => {
       return {
         ...accum,
-        [tag]: snippets[index],
+        [tag]: snippets[index] || [],
       }
     }, {} as SnippetMap)
     console.log(snippetMap)

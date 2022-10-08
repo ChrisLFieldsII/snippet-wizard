@@ -50,6 +50,7 @@ class GitHubSnippetPlugin extends SnippetPlugin {
       // gist dont have title, use description
       title: rawSnippet.description,
       url: rawSnippet.html_url,
+      service: 'github',
     }
   }
 
