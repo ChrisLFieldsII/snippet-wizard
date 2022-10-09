@@ -44,8 +44,8 @@ export type SnippetManagerDeleteInput = {
 }
 
 export interface ISnippetPlugin {
-  getSnippets(): Promise<Snippet[] | null>
-  createSnippet(input: SnippetMutationInput): Promise<Snippet | null>
+  getSnippets(): Promise<Snippet[]>
+  createSnippet(input: CreateSnippetInput): Promise<Snippet | null>
   deleteSnippet(input: SnippetMutationInput): Promise<DeleteSnippetResponse>
   updateSnippet(input: SnippetMutationInput): Promise<Snippet | null>
   transformSnippet(rawSnippet: unknown): Promise<Snippet>
@@ -55,3 +55,12 @@ export interface ISnippetPlugin {
 }
 
 export type SnippetMap = Record<ServiceTag, Snippet[]>
+
+export type CreateSnippetInput = {
+  privacy: SnippetPrivacy
+  title: string
+  description: string
+  /** actual snippet text */
+  contents: string
+  filename: string
+}

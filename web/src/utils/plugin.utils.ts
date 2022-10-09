@@ -10,6 +10,7 @@ import {
   Snippet,
   DeleteSnippetResponse,
   SnippetManagerDeleteInput,
+  CreateSnippetInput,
 } from '~/types'
 
 interface ISnippetPluginManager {
@@ -26,8 +27,8 @@ export abstract class SnippetPlugin implements ISnippetPlugin {
   constructor(tag: ServiceTag) {
     this.tag = tag
   }
-  abstract getSnippets(): Promise<Snippet[] | null>
-  abstract createSnippet(input: SnippetMutationInput): Promise<Snippet>
+  abstract getSnippets(): Promise<Snippet[]>
+  abstract createSnippet(input: CreateSnippetInput): Promise<Snippet | null>
   abstract deleteSnippet(
     input: SnippetMutationInput
   ): Promise<DeleteSnippetResponse>
@@ -63,7 +64,7 @@ export class SnippetPluginManager implements ISnippetPluginManager {
     const snippetMap = this.tags.reduce((accum, tag, index) => {
       return {
         ...accum,
-        [tag]: snippets[index] || [],
+        [tag]: snippets[index],
       }
     }, {} as SnippetMap)
     console.log(snippetMap)

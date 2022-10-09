@@ -46,9 +46,9 @@ class GitHubSnippetPlugin extends SnippetPlugin {
     return null
   }
 
-  async getSnippets(): Promise<Snippet[] | null> {
+  async getSnippets(): Promise<Snippet[]> {
     if (!this.isEnabled()) {
-      return null
+      return []
     }
 
     const rawSnippets = await request('GET /gists', {

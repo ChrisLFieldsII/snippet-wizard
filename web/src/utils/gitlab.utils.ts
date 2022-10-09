@@ -50,9 +50,9 @@ class GitLabSnippetPlugin extends SnippetPlugin {
     return null
   }
 
-  async getSnippets(): Promise<Snippet[] | null> {
+  async getSnippets(): Promise<Snippet[]> {
     if (!this.isEnabled()) {
-      return null
+      return []
     }
 
     const rawSnippets = (await fetch(`${API_URL}/snippets`, {
