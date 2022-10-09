@@ -1,12 +1,11 @@
-import { githubSnippetPlugin } from './github.utils'
-import { gitlabSnippetPlugin } from './gitlab.utils'
-import { getKeys } from './utils.utils'
+import { useStore as store } from 'src/state'
 
 import {
-  SnippetPlugin,
   SnippetMutationInput,
   ServiceTag,
   SnippetMap,
+  ISnippetPlugin,
+  Snippet,
 } from '~/types'
 
 interface ISnippetPluginManager {
@@ -16,12 +15,36 @@ interface ISnippetPluginManager {
   updateSnippet(input: SnippetMutationInput): Promise<SnippetMap>
 }
 
-class SnippetPluginManager implements ISnippetPluginManager {
+export abstract class SnippetPlugin implements ISnippetPlugin {
+  private tag: ServiceTag
+  constructor(tag: ServiceTag) {
+    this.tag = tag
+  }
+  abstract getSnippets(): Promise<Snippet[] | null>
+  abstract createSnippet(input: SnippetMutationInput): Promise<Snippet>
+  abstract deleteSnippet(input: SnippetMutationInput): Promise<boolean>
+  abstract updateSnippet(input: SnippetMutationInput): Promise<Snippet>
+  abstract transformSnippet(rawSnippet: unknown): Promise<Snippet>
+  isEnabled(): boolean {
+    return !!this.getServiceConfig().token.length
+  }
+  getToken(): string {
+    return this.getServiceConfig().token
+  }
+  getTag(): ServiceTag {
+    return this.tag
+  }
+  private getServiceConfig() {
+    return store.getState().services[this.tag]
+  }
+}
+
+export class SnippetPluginManager implements ISnippetPluginManager {
   private tags: ServiceTag[] = []
   private plugins: SnippetPlugin[] = []
 
   constructor(plugins: SnippetPlugin[]) {
-    this.tags = getKeys<ServiceTag>(plugins)
+    this.tags = plugins.map((p) => p.getTag())
     this.plugins = plugins
   }
 
@@ -49,8 +72,3 @@ class SnippetPluginManager implements ISnippetPluginManager {
     throw new Error('Method not implemented.')
   }
 }
-
-export const snippetPluginManager = new SnippetPluginManager([
-  githubSnippetPlugin,
-  gitlabSnippetPlugin,
-])

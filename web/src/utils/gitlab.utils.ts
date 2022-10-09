@@ -1,4 +1,6 @@
-import { SnippetPlugin, Snippet, SnippetMutationInput } from 'src/types'
+import { Snippet, SnippetMutationInput } from 'src/types'
+
+import { SnippetPlugin } from './plugin.utils'
 
 const API_URL = 'https://gitlab.com/api/v4'
 class GitLabSnippetPlugin extends SnippetPlugin {

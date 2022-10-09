@@ -35,7 +35,7 @@ import { FiDownloadCloud } from 'react-icons/fi'
 import { SERVICES_MAP, SERVICE_TAGS } from 'src/app-constants'
 import { useStore } from 'src/state'
 import { ServiceTag } from 'src/types'
-import { emitter, snippetPluginManager } from 'src/utils'
+import { emitter } from 'src/utils'
 
 type MainLayoutProps = {
   children?: React.ReactNode
@@ -267,7 +267,7 @@ export const Sidebar = () => {
                 <ServiceInput
                   key={tag}
                   tag={tag}
-                  icon={SERVICES_MAP[tag].icon}
+                  icon={SERVICES_MAP[tag].Icon}
                 />
               )
             })}

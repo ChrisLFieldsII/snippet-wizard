@@ -1,6 +1,8 @@
 import { request } from '@octokit/request'
 
-import { SnippetPlugin, Snippet, SnippetMutationInput } from 'src/types'
+import { Snippet, SnippetMutationInput } from 'src/types'
+
+import { SnippetPlugin } from './plugin.utils'
 
 class GitHubSnippetPlugin extends SnippetPlugin {
   createSnippet(input: SnippetMutationInput): Promise<Snippet | null> {
@@ -42,7 +44,7 @@ class GitHubSnippetPlugin extends SnippetPlugin {
           return res.data.files[filename].content
         })
       })(),
-      description: rawSnippet.description,
+      description: '',
       // NOTE: only supporting one file per gist currently
       filename: Object.keys(rawSnippet.files)[0],
       id: rawSnippet.id,

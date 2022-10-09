@@ -1,5 +1,10 @@
 # README
 
+## Resources
+- [react syntax highlighter languages](https://github.com/react-syntax-highlighter/react-syntax-highlighter/blob/05300e67cfadeb25fbd6125a2df0c820db3d0673/AVAILABLE_LANGUAGES_HLJS.MD)
+
+# Redwood
+
 Welcome to [RedwoodJS](https://redwoodjs.com)!
 
 > **Prerequisites**

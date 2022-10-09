@@ -1,10 +1,6 @@
-import { useEffect } from 'react'
-
 import {
   Alert,
   AlertIcon,
-  Button,
-  Code,
   ListItem,
   UnorderedList,
   Link as ChakraLink,
@@ -12,11 +8,9 @@ import {
   Heading,
   Text,
   VStack,
-  Box,
 } from '@chakra-ui/react'
 import { createView } from 'react-create-view'
 
-import { Link, routes } from '@redwoodjs/router'
 import { MetaTags } from '@redwoodjs/web'
 
 import MainLayout from 'src/layouts/MainLayout/MainLayout'
@@ -24,14 +18,19 @@ import MainLayout from 'src/layouts/MainLayout/MainLayout'
 import { useHomeView, HomeViewSuccessModel } from './useHomeView'
 
 import { SERVICES_MAP, SERVICE_TAGS } from '~/app-constants'
+import { List, Snippet } from '~/components'
+import { UISnippet } from '~/types'
 
 const HomeView = createView<HomeViewSuccessModel>({
   Success({ snippets }) {
-    console.log('render success')
+    const renderItem = (snippet: UISnippet) => {
+      return <Snippet {...snippet} />
+    }
+
     return (
-      <Box as="pre" w="full">
-        <Code>{JSON.stringify(snippets, null, 5)}</Code>
-      </Box>
+      <>
+        <List items={snippets} renderItem={renderItem} />
+      </>
     )
   },
   Empty() {
@@ -59,7 +58,7 @@ const HomeView = createView<HomeViewSuccessModel>({
 
               return (
                 <ListItem key={tag}>
-                  {service.icon}
+                  {service.Icon}
                   <ChakraLink href={service.patLink} isExternal>
                     {service.name}
                   </ChakraLink>

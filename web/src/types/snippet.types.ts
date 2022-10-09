@@ -1,5 +1,3 @@
-import { useStore as store } from 'src/state'
-
 /** tag for a snippet service */
 export type ServiceTag = 'gitlab' | 'github'
 
@@ -28,9 +26,11 @@ export type Snippet = {
 }
 
 /** Snippet shown in UI */
-export type UISnippet = Snippet & {
+export type UISnippet = Omit<Snippet, 'service' | 'url'> & {
   /** the services the snippet is in */
   services: ServiceTag[]
+  servicesMap: Record<ServiceTag, { url: string }>
+  isPublic: boolean
 }
 
 export interface ISnippetPlugin {
@@ -42,30 +42,6 @@ export interface ISnippetPlugin {
   isEnabled(): boolean
   getToken(): string
   getTag(): ServiceTag
-}
-
-export abstract class SnippetPlugin implements ISnippetPlugin {
-  private tag: ServiceTag
-  constructor(tag: ServiceTag) {
-    this.tag = tag
-  }
-  abstract getSnippets(): Promise<Snippet[] | null>
-  abstract createSnippet(input: SnippetMutationInput): Promise<Snippet>
-  abstract deleteSnippet(input: SnippetMutationInput): Promise<boolean>
-  abstract updateSnippet(input: SnippetMutationInput): Promise<Snippet>
-  abstract transformSnippet(rawSnippet: unknown): Promise<Snippet>
-  isEnabled(): boolean {
-    return !!this.getServiceConfig().token.length
-  }
-  getToken(): string {
-    return this.getServiceConfig().token
-  }
-  getTag(): ServiceTag {
-    return this.tag
-  }
-  private getServiceConfig() {
-    return store.getState().services[this.tag]
-  }
 }
 
 export type SnippetMap = Record<ServiceTag, Snippet[]>
