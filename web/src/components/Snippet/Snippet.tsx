@@ -18,7 +18,14 @@ import {
   AccordionPanel,
   AccordionIcon,
   useDisclosure,
+  Menu,
+  MenuList,
+  MenuItem,
+  MenuButton,
+  IconButton,
 } from '@chakra-ui/react'
+import { FaTrash } from 'react-icons/fa'
+import { FiMoreHorizontal } from 'react-icons/fi'
 import SyntaxHighlighter from 'react-syntax-highlighter'
 
 import { FILE_UI_MAP, SERVICES_MAP } from '~/app-constants'
@@ -77,7 +84,20 @@ export const Snippet = (props: SnippetProps) => {
                   </VStack>
                 </HStack>
 
-                <Text color="muted">TODO</Text>
+                {/* snippet actions */}
+                <Menu>
+                  <MenuButton
+                    as={IconButton}
+                    aria-label="Options"
+                    icon={<FiMoreHorizontal />}
+                    variant="outline"
+                  />
+                  <MenuList>
+                    <MenuItem color={'red'} icon={<FaTrash />}>
+                      Delete
+                    </MenuItem>
+                  </MenuList>
+                </Menu>
               </Stack>
 
               <Text
@@ -113,7 +133,7 @@ export const Snippet = (props: SnippetProps) => {
               <VStack align="start">
                 <Accordion
                   w="full"
-                  borderStyle={'none'}
+                  borderColor="transparent"
                   index={codeDisclosure.isOpen ? 0 : 1}
                 >
                   <AccordionItem>
