@@ -10,6 +10,7 @@ import { Snippet, UISnippet } from '~/types'
 
 export type HomeViewSuccessModel = {
   snippets: UISnippet[]
+  onDelete(snippet: UISnippet): void
 }
 
 type HomeViewModelProps = ViewModelProps<HomeViewSuccessModel>
@@ -80,6 +81,7 @@ export const useHomeView = (): HomeViewModelProps => {
         servicesMap: {
           [currSnippet.service]: {
             url: currSnippet.url,
+            id: currSnippet.id,
           },
         },
       }
@@ -91,6 +93,7 @@ export const useHomeView = (): HomeViewModelProps => {
         mapping.url = currSnippet.url
       } else {
         accum[contents].servicesMap[currSnippet.service] = {
+          id: currSnippet.id,
           url: currSnippet.url,
         }
       }
@@ -111,6 +114,15 @@ export const useHomeView = (): HomeViewModelProps => {
     status: 'success',
     model: {
       snippets: uiSnippets,
+      async onDelete(snippet) {
+        try {
+          await snippetPluginManager.deleteSnippet({
+            services: snippet.servicesMap,
+          })
+        } catch (error) {
+          console.error('snippet manager failed to delete snippets', error)
+        }
+      },
     },
   }
 }

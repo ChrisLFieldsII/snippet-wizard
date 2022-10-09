@@ -32,7 +32,9 @@ import { FILE_UI_MAP, SERVICES_MAP } from '~/app-constants'
 import { UISnippet } from '~/types'
 import { getCodeLanguage, getKnownFileExtension } from '~/utils'
 
-type SnippetProps = UISnippet & {}
+type SnippetProps = UISnippet & {
+  onDelete(snippet: UISnippet): void
+}
 
 export const Snippet = (props: SnippetProps) => {
   const {
@@ -45,6 +47,7 @@ export const Snippet = (props: SnippetProps) => {
     title,
     updatedAt,
     servicesMap,
+    onDelete,
   } = props
   const codeDisclosure = useDisclosure({
     defaultIsOpen: true,
@@ -93,7 +96,11 @@ export const Snippet = (props: SnippetProps) => {
                     variant="outline"
                   />
                   <MenuList>
-                    <MenuItem color={'red'} icon={<FaTrash />}>
+                    <MenuItem
+                      color={'red'}
+                      icon={<FaTrash />}
+                      onClick={() => onDelete(props)}
+                    >
                       Delete
                     </MenuItem>
                   </MenuList>

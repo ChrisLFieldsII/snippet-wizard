@@ -7,7 +7,9 @@ export type ServiceState = {
 
 export type ServicesMap = Record<ServiceTag, ServiceState>
 
-export type SnippetMutationInput = {}
+export type SnippetMutationInput = {
+  id: string
+}
 
 export type SnippetPrivacy = 'public' | 'private'
 
@@ -29,14 +31,22 @@ export type Snippet = {
 export type UISnippet = Omit<Snippet, 'service' | 'url'> & {
   /** the services the snippet is in */
   services: ServiceTag[]
-  servicesMap: Record<ServiceTag, { url: string }>
+  servicesMap: Record<ServiceTag, { url: string; id: string }>
   isPublic: boolean
+}
+
+export type DeleteSnippetResponse = { isSuccess: boolean; service: ServiceTag }
+
+/** delete input for snippet manager */
+export type SnippetManagerDeleteInput = {
+  /** input is a map of the service to the snippet id to delete */
+  services: Record<ServiceTag, { id: string }>
 }
 
 export interface ISnippetPlugin {
   getSnippets(): Promise<Snippet[] | null>
   createSnippet(input: SnippetMutationInput): Promise<Snippet | null>
-  deleteSnippet(input: SnippetMutationInput): Promise<boolean>
+  deleteSnippet(input: SnippetMutationInput): Promise<DeleteSnippetResponse>
   updateSnippet(input: SnippetMutationInput): Promise<Snippet | null>
   transformSnippet(rawSnippet: unknown): Promise<Snippet>
   isEnabled(): boolean
