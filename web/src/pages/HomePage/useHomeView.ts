@@ -74,6 +74,7 @@ export const useHomeView = (): HomeViewModelProps => {
         ...currSnippet,
         isPublic: currSnippet.privacy === 'public',
         services: [currSnippet.service],
+        contents: currSnippet.contents.split('\\n').join('\n'), // format contents from service apis
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore - we are okay w/ a partial map here
         servicesMap: {
