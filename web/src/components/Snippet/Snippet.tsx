@@ -12,6 +12,12 @@ import {
   Tag,
   TagLeftIcon,
   TagLabel,
+  Accordion,
+  AccordionItem,
+  AccordionButton,
+  AccordionPanel,
+  AccordionIcon,
+  useDisclosure,
 } from '@chakra-ui/react'
 import SyntaxHighlighter from 'react-syntax-highlighter'
 
@@ -33,8 +39,9 @@ export const Snippet = (props: SnippetProps) => {
     updatedAt,
     servicesMap,
   } = props
-  console.log(props)
-
+  const codeDisclosure = useDisclosure({
+    defaultIsOpen: true,
+  })
   const boxShadow = useColorModeValue('sm', 'sm-dark')
 
   const fileExtension = getKnownFileExtension(filename)
@@ -104,18 +111,36 @@ export const Snippet = (props: SnippetProps) => {
               </HStack>
 
               <VStack align="start">
-                <SyntaxHighlighter
-                  language={getCodeLanguage(fileExtension)}
-                  showLineNumbers
-                  // NOTE: if want to wrap code, disable these styles and enable wrap props
-                  customStyle={{
-                    width: '100%',
-                    overflowX: 'scroll',
-                  }}
-                  // wrapLongLines
+                <Accordion
+                  w="full"
+                  borderStyle={'none'}
+                  index={codeDisclosure.isOpen ? 0 : 1}
                 >
-                  {contents.split('\\n').join('\n')}
-                </SyntaxHighlighter>
+                  <AccordionItem>
+                    <h2>
+                      <AccordionButton onClick={codeDisclosure.onToggle}>
+                        <Box flex="1" textAlign="left">
+                          {`${codeDisclosure.isOpen ? 'Close' : 'Open'} code`}
+                        </Box>
+                        <AccordionIcon />
+                      </AccordionButton>
+                    </h2>
+                    <AccordionPanel>
+                      <SyntaxHighlighter
+                        language={getCodeLanguage(fileExtension)}
+                        showLineNumbers
+                        // NOTE: if want to wrap code, disable these styles and enable wrap props
+                        customStyle={{
+                          width: '100%',
+                          overflowX: 'auto',
+                        }}
+                        // wrapLongLines
+                      >
+                        {contents}
+                      </SyntaxHighlighter>
+                    </AccordionPanel>
+                  </AccordionItem>
+                </Accordion>
               </VStack>
 
               <VStack alignItems={'end'}>
