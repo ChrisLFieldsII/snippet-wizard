@@ -41,6 +41,15 @@ export type SnippetManagerDeleteInput = {
   services: Record<ServiceTag, { id: string }>
 }
 
+export type SnippetManagerCreateInput = {
+  services: Record<
+    ServiceTag,
+    {
+      input: CreateSnippetInput
+    }
+  >
+}
+
 export interface ISnippetPlugin {
   tag: ServiceTag
   getSnippets(): Promise<Snippet[]>

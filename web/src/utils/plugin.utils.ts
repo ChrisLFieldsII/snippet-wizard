@@ -12,12 +12,15 @@ import {
   SnippetManagerDeleteInput,
   CreateSnippetInput,
   CreateSnippetResponse,
+  SnippetManagerCreateInput,
 } from '~/types'
 
 /** THE PLUGIN MANGER */
 interface ISnippetPluginManager {
   getSnippets(): Promise<SnippetMap>
-  createSnippet(input: SnippetMutationInput): Promise<SnippetMap>
+  createSnippet(
+    input: SnippetManagerCreateInput
+  ): Promise<Record<ServiceTag, CreateSnippetResponse>>
   deleteSnippet(
     input: SnippetManagerDeleteInput
   ): Promise<Record<ServiceTag, SnippetMutationResponse>>
@@ -76,8 +79,27 @@ export class SnippetPluginManager implements ISnippetPluginManager {
     return snippetMap
   }
 
-  createSnippet(input: SnippetMutationInput): Promise<SnippetMap> {
-    throw new Error('Method not implemented.')
+  async createSnippet({
+    services,
+  }: SnippetManagerCreateInput): Promise<
+    Record<ServiceTag, CreateSnippetResponse>
+  > {
+    const tags = getKeys(services)
+    const promises = await this.plugins
+      .filter((plugin) => tags.includes(plugin.getTag()))
+      .map((plugin) => plugin.createSnippet(services[plugin.getTag()].input))
+
+    // TODO: improve with allSettled
+    const responses = await Promise.all(promises)
+
+    const map = this.tags.reduce((accum, tag, index) => {
+      return {
+        ...accum,
+        [tag]: responses[index],
+      }
+    }, {} as Record<ServiceTag, CreateSnippetResponse>)
+
+    return map
   }
 
   async deleteSnippet({
@@ -86,11 +108,11 @@ export class SnippetPluginManager implements ISnippetPluginManager {
     Record<ServiceTag, SnippetMutationResponse>
   > {
     const tags = getKeys(services)
-    const promises = await this.plugins.map((plugin) =>
-      tags.includes(plugin.getTag())
-        ? plugin.deleteSnippet({ id: services[plugin.getTag()].id })
-        : Promise.resolve({ isSuccess: true, service: plugin.getTag() })
-    )
+    const promises = await this.plugins
+      .filter((plugin) => tags.includes(plugin.getTag()))
+      .map((plugin) =>
+        plugin.deleteSnippet({ id: services[plugin.getTag()].id })
+      )
     // TODO: improve with allSettled
     const responses = await Promise.all(promises)
 
