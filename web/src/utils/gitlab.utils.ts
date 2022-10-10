@@ -1,21 +1,70 @@
 import {
-  DeleteSnippetResponse,
+  SnippetMutationResponse,
   ServiceTag,
   Snippet,
   SnippetMutationInput,
+  CreateSnippetResponse,
+  CreateSnippetInput,
 } from 'src/types'
 
 import { SnippetPlugin } from './plugin.utils'
 
 const API_URL = 'https://gitlab.com/api/v4'
 class GitLabSnippetPlugin extends SnippetPlugin {
-  createSnippet(input: SnippetMutationInput): Promise<Snippet | null> {
-    console.error('Method not implemented.' + this.getTag(), input)
-    return null
+  async createSnippet(
+    input: CreateSnippetInput
+  ): Promise<CreateSnippetResponse> {
+    if (!this.isEnabled()) {
+      return {
+        isSuccess: false,
+        service: this.getTag(),
+      }
+    }
+
+    const { contents, description, filename, privacy, title } = input
+
+    try {
+      const res = (await fetch(`${API_URL}/snippets`, {
+        method: 'POST',
+        headers: {
+          ...this.getHeaders(),
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title,
+          description,
+          visibility: privacy,
+          files: [
+            {
+              content: contents,
+              file_path: filename,
+            },
+          ],
+        }),
+      }).then((res) => res.json())) as GitLabSnippet
+
+      console.log('gitlab create res', res)
+
+      if (!res.id) {
+        throw new Error('Failed to create gitlab snippet')
+      }
+
+      return {
+        isSuccess: true,
+        service: this.getTag(),
+        snippet: await this.transformSnippet(res),
+      }
+    } catch (error) {
+      return {
+        isSuccess: false,
+        service: this.getTag(),
+      }
+    }
   }
+
   async deleteSnippet({
     id,
-  }: SnippetMutationInput): Promise<DeleteSnippetResponse> {
+  }: SnippetMutationInput): Promise<SnippetMutationResponse> {
     if (!this.isEnabled()) {
       return {
         isSuccess: false,

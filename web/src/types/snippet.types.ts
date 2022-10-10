@@ -35,8 +35,6 @@ export type UISnippet = Omit<Snippet, 'service' | 'url'> & {
   isPublic: boolean
 }
 
-export type DeleteSnippetResponse = { isSuccess: boolean; service: ServiceTag }
-
 /** delete input for snippet manager */
 export type SnippetManagerDeleteInput = {
   /** input is a map of the service to the snippet id to delete */
@@ -44,9 +42,10 @@ export type SnippetManagerDeleteInput = {
 }
 
 export interface ISnippetPlugin {
+  tag: ServiceTag
   getSnippets(): Promise<Snippet[]>
-  createSnippet(input: CreateSnippetInput): Promise<Snippet | null>
-  deleteSnippet(input: SnippetMutationInput): Promise<DeleteSnippetResponse>
+  createSnippet(input: CreateSnippetInput): Promise<CreateSnippetResponse>
+  deleteSnippet(input: SnippetMutationInput): Promise<SnippetMutationResponse>
   updateSnippet(input: SnippetMutationInput): Promise<Snippet | null>
   transformSnippet(rawSnippet: unknown): Promise<Snippet>
   isEnabled(): boolean
@@ -63,4 +62,13 @@ export type CreateSnippetInput = {
   /** actual snippet text */
   contents: string
   filename: string
+}
+
+export type SnippetMutationResponse = {
+  isSuccess: boolean
+  service: ServiceTag
+}
+
+export type CreateSnippetResponse = SnippetMutationResponse & {
+  snippet?: Snippet
 }

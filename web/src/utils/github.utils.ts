@@ -1,22 +1,58 @@
 import { request } from '@octokit/request'
 
 import {
-  DeleteSnippetResponse,
+  SnippetMutationResponse,
   ServiceTag,
   Snippet,
   SnippetMutationInput,
+  CreateSnippetInput,
+  CreateSnippetResponse,
 } from 'src/types'
 
 import { SnippetPlugin } from './plugin.utils'
 
 class GitHubSnippetPlugin extends SnippetPlugin {
-  createSnippet(input: SnippetMutationInput): Promise<Snippet | null> {
-    console.error('Method not implemented.' + this.getTag(), input)
-    return null
+  async createSnippet(
+    input: CreateSnippetInput
+  ): Promise<CreateSnippetResponse> {
+    const service = this.tag
+
+    if (!this.isEnabled()) {
+      return {
+        isSuccess: false,
+        service,
+      }
+    }
+
+    const { contents, description, filename, privacy } = input
+
+    try {
+      const rawSnippet = await request('POST /gists', {
+        description,
+        public: privacy === 'public',
+        files: {
+          [filename]: {
+            content: contents,
+          },
+        },
+      })
+
+      return {
+        isSuccess: true,
+        service,
+        snippet: await this.transformSnippet(rawSnippet.data as GitHubSnippet),
+      }
+    } catch (error) {
+      return {
+        isSuccess: false,
+        service,
+      }
+    }
   }
+
   async deleteSnippet({
     id,
-  }: SnippetMutationInput): Promise<DeleteSnippetResponse> {
+  }: SnippetMutationInput): Promise<SnippetMutationResponse> {
     if (!this.isEnabled()) {
       return {
         isSuccess: false,
@@ -109,6 +145,8 @@ export type GitHubSnippet = {
       language?: string
       raw_url?: string
       size?: number
+      truncated?: boolean
+      content?: string
     }
   }
   public: boolean
@@ -139,4 +177,6 @@ export type GitHubSnippet = {
     site_admin: boolean
   }
   truncated?: boolean
+  forks?: any[]
+  history?: any[]
 }

@@ -8,30 +8,34 @@ import {
   SnippetMap,
   ISnippetPlugin,
   Snippet,
-  DeleteSnippetResponse,
+  SnippetMutationResponse,
   SnippetManagerDeleteInput,
   CreateSnippetInput,
+  CreateSnippetResponse,
 } from '~/types'
 
+/** THE PLUGIN MANGER */
 interface ISnippetPluginManager {
   getSnippets(): Promise<SnippetMap>
   createSnippet(input: SnippetMutationInput): Promise<SnippetMap>
   deleteSnippet(
     input: SnippetManagerDeleteInput
-  ): Promise<Record<ServiceTag, DeleteSnippetResponse>>
+  ): Promise<Record<ServiceTag, SnippetMutationResponse>>
   updateSnippet(input: SnippetMutationInput): Promise<SnippetMap>
 }
 
 export abstract class SnippetPlugin implements ISnippetPlugin {
-  private tag: ServiceTag
+  public readonly tag: ServiceTag
   constructor(tag: ServiceTag) {
     this.tag = tag
   }
   abstract getSnippets(): Promise<Snippet[]>
-  abstract createSnippet(input: CreateSnippetInput): Promise<Snippet | null>
+  abstract createSnippet(
+    input: CreateSnippetInput
+  ): Promise<CreateSnippetResponse>
   abstract deleteSnippet(
     input: SnippetMutationInput
-  ): Promise<DeleteSnippetResponse>
+  ): Promise<SnippetMutationResponse>
   abstract updateSnippet(input: SnippetMutationInput): Promise<Snippet>
   abstract transformSnippet(rawSnippet: unknown): Promise<Snippet>
   isEnabled(): boolean {
@@ -79,7 +83,7 @@ export class SnippetPluginManager implements ISnippetPluginManager {
   async deleteSnippet({
     services,
   }: SnippetManagerDeleteInput): Promise<
-    Record<ServiceTag, DeleteSnippetResponse>
+    Record<ServiceTag, SnippetMutationResponse>
   > {
     const tags = getKeys(services)
     const promises = await this.plugins.map((plugin) =>
@@ -95,7 +99,7 @@ export class SnippetPluginManager implements ISnippetPluginManager {
         ...accum,
         [tag]: responses[index],
       }
-    }, {} as Record<ServiceTag, DeleteSnippetResponse>)
+    }, {} as Record<ServiceTag, SnippetMutationResponse>)
 
     return map
   }
