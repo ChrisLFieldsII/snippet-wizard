@@ -24,6 +24,7 @@ import { UISnippet } from '~/types'
 const HomeView = createView<HomeViewSuccessModel>({
   Success({ snippets }) {
     const renderItem = (snippet: UISnippet) => {
+      // TODO: hook up on delete fn
       return <Snippet {...snippet} />
     }
 

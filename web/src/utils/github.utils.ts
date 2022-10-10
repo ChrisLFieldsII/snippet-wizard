@@ -2,7 +2,6 @@ import { request } from '@octokit/request'
 
 import {
   SnippetMutationResponse,
-  ServiceTag,
   Snippet,
   SnippetMutationInput,
   CreateSnippetInput,
@@ -35,6 +34,7 @@ class GitHubSnippetPlugin extends SnippetPlugin {
             content: contents,
           },
         },
+        headers: this.getHeaders(),
       })
 
       return {
@@ -56,7 +56,7 @@ class GitHubSnippetPlugin extends SnippetPlugin {
     if (!this.isEnabled()) {
       return {
         isSuccess: false,
-        service: this.getTag(),
+        service: this.tag,
       }
     }
 
@@ -65,20 +65,21 @@ class GitHubSnippetPlugin extends SnippetPlugin {
     try {
       await request('DELETE /gists/{gist_id}', {
         gist_id: id,
+        headers: this.getHeaders(),
       })
       isSuccess = true
     } catch (error) {
-      console.error(this.getTag(), 'failed to delete snippet: ' + id)
+      console.error(this.tag, 'failed to delete snippet: ' + id)
     }
 
     return {
       isSuccess,
-      service: this.getTag(),
+      service: this.tag,
     }
   }
 
   updateSnippet(input: SnippetMutationInput): Promise<Snippet | null> {
-    console.error('Method not implemented.' + this.getTag(), input)
+    console.error('Method not implemented.' + this.tag, input)
     return null
   }
 

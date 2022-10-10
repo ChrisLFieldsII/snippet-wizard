@@ -29,6 +29,7 @@ interface AppState {
 export const useStore = create<AppState>()((set, get) => ({
   services: createEmptyServicesMap(),
   init() {
+    // NOTE: use to do stuff like load tokens from storage (if thats safe)
     console.log('init app state')
   },
   setToken(service, token: string) {

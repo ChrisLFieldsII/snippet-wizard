@@ -2,7 +2,6 @@ import { IconType } from 'react-icons'
 import { AiFillGitlab, AiFillGithub } from 'react-icons/ai'
 
 import { ServiceTag } from 'src/types'
-import { getKeys } from 'src/utils'
 
 type ServiceConfig = {
   Icon: IconType
@@ -27,4 +26,4 @@ export const SERVICES_MAP: Record<ServiceTag, ServiceConfig> = {
     name: 'GitLab',
   },
 }
-export const SERVICE_TAGS = getKeys(SERVICES_MAP)
+export const SERVICE_TAGS = Object.keys(SERVICES_MAP) as ServiceTag[]

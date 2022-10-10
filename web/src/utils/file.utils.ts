@@ -1,16 +1,4 @@
-import Emittery from 'emittery'
-
-import { KNOWN_FILE_EXTENSIONS, FILE_UI_MAP } from '~/app-constants'
-
-export const getKeys = <T extends object>(obj: T) => {
-  return Object.keys(obj) as (keyof T)[]
-}
-
-type EventMap = {
-  getSnippets: undefined
-}
-
-export const emitter = new Emittery<EventMap>()
+import { KNOWN_FILE_EXTENSIONS, FILE_UI_MAP } from 'src/app-constants'
 
 export const getFileExtension = (filename: string): string => {
   const parts = filename.split('.')

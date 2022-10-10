@@ -1,6 +1,7 @@
+import axios from 'axios'
+
 import {
   SnippetMutationResponse,
-  ServiceTag,
   Snippet,
   SnippetMutationInput,
   CreateSnippetResponse,
@@ -10,6 +11,7 @@ import {
 import { SnippetPlugin } from './plugin.utils'
 
 const API_URL = 'https://gitlab.com/api/v4'
+
 class GitLabSnippetPlugin extends SnippetPlugin {
   async createSnippet(
     input: CreateSnippetInput
@@ -17,20 +19,16 @@ class GitLabSnippetPlugin extends SnippetPlugin {
     if (!this.isEnabled()) {
       return {
         isSuccess: false,
-        service: this.getTag(),
+        service: this.tag,
       }
     }
 
     const { contents, description, filename, privacy, title } = input
 
     try {
-      const res = (await fetch(`${API_URL}/snippets`, {
-        method: 'POST',
-        headers: {
-          ...this.getHeaders(),
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      const res = await axios.post<GitLabSnippet>(
+        `${API_URL}/snippets`,
+        {
           title,
           description,
           visibility: privacy,
@@ -40,24 +38,31 @@ class GitLabSnippetPlugin extends SnippetPlugin {
               file_path: filename,
             },
           ],
-        }),
-      }).then((res) => res.json())) as GitLabSnippet
+        },
+        {
+          headers: {
+            ...this.getHeaders(),
+            'Content-Type': 'application/json',
+          },
+        }
+      )
 
       console.log('gitlab create res', res)
 
-      if (!res.id) {
+      if (!res.data.id) {
         throw new Error('Failed to create gitlab snippet')
       }
 
       return {
         isSuccess: true,
-        service: this.getTag(),
-        snippet: await this.transformSnippet(res),
+        service: this.tag,
+        snippet: await this.transformSnippet(res.data),
       }
     } catch (error) {
+      console.error(error)
       return {
         isSuccess: false,
-        service: this.getTag(),
+        service: this.tag,
       }
     }
   }
@@ -68,15 +73,14 @@ class GitLabSnippetPlugin extends SnippetPlugin {
     if (!this.isEnabled()) {
       return {
         isSuccess: false,
-        service: this.getTag(),
+        service: this.tag,
       }
     }
 
     let isSuccess = false
 
     try {
-      const res = await fetch(`${API_URL}/snippets/${id}`, {
-        method: 'DELETE',
+      const res = await axios.delete(`${API_URL}/snippets/${id}`, {
         headers: this.getHeaders(),
       })
 
@@ -86,7 +90,7 @@ class GitLabSnippetPlugin extends SnippetPlugin {
 
       isSuccess = true
     } catch (error) {
-      console.error(this.getTag(), 'failed to delete snippet: ' + id)
+      console.error(this.tag, 'failed to delete snippet: ' + id)
     }
 
     return {
@@ -95,7 +99,7 @@ class GitLabSnippetPlugin extends SnippetPlugin {
     }
   }
   updateSnippet(input: SnippetMutationInput): Promise<Snippet | null> {
-    console.error('Method not implemented.' + this.getTag(), input)
+    console.error('Method not implemented.' + this.tag, input)
     return null
   }
 
@@ -104,12 +108,14 @@ class GitLabSnippetPlugin extends SnippetPlugin {
       return []
     }
 
-    const rawSnippets = (await fetch(`${API_URL}/snippets`, {
-      headers: this.getHeaders(),
-    }).then((r) => r.json())) as GitLabSnippet[]
-    // console.log(rawSnippets)
+    const rawSnippets = await axios.get<GitLabSnippet[]>(
+      `${API_URL}/snippets`,
+      {
+        headers: this.getHeaders(),
+      }
+    )
     return Promise.all(
-      rawSnippets.map((rawSnippet) => this.transformSnippet(rawSnippet))
+      rawSnippets.data.map((rawSnippet) => this.transformSnippet(rawSnippet))
     )
   }
 
@@ -118,11 +124,12 @@ class GitLabSnippetPlugin extends SnippetPlugin {
       createdAt: new Date(rawSnippet.created_at),
       updatedAt: new Date(rawSnippet.updated_at),
       contents: await (async () => {
-        return (
-          await fetch(`${API_URL}/snippets/${rawSnippet.id}/raw`, {
+        return await axios
+          .get<string>(`${API_URL}/snippets/${rawSnippet.id}/raw`, {
             headers: this.getHeaders(),
+            responseType: 'text',
           })
-        ).text()
+          .then((res) => res.data)
       })(),
       description: rawSnippet.description,
       filename: rawSnippet.file_name,
@@ -138,9 +145,9 @@ class GitLabSnippetPlugin extends SnippetPlugin {
 
   private getHeaders() {
     const token = this.getToken()
-    const headers = new Headers()
-    headers.set('PRIVATE-TOKEN', token)
-    return headers
+    return {
+      'PRIVATE-TOKEN': token,
+    }
   }
 }
 
