@@ -80,14 +80,14 @@ export class SnippetPluginManager implements ISnippetPluginManager {
   }
 
   async createSnippet({
-    services,
+    services: tags,
+    input,
   }: SnippetManagerCreateInput): Promise<
     Record<ServiceTag, CreateSnippetResponse>
   > {
-    const tags = getKeys(services)
     const promises = await this.plugins
       .filter((plugin) => tags.includes(plugin.getTag()))
-      .map((plugin) => plugin.createSnippet(services[plugin.getTag()].input))
+      .map((plugin) => plugin.createSnippet(input))
 
     // TODO: improve with allSettled
     const responses = await Promise.all(promises)

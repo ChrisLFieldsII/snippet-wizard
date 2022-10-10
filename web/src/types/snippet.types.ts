@@ -42,12 +42,9 @@ export type SnippetManagerDeleteInput = {
 }
 
 export type SnippetManagerCreateInput = {
-  services: Record<
-    ServiceTag,
-    {
-      input: CreateSnippetInput
-    }
-  >
+  /** the services want to create snippet for */
+  services: ServiceTag[]
+  input: CreateSnippetInput
 }
 
 export interface ISnippetPlugin {
