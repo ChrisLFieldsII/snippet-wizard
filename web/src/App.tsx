@@ -1,5 +1,3 @@
-import { useEffect } from 'react'
-
 import { ChakraProvider, ColorModeScript } from '@chakra-ui/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
@@ -10,7 +8,7 @@ import FatalErrorPage from 'src/pages/FatalErrorPage'
 import Routes from 'src/Routes'
 
 import './index.css'
-import { useInitStore } from './state'
+import { useInitApp } from './hooks'
 import { theme } from './styles'
 
 const queryClient = new QueryClient({
@@ -25,7 +23,7 @@ const queryClient = new QueryClient({
 })
 
 const App = () => {
-  useInitStore()
+  useInitApp()
 
   return (
     <QueryClientProvider client={queryClient}>

@@ -8,6 +8,8 @@ import {
   Heading,
   Text,
   VStack,
+  Spinner,
+  Center,
 } from '@chakra-ui/react'
 import { createView } from 'react-create-view'
 
@@ -22,10 +24,9 @@ import { List, Snippet } from '~/components'
 import { UISnippet } from '~/types'
 
 const HomeView = createView<HomeViewSuccessModel>({
-  Success({ snippets }) {
+  Success({ snippets, onDelete }) {
     const renderItem = (snippet: UISnippet) => {
-      // TODO: hook up on delete fn
-      return <Snippet {...snippet} />
+      return <Snippet {...snippet} onDelete={onDelete} />
     }
 
     return (
@@ -69,6 +70,13 @@ const HomeView = createView<HomeViewSuccessModel>({
           </UnorderedList>
         </Flex>
       </>
+    )
+  },
+  Loading() {
+    return (
+      <Center>
+        <Spinner />
+      </Center>
     )
   },
 })

@@ -6,6 +6,7 @@ import {
   SnippetMutationInput,
   CreateSnippetResponse,
   CreateSnippetInput,
+  DeleteSnippetResponse,
 } from 'src/types'
 
 import { SnippetPlugin } from './plugin.utils'
@@ -19,7 +20,6 @@ class GitLabSnippetPlugin extends SnippetPlugin {
     if (!this.isEnabled()) {
       return {
         isSuccess: false,
-        service: this.tag,
       }
     }
 
@@ -55,29 +55,28 @@ class GitLabSnippetPlugin extends SnippetPlugin {
 
       return {
         isSuccess: true,
-        service: this.tag,
-        snippet: await this.transformSnippet(res.data),
+        data: {
+          snippet: await this.transformSnippet(res.data),
+        },
       }
     } catch (error) {
       console.error(error)
       return {
         isSuccess: false,
-        service: this.tag,
       }
     }
   }
 
   async deleteSnippet({
     id,
-  }: SnippetMutationInput): Promise<SnippetMutationResponse> {
+  }: SnippetMutationInput): Promise<
+    SnippetMutationResponse<DeleteSnippetResponse>
+  > {
     if (!this.isEnabled()) {
       return {
         isSuccess: false,
-        service: this.tag,
       }
     }
-
-    let isSuccess = false
 
     try {
       const res = await axios.delete(`${API_URL}/snippets/${id}`, {
@@ -88,14 +87,17 @@ class GitLabSnippetPlugin extends SnippetPlugin {
         throw new Error('Failed to delete snippet')
       }
 
-      isSuccess = true
+      return {
+        isSuccess: true,
+        data: {
+          id,
+        },
+      }
     } catch (error) {
       console.error(this.tag, 'failed to delete snippet: ' + id)
-    }
-
-    return {
-      isSuccess,
-      service: 'gitlab',
+      return {
+        isSuccess: false,
+      }
     }
   }
   updateSnippet(input: SnippetMutationInput): Promise<Snippet | null> {
@@ -109,7 +111,7 @@ class GitLabSnippetPlugin extends SnippetPlugin {
     }
 
     const rawSnippets = await axios.get<GitLabSnippet[]>(
-      `${API_URL}/snippets`,
+      `${API_URL}/snippets?per_page=5`, // TODO: per_page is temp while testing
       {
         headers: this.getHeaders(),
       }

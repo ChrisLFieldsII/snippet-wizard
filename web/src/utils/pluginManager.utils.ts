@@ -6,6 +6,7 @@ import {
   SnippetManagerDeleteInput,
   CreateSnippetResponse,
   SnippetManagerCreateInput,
+  DeleteSnippetResponse,
 } from 'src/types'
 
 import { getKeys } from './general.utils'
@@ -19,9 +20,13 @@ interface ISnippetPluginManager {
   createSnippet(
     input: SnippetManagerCreateInput
   ): Promise<Record<ServiceTag, CreateSnippetResponse>>
+  /**
+   * @input Takes in a map of services to the snippet id to delete.
+   * @returns a map of services to success response
+   */
   deleteSnippet(
     input: SnippetManagerDeleteInput
-  ): Promise<Record<ServiceTag, SnippetMutationResponse>>
+  ): Promise<Record<ServiceTag, SnippetMutationResponse<DeleteSnippetResponse>>>
   updateSnippet(input: SnippetMutationInput): Promise<SnippetMap>
 }
 
@@ -75,7 +80,7 @@ export class SnippetPluginManager implements ISnippetPluginManager {
   async deleteSnippet({
     services,
   }: SnippetManagerDeleteInput): Promise<
-    Record<ServiceTag, SnippetMutationResponse>
+    Record<ServiceTag, SnippetMutationResponse<DeleteSnippetResponse>>
   > {
     const tags = getKeys(services)
     const promises = await this.plugins
@@ -91,7 +96,7 @@ export class SnippetPluginManager implements ISnippetPluginManager {
         ...accum,
         [tag]: responses[index],
       }
-    }, {} as Record<ServiceTag, SnippetMutationResponse>)
+    }, {} as Record<ServiceTag, SnippetMutationResponse<DeleteSnippetResponse>>)
 
     return map
   }

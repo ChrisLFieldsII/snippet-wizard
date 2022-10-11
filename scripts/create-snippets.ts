@@ -25,5 +25,5 @@ export default async () => {
   console.log(store.getState())
 
   const res = await snippetPluginManager.createSnippet(input)
-  console.log(res)
+  console.dir(res, { depth: null })
 }

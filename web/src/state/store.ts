@@ -1,5 +1,3 @@
-import { useEffect } from 'react'
-
 import produce from 'immer'
 import create from 'zustand'
 
@@ -21,17 +19,12 @@ const createEmptyServicesMap = (): ServicesMap => {
 }
 
 interface AppState {
-  init(): void
   services: ServicesMap
   setToken(service: ServiceTag, token: string): void
 }
 
-export const useStore = create<AppState>()((set, get) => ({
+export const useStore = create<AppState>()((set) => ({
   services: createEmptyServicesMap(),
-  init() {
-    // NOTE: use to do stuff like load tokens from storage (if thats safe)
-    console.log('init app state')
-  },
   setToken(service, token: string) {
     console.log(`setting token for ${service} to ${token}`)
 
@@ -42,11 +35,3 @@ export const useStore = create<AppState>()((set, get) => ({
     )
   },
 }))
-
-export const useInitStore = () => {
-  const initStore = useStore((store) => store.init)
-
-  useEffect(() => {
-    initStore()
-  }, [])
-}

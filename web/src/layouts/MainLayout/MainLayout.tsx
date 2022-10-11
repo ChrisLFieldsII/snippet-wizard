@@ -353,6 +353,7 @@ type ServiceInputProps = InputProps & {
  */
 const ServiceInput = ({ icon, tag, ...props }: ServiceInputProps) => {
   const setToken = useStore((store) => store.setToken)
+  const services = useStore((store) => store.services)
 
   return (
     <>
@@ -364,6 +365,7 @@ const ServiceInput = ({ icon, tag, ...props }: ServiceInputProps) => {
           {...props}
           placeholder={tag}
           type="password"
+          value={services[tag].token}
           onChange={(e) => {
             setToken(tag, e.currentTarget.value)
           }}

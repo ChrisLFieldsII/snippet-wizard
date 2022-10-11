@@ -51,7 +51,9 @@ export interface ISnippetPlugin {
   tag: ServiceTag
   getSnippets(): Promise<Snippet[]>
   createSnippet(input: CreateSnippetInput): Promise<CreateSnippetResponse>
-  deleteSnippet(input: SnippetMutationInput): Promise<SnippetMutationResponse>
+  deleteSnippet(
+    input: SnippetMutationInput
+  ): Promise<SnippetMutationResponse<DeleteSnippetResponse>>
   updateSnippet(input: SnippetMutationInput): Promise<Snippet | null>
   transformSnippet(rawSnippet: unknown): Promise<Snippet>
   isEnabled(): boolean
@@ -70,11 +72,15 @@ export type CreateSnippetInput = {
   filename: string
 }
 
-export type SnippetMutationResponse = {
-  isSuccess: boolean
-  service: ServiceTag
+export type DeleteSnippetResponse = {
+  id: string
 }
 
-export type CreateSnippetResponse = SnippetMutationResponse & {
-  snippet?: Snippet
+export type SnippetMutationResponse<Data = unknown> = {
+  isSuccess: boolean
+  data?: Data
 }
+
+export type CreateSnippetResponse = SnippetMutationResponse<{
+  snippet?: Snippet
+}>

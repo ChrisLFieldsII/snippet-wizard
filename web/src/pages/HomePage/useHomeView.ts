@@ -1,12 +1,13 @@
 import { useEffect } from 'react'
 
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
+import produce from 'immer'
 import { ViewModelProps } from 'react-create-view'
 
-import { emitter, getKeys, snippetPluginManager } from 'src/utils'
+import { emitter, getEntries, getKeys, snippetPluginManager } from 'src/utils'
 
 import { mockSnippets } from '~/../mocks'
-import { Snippet, UISnippet } from '~/types'
+import { ServiceTag, Snippet, SnippetMap, UISnippet } from '~/types'
 
 export type HomeViewSuccessModel = {
   snippets: UISnippet[]
@@ -15,7 +16,8 @@ export type HomeViewSuccessModel = {
 
 type HomeViewModelProps = ViewModelProps<HomeViewSuccessModel>
 
-const IS_DEBUG = true
+const IS_DEBUG = false
+const QUERY_KEY = 'snippets'
 
 /**
  * This is where the magic happens!
@@ -24,15 +26,66 @@ const IS_DEBUG = true
  * Reduce `SnippetMap` down to UI models.
  */
 export const useHomeView = (): HomeViewModelProps => {
-  const query = useQuery(['snippets'], async () => {
-    console.log('home page getting snippets')
+  const query = useQuery(
+    [QUERY_KEY],
+    async () => {
+      console.log('home page getting snippets')
 
-    if (IS_DEBUG) {
-      return {}
+      if (IS_DEBUG) {
+        return {}
+      }
+      const snippetMap = snippetPluginManager.getSnippets()
+      return snippetMap
+    },
+    {
+      // dont want to abuse service apis. staleTime is longer than usual.
+      // cacheTime is infinite to preserve data. will manage cache on operations
+      cacheTime: Infinity,
+      staleTime: 1000 * 60 * 30,
     }
-    const snippetMap = snippetPluginManager.getSnippets()
-    return snippetMap
-  })
+  )
+  const queryClient = useQueryClient()
+
+  const onDeleteMutation = useMutation(
+    async (snippet: UISnippet) => {
+      try {
+        const res = await snippetPluginManager.deleteSnippet({
+          services: snippet.servicesMap,
+        })
+        console.log('deleted snippets response', res)
+
+        return res
+
+        // TODO: store deleted snippets for awhile so user can restore! (premium feature?)
+      } catch (error) {
+        alert('snippet manager failed to delete snippets')
+        throw error
+      }
+    },
+    {
+      onSuccess(data) {
+        // modify cached data w/ deleted ids and set new cached data
+        let cachedData = queryClient.getQueryData<SnippetMap>([QUERY_KEY])
+        console.log('cached data', cachedData)
+
+        getEntries(data).forEach(([service, snippetRes]) => {
+          if (!snippetRes.isSuccess) {
+            return
+          }
+
+          cachedData = produce<SnippetMap>(cachedData, (draft) => {
+            draft[service] = draft[service].filter(
+              (currSnippet) => currSnippet.id !== snippetRes.data?.id
+            )
+          })
+        })
+
+        console.log('set new cached data', cachedData)
+
+        queryClient.setQueryData<SnippetMap>([QUERY_KEY], cachedData)
+      },
+    }
+  )
 
   useEffect(() => {
     return emitter.on('getSnippets', () => {
@@ -53,6 +106,7 @@ export const useHomeView = (): HomeViewModelProps => {
   }
 
   const snippetMap = query.data
+  console.log('snippet map', snippetMap)
 
   // reduce snippet map into combined array of snippets
   let combinedSnippets: Snippet[] = getKeys(query.data).reduce<Snippet[]>(
@@ -115,13 +169,11 @@ export const useHomeView = (): HomeViewModelProps => {
     model: {
       snippets: uiSnippets,
       async onDelete(snippet) {
-        try {
-          await snippetPluginManager.deleteSnippet({
-            services: snippet.servicesMap,
-          })
-        } catch (error) {
-          console.error('snippet manager failed to delete snippets', error)
+        if (!confirm(`Delete snippet "${snippet.title}"?`)) {
+          return
         }
+
+        await onDeleteMutation.mutateAsync(snippet)
       },
     },
   }

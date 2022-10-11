@@ -6,6 +6,7 @@ import {
   SnippetMutationInput,
   CreateSnippetInput,
   CreateSnippetResponse,
+  DeleteSnippetResponse,
 } from 'src/types'
 
 import { SnippetPlugin } from './plugin.utils'
@@ -14,12 +15,9 @@ class GitHubSnippetPlugin extends SnippetPlugin {
   async createSnippet(
     input: CreateSnippetInput
   ): Promise<CreateSnippetResponse> {
-    const service = this.tag
-
     if (!this.isEnabled()) {
       return {
         isSuccess: false,
-        service,
       }
     }
 
@@ -39,42 +37,46 @@ class GitHubSnippetPlugin extends SnippetPlugin {
 
       return {
         isSuccess: true,
-        service,
-        snippet: await this.transformSnippet(rawSnippet.data as GitHubSnippet),
+        data: {
+          snippet: await this.transformSnippet(
+            rawSnippet.data as GitHubSnippet
+          ),
+        },
       }
     } catch (error) {
       return {
         isSuccess: false,
-        service,
       }
     }
   }
 
   async deleteSnippet({
     id,
-  }: SnippetMutationInput): Promise<SnippetMutationResponse> {
+  }: SnippetMutationInput): Promise<
+    SnippetMutationResponse<DeleteSnippetResponse>
+  > {
     if (!this.isEnabled()) {
       return {
         isSuccess: false,
-        service: this.tag,
       }
     }
-
-    let isSuccess = false
 
     try {
       await request('DELETE /gists/{gist_id}', {
         gist_id: id,
         headers: this.getHeaders(),
       })
-      isSuccess = true
+      return {
+        isSuccess: true,
+        data: {
+          id,
+        },
+      }
     } catch (error) {
       console.error(this.tag, 'failed to delete snippet: ' + id)
-    }
-
-    return {
-      isSuccess,
-      service: this.tag,
+      return {
+        isSuccess: false,
+      }
     }
   }
 
@@ -90,6 +92,7 @@ class GitHubSnippetPlugin extends SnippetPlugin {
 
     const rawSnippets = await request('GET /gists', {
       headers: this.getHeaders(),
+      per_page: 5, // TODO: this is temp while testing
     })
     return Promise.all(
       rawSnippets.data.map((rawSnippet) => this.transformSnippet(rawSnippet))
