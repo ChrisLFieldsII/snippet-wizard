@@ -15,5 +15,5 @@ export const getKnownFileExtension = (filename: string): string => {
 }
 
 export const getCodeLanguage = (extension: string) => {
-  return FILE_UI_MAP[extension]?.language || 'text'
+  return FILE_UI_MAP[extension]?.language || 'markdown'
 }

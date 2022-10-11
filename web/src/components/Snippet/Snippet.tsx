@@ -1,7 +1,6 @@
 import {
   Container,
   Stack,
-  useColorModeValue,
   HStack,
   Link as ChakraLink,
   Heading,
@@ -26,11 +25,13 @@ import {
 } from '@chakra-ui/react'
 import { FaTrash } from 'react-icons/fa'
 import { FiMoreHorizontal } from 'react-icons/fi'
-import SyntaxHighlighter from 'react-syntax-highlighter'
+
+import { Card } from '../Card/Card'
+import CodeEditor from '../CodeEditor/CodeEditor'
 
 import { FILE_UI_MAP, SERVICES_MAP } from '~/app-constants'
 import { UISnippet } from '~/types'
-import { getCodeLanguage, getKnownFileExtension } from '~/utils'
+import { getKnownFileExtension } from '~/utils'
 
 type SnippetProps = UISnippet & {
   onDelete(snippet: UISnippet): void
@@ -49,10 +50,10 @@ export const Snippet = (props: SnippetProps) => {
     servicesMap,
     onDelete,
   } = props
+
   const codeDisclosure = useDisclosure({
     defaultIsOpen: true,
   })
-  const boxShadow = useColorModeValue('sm', 'sm-dark')
 
   const fileExtension = getKnownFileExtension(filename)
   const FileIcon = FILE_UI_MAP[fileExtension].Icon
@@ -65,12 +66,7 @@ export const Snippet = (props: SnippetProps) => {
     <Box>
       <Box as="section" py={{ base: '4', md: '8' }}>
         <Container maxW="3xl">
-          <Box
-            bg="bg-surface"
-            boxShadow={boxShadow}
-            borderRadius="lg"
-            p={{ base: '4', md: '6' }}
-          >
+          <Card>
             <Stack fontSize="sm" px="4" spacing="4">
               <Stack direction="row" justify="space-between" spacing="4">
                 <HStack spacing="3">
@@ -153,18 +149,7 @@ export const Snippet = (props: SnippetProps) => {
                       </AccordionButton>
                     </h2>
                     <AccordionPanel>
-                      <SyntaxHighlighter
-                        language={getCodeLanguage(fileExtension)}
-                        showLineNumbers
-                        // NOTE: if want to wrap code, disable these styles and enable wrap props
-                        customStyle={{
-                          width: '100%',
-                          overflowX: 'auto',
-                        }}
-                        // wrapLongLines
-                      >
-                        {contents}
-                      </SyntaxHighlighter>
+                      <CodeEditor code={contents} filename={filename} />
                     </AccordionPanel>
                   </AccordionItem>
                 </Accordion>
@@ -185,7 +170,7 @@ export const Snippet = (props: SnippetProps) => {
                 </VStack>
               </VStack>
             </Stack>
-          </Box>
+          </Card>
         </Container>
       </Box>
     </Box>

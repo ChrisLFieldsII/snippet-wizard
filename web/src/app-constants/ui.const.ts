@@ -1,17 +1,20 @@
+import { langs } from '@uiw/codemirror-extensions-langs'
 import { IconType } from 'react-icons'
 import { AiFillFileUnknown } from 'react-icons/ai'
 import { SiGnubash, SiTypescript } from 'react-icons/si'
+
+type CodeLanguage = keyof typeof langs
 
 export const FILE_UI_MAP: Record<
   string,
   {
     Icon: IconType
-    language: string
+    language: CodeLanguage
   }
 > = {
   '.sh': {
     Icon: SiGnubash,
-    language: 'bash',
+    language: 'shell',
   },
   '.ts': {
     Icon: SiTypescript,
@@ -19,7 +22,7 @@ export const FILE_UI_MAP: Record<
   },
   '.unknown': {
     Icon: AiFillFileUnknown,
-    language: 'text',
+    language: 'markdown',
   },
 }
 export const KNOWN_FILE_EXTENSIONS: string[] = Object.keys(FILE_UI_MAP)

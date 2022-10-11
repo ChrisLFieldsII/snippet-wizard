@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import { ChakraProvider, extendTheme } from '@chakra-ui/react'
+import { Box, ChakraProvider, extendTheme } from '@chakra-ui/react'
 
 // import * as theme from 'config/chakra.config'
 import { theme } from '../src/styles/theme'
@@ -28,4 +28,10 @@ const withChakra = (StoryFn) => {
   )
 }
 
-export const decorators = [withChakra]
+const withPadding = (Story) => (
+  <Box p={30}>
+    <Story />
+  </Box>
+)
+
+export const decorators = [withChakra, withPadding]
