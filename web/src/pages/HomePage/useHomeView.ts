@@ -141,6 +141,7 @@ export const useHomeView = (): HomeViewModelProps => {
       }
     } else {
       accum[contents].services.push(currSnippet.service)
+      accum[contents].description = currSnippet.description
 
       const mapping = accum[contents].servicesMap[currSnippet.service]
       if (mapping) {
@@ -157,6 +158,7 @@ export const useHomeView = (): HomeViewModelProps => {
   }, {})
 
   const uiSnippets = Object.values(snippetsMapByContents)
+  console.log(uiSnippets)
 
   if (!uiSnippets.length) {
     return {
