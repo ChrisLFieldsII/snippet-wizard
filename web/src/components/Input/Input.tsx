@@ -11,12 +11,12 @@ type InputProps = ChakraInputProps & {
 }
 
 export const Input = (props: InputProps) => {
-  const { label, id } = props
+  const { label, id, size } = props
 
   return (
     <FormControl>
-      <ChakraInput id={id} {...props} placeholder=" " data-peer />
-      <FormLabel htmlFor={id} variant="floating">
+      <ChakraInput {...props} id={id} name={id} placeholder=" " data-peer />
+      <FormLabel htmlFor={id} variant="floating" size={size}>
         {label}
       </FormLabel>
     </FormControl>

@@ -27,7 +27,7 @@ import { FaTrash } from 'react-icons/fa'
 import { FiMoreHorizontal } from 'react-icons/fi'
 
 import { Card } from '../Card/Card'
-import CodeEditor from '../CodeEditor/CodeEditor'
+import { CodeEditor } from '../CodeEditor/CodeEditor'
 
 import { FILE_UI_MAP, SERVICES_MAP } from '~/app-constants'
 import { UISnippet } from '~/types'

@@ -28,6 +28,7 @@
     "@uiw/react-codemirror": "^4.12.4",
     "axios": "^1.1.2",
     "emittery": "^1.0.0",
+    "formik": "^2.2.9",
     "framer-motion": "^6",
     "immer": "^9.0.15",
     "prop-types": "15.8.1",

@@ -13,7 +13,7 @@
 
 import type { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import CodeEditor from './CodeEditor'
+import { CodeEditor } from './CodeEditor'
 
 export default {
   title: 'Components/CodeEditor',
@@ -21,6 +21,12 @@ export default {
   args: {
     code: `echo "hello world"`,
     filename: 'example.sh',
+    isEditable: true,
+    showHeader: true,
+  },
+  argTypes: {
+    setFilename: { action: 'set filename' },
+    setCode: { action: 'set code' },
   },
 } as ComponentMeta<typeof CodeEditor>
 

@@ -35,3 +35,7 @@ const withPadding = (Story) => (
 )
 
 export const decorators = [withChakra, withPadding]
+
+export const parameters = {
+  actions: { argTypesRegex: '(^on.*|^set.*)' },
+}
