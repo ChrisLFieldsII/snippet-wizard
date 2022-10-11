@@ -11,7 +11,6 @@
 //
 // See https://storybook.js.org/docs/react/writing-stories/args.
 
-import { Box } from '@chakra-ui/react'
 import type { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import Input from './Input'
@@ -22,13 +21,6 @@ export default {
   args: {
     label: 'Label',
   },
-  decorators: [
-    (Story) => (
-      <Box p={10}>
-        <Story />
-      </Box>
-    ),
-  ],
 } as ComponentMeta<typeof Input>
 
 type InputStory = ComponentStory<typeof Input>

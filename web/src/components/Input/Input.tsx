@@ -6,15 +6,17 @@ import {
 } from '@chakra-ui/react'
 
 type InputProps = ChakraInputProps & {
+  id: string
   label: string
 }
 
 export const Input = (props: InputProps) => {
-  const { label } = props
+  const { label, id } = props
+
   return (
     <FormControl>
-      <ChakraInput {...props} placeholder=" " data-peer />
-      <FormLabel htmlFor="medium" variant="floating" size="md">
+      <ChakraInput id={id} {...props} placeholder=" " data-peer />
+      <FormLabel htmlFor={id} variant="floating">
         {label}
       </FormLabel>
     </FormControl>
