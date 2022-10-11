@@ -158,7 +158,7 @@ export const useHomeView = (): HomeViewModelProps => {
   }, {})
 
   const uiSnippets = Object.values(snippetsMapByContents)
-  console.log(uiSnippets)
+  console.log('ui snippets', uiSnippets)
 
   if (!uiSnippets.length) {
     return {

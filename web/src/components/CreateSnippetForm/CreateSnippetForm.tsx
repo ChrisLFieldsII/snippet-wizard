@@ -9,16 +9,16 @@ import {
 } from '@chakra-ui/react'
 import { useFormik } from 'formik'
 
-import { Card } from '../Card/Card'
 import { CodeEditor } from '../CodeEditor/CodeEditor'
 import { Input } from '../Input/Input'
 
 import { FormProps, SnippetPrivacy } from '~/types'
 import { noop, reduceObjectToString } from '~/utils'
 
-type CreateSnippetFormValues = {
+// TODO: unify this type with `CreateSnippetInput`
+export type CreateSnippetFormValues = {
   title: string
-  description?: string
+  description: string
   filename: string
   code: string
   privacy: SnippetPrivacy
@@ -57,52 +57,50 @@ export const CreateSnippetForm = ({
 
   return (
     // @ts-ignore
-    <Card as="form" p={10} onSubmit={handleSubmit}>
-      <VStack spacing={12} align="start">
-        <Input
-          id="title"
-          label="Title"
-          value={title}
-          isRequired
-          onChange={handleChange}
+    <VStack spacing={12} align="start" as="form" onSubmit={handleSubmit}>
+      <Input
+        id="title"
+        label="Title"
+        value={title}
+        isRequired
+        onChange={handleChange}
+      />
+
+      <Input
+        id="description"
+        label="Description"
+        value={description}
+        onChange={handleChange}
+      />
+
+      <CodeEditor
+        isEditable
+        showHeader
+        code={code}
+        filename={filename}
+        setFilename={(newFilename) => setFieldValue('filename', newFilename)}
+        setCode={(newCode) => setFieldValue('code', newCode)}
+      />
+
+      <FormControl display="flex" alignItems="center">
+        <FormLabel htmlFor="privacy" mb="0">
+          Make snippet public?
+        </FormLabel>
+
+        <Switch
+          id="privacy"
+          checked={privacy === 'public'}
+          onChange={(e) =>
+            setFieldValue(
+              'privacy',
+              e.currentTarget.checked ? 'public' : 'private'
+            )
+          }
         />
+      </FormControl>
 
-        <Input
-          id="description"
-          label="Description"
-          value={description}
-          onChange={handleChange}
-        />
-
-        <CodeEditor
-          isEditable
-          showHeader
-          code={code}
-          filename={filename}
-          setFilename={(newFilename) => setFieldValue('filename', newFilename)}
-          setCode={(newCode) => setFieldValue('code', newCode)}
-        />
-
-        <FormControl display="flex" alignItems="center">
-          <FormLabel htmlFor="privacy" mb="0">
-            Make snippet public?
-          </FormLabel>
-
-          <Switch
-            id="privacy"
-            checked={privacy === 'public'}
-            onChange={(e) =>
-              setFieldValue(
-                'privacy',
-                e.currentTarget.checked ? 'public' : 'private'
-              )
-            }
-          />
-        </FormControl>
-
-        <Button type="submit">Create Snippet</Button>
-      </VStack>
-    </Card>
+      <Button type="submit">Create Snippet</Button>
+    </VStack>
   )
 }
 

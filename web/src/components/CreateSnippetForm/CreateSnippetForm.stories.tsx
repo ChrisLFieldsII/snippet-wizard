@@ -13,6 +13,8 @@
 
 import type { ComponentMeta } from '@storybook/react'
 
+import { Card } from '../Card/Card'
+
 import CreateSnippetForm from './CreateSnippetForm'
 
 export const generated = () => {
@@ -22,4 +24,11 @@ export const generated = () => {
 export default {
   title: 'Components/CreateSnippetForm',
   component: CreateSnippetForm,
+  decorators: [
+    (Story) => (
+      <Card p={10}>
+        <Story />
+      </Card>
+    ),
+  ],
 } as ComponentMeta<typeof CreateSnippetForm>
