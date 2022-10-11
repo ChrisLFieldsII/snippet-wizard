@@ -7,3 +7,9 @@ export const getEntries = <T extends object>(obj: T) => {
 }
 
 export const noop = (...params: any[]) => {}
+
+export const reduceObjectToString = (obj: object) => {
+  return Object.values(obj)
+    .map((value) => value + '')
+    .join()
+}
