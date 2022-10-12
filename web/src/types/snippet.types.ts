@@ -47,6 +47,12 @@ export type SnippetManagerCreateInput = {
   input: CreateSnippetInput
 }
 
+export type SnippetManagerUpdateInput = {
+  /** the services want to update snippet for */
+  services: ServiceTag[]
+  input: UpdateSnippetInput
+}
+
 export interface ISnippetPlugin {
   tag: ServiceTag
   getSnippets(): Promise<Snippet[]>

@@ -7,6 +7,8 @@ import {
   CreateSnippetResponse,
   SnippetManagerCreateInput,
   DeleteSnippetResponse,
+  SnippetManagerUpdateInput,
+  UpdateSnippetResponse,
 } from 'src/types'
 
 import { getKeys } from './general.utils'
@@ -27,7 +29,9 @@ interface ISnippetPluginManager {
   deleteSnippet(
     input: SnippetManagerDeleteInput
   ): Promise<Record<ServiceTag, SnippetMutationResponse<DeleteSnippetResponse>>>
-  updateSnippet(input: SnippetMutationInput): Promise<SnippetMap>
+  updateSnippet(
+    input: SnippetManagerUpdateInput
+  ): Promise<Record<ServiceTag, UpdateSnippetResponse>>
 }
 
 export class SnippetPluginManager implements ISnippetPluginManager {
@@ -101,8 +105,27 @@ export class SnippetPluginManager implements ISnippetPluginManager {
     return map
   }
 
-  updateSnippet(input: SnippetMutationInput): Promise<SnippetMap> {
-    throw new Error('Method not implemented.')
+  async updateSnippet({
+    services: tags,
+    input,
+  }: SnippetManagerUpdateInput): Promise<
+    Record<ServiceTag, UpdateSnippetResponse>
+  > {
+    const promises = await this.plugins
+      .filter((plugin) => tags.includes(plugin.getTag()))
+      .map((plugin) => plugin.updateSnippet(input))
+
+    // TODO: improve with allSettled
+    const responses = await Promise.all(promises)
+
+    const map = this.tags.reduce((accum, tag, index) => {
+      return {
+        ...accum,
+        [tag]: responses[index],
+      }
+    }, {} as Record<ServiceTag, UpdateSnippetResponse>)
+
+    return map
   }
 }
 
