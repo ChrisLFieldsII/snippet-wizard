@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 
+import { useToast } from '@chakra-ui/react'
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import produce from 'immer'
 import { ViewModelProps } from 'react-create-view'
@@ -26,6 +27,7 @@ const QUERY_KEY = 'snippets'
  * Reduce `SnippetMap` down to UI models.
  */
 export const useHomeView = (): HomeViewModelProps => {
+  const toast = useToast()
   const query = useQuery(
     [QUERY_KEY],
     async () => {
@@ -48,28 +50,29 @@ export const useHomeView = (): HomeViewModelProps => {
 
   const onDeleteMutation = useMutation(
     async (snippet: UISnippet) => {
-      try {
-        const res = await snippetPluginManager.deleteSnippet({
-          services: snippet.servicesMap,
-        })
-        console.log('deleted snippets response', res)
+      const res = await snippetPluginManager.deleteSnippet({
+        services: snippet.servicesMap,
+      })
+      console.log('deleted snippets response', res)
 
-        return res
-
-        // TODO: store deleted snippets for awhile so user can restore! (premium feature?)
-      } catch (error) {
-        alert('snippet manager failed to delete snippets')
-        throw error
-      }
+      return res
     },
     {
       onSuccess(data) {
+        // #region modify cache
         // modify cached data w/ deleted ids and set new cached data
         let cachedData = queryClient.getQueryData<SnippetMap>([QUERY_KEY])
         console.log('cached data', cachedData)
 
         getEntries(data).forEach(([service, snippetRes]) => {
           if (!snippetRes.isSuccess) {
+            toast({
+              title: `Error deleting snippet`,
+              description: `Failed to delete snippet for service ${service}`,
+              status: 'error',
+              position: 'top',
+              isClosable: true,
+            })
             return
           }
 
@@ -83,6 +86,31 @@ export const useHomeView = (): HomeViewModelProps => {
         console.log('set new cached data', cachedData)
 
         queryClient.setQueryData<SnippetMap>([QUERY_KEY], cachedData)
+        // #endregion modify cache
+
+        const entries = getEntries(data)
+
+        // if there were no failures, show success alert
+        if (
+          entries.filter(([_, response]) => !response.isSuccess).length == 0
+        ) {
+          toast({
+            title: `Deleted snippets!`,
+            description: `Snippets were deleted for each of your services`,
+            status: 'success',
+            position: 'top',
+            isClosable: true,
+          })
+        }
+      },
+      onError() {
+        toast({
+          title: `Error deleting snippets`,
+          description: `Failed to delete snippets for some reason...`,
+          status: 'error',
+          position: 'top',
+          isClosable: true,
+        })
       },
     }
   )
