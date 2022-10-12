@@ -162,15 +162,20 @@ class GitLabSnippetPlugin extends SnippetPlugin {
       return []
     }
 
-    const rawSnippets = await axios.get<GitLabSnippet[]>(
-      `${API_URL}/snippets?per_page=5`, // TODO: per_page is temp while testing
-      {
-        headers: this.getHeaders(),
-      }
-    )
-    return Promise.all(
-      rawSnippets.data.map((rawSnippet) => this.transformSnippet(rawSnippet))
-    )
+    try {
+      const rawSnippets = await axios.get<GitLabSnippet[]>(
+        `${API_URL}/snippets?per_page=5`, // TODO: per_page is temp while testing
+        {
+          headers: this.getHeaders(),
+        }
+      )
+      return Promise.all(
+        rawSnippets.data.map((rawSnippet) => this.transformSnippet(rawSnippet))
+      )
+    } catch (error) {
+      console.error(this.tag, 'failed to get snippets')
+      return []
+    }
   }
 
   async transformSnippet(rawSnippet: GitLabSnippet): Promise<Snippet> {

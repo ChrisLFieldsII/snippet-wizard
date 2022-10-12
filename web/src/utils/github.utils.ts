@@ -126,13 +126,18 @@ class GitHubSnippetPlugin extends SnippetPlugin {
       return []
     }
 
-    const rawSnippets = await request('GET /gists', {
-      headers: this.getHeaders(),
-      per_page: 5, // TODO: this is temp while testing
-    })
-    return Promise.all(
-      rawSnippets.data.map((rawSnippet) => this.transformSnippet(rawSnippet))
-    )
+    try {
+      const rawSnippets = await request('GET /gists', {
+        headers: this.getHeaders(),
+        per_page: 5, // TODO: this is temp while testing
+      })
+      return Promise.all(
+        rawSnippets.data.map((rawSnippet) => this.transformSnippet(rawSnippet))
+      )
+    } catch (error) {
+      console.error(this.tag, 'failed to get snippets')
+      return []
+    }
   }
 
   async transformSnippet(rawSnippet: GitHubSnippet): Promise<Snippet> {
