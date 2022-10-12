@@ -168,7 +168,6 @@ export const useHomeView = (): HomeViewModelProps => {
         },
       }
     } else {
-      // accum[contents].services.push(currSnippet.service)
       const { services } = accum[contents]
       // `Set` ensures uniqueness
       accum[contents].services = [

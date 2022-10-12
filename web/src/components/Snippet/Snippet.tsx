@@ -143,7 +143,9 @@ export const Snippet = (props: SnippetProps) => {
                     <h2>
                       <AccordionButton onClick={codeDisclosure.onToggle}>
                         <Box flex="1" textAlign="left">
-                          {`${codeDisclosure.isOpen ? 'Close' : 'Open'} code`}
+                          <Text color="muted" fontSize={'xs'}>
+                            {`${codeDisclosure.isOpen ? 'Close' : 'Open'} code`}
+                          </Text>
                         </Box>
                         <AccordionIcon />
                       </AccordionButton>

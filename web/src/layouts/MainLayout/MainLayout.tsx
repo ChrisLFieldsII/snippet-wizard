@@ -43,7 +43,7 @@ type MainLayoutProps = {
   children?: React.ReactNode
 }
 
-const MainLayout = ({ children }: MainLayoutProps) => {
+export const MainLayout = ({ children }: MainLayoutProps) => {
   const isDesktop = useBreakpointValue({ base: false, lg: true })
 
   return (
