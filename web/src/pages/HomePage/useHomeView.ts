@@ -168,7 +168,12 @@ export const useHomeView = (): HomeViewModelProps => {
         },
       }
     } else {
-      accum[contents].services.push(currSnippet.service)
+      // accum[contents].services.push(currSnippet.service)
+      const { services } = accum[contents]
+      // `Set` ensures uniqueness
+      accum[contents].services = [
+        ...new Set<ServiceTag>(services.concat(currSnippet.service)),
+      ]
       accum[contents].description = currSnippet.description
 
       const mapping = accum[contents].servicesMap[currSnippet.service]
