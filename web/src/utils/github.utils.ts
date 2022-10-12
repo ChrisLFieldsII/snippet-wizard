@@ -7,8 +7,11 @@ import {
   CreateSnippetInput,
   CreateSnippetResponse,
   DeleteSnippetResponse,
+  UpdateSnippetInput,
+  UpdateSnippetResponse,
 } from 'src/types'
 
+import { getKeys } from './general.utils'
 import { SnippetPlugin } from './plugin.utils'
 
 class GitHubSnippetPlugin extends SnippetPlugin {
@@ -80,9 +83,42 @@ class GitHubSnippetPlugin extends SnippetPlugin {
     }
   }
 
-  updateSnippet(input: SnippetMutationInput): Promise<Snippet | null> {
-    console.error('Method not implemented.' + this.tag, input)
-    return null
+  async updateSnippet(
+    input: UpdateSnippetInput
+  ): Promise<UpdateSnippetResponse> {
+    if (!this.isEnabled()) {
+      return {
+        isSuccess: false,
+      }
+    }
+
+    const { contents, description, id, newFilename, oldFilename } = input
+
+    // github doesnt seem to let you update privacy
+
+    try {
+      const res = await request('PATCH /gists/{gist_id}', {
+        gist_id: id,
+        description,
+        files: {
+          [oldFilename]: {
+            filename: newFilename,
+            content: contents,
+          },
+        },
+      })
+      return {
+        isSuccess: true,
+        data: {
+          snippet: await this.transformSnippet(res.data as GitHubSnippet),
+        },
+      }
+    } catch (error) {
+      console.error(this.tag, 'failed to update snippet: ' + input)
+      return {
+        isSuccess: false,
+      }
+    }
   }
 
   async getSnippets(): Promise<Snippet[]> {
@@ -104,6 +140,11 @@ class GitHubSnippetPlugin extends SnippetPlugin {
       createdAt: new Date(rawSnippet.created_at),
       updatedAt: new Date(rawSnippet.updated_at),
       contents: await (async () => {
+        // return contents if rawSnippet already contains it (from update/create)
+        const filename = getKeys(rawSnippet.files)[0] as string
+        const contents = rawSnippet.files[filename].content
+        if (contents) return contents
+
         return await request('GET /gists/{gist_id}', {
           gist_id: rawSnippet.id,
           headers: this.getHeaders(),

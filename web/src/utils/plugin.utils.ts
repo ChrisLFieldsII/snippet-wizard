@@ -9,6 +9,7 @@ import {
   CreateSnippetInput,
   CreateSnippetResponse,
   DeleteSnippetResponse,
+  UpdateSnippetResponse,
 } from '~/types'
 
 export abstract class SnippetPlugin implements ISnippetPlugin {
@@ -23,7 +24,9 @@ export abstract class SnippetPlugin implements ISnippetPlugin {
   abstract deleteSnippet(
     input: SnippetMutationInput
   ): Promise<SnippetMutationResponse<DeleteSnippetResponse>>
-  abstract updateSnippet(input: SnippetMutationInput): Promise<Snippet>
+  abstract updateSnippet(
+    input: SnippetMutationInput
+  ): Promise<UpdateSnippetResponse>
   abstract transformSnippet(rawSnippet: unknown): Promise<Snippet>
   isEnabled(): boolean {
     const isEnabled = !!this.getServiceConfig().token.length

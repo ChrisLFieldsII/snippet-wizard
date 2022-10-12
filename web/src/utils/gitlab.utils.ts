@@ -7,6 +7,8 @@ import {
   CreateSnippetResponse,
   CreateSnippetInput,
   DeleteSnippetResponse,
+  UpdateSnippetInput,
+  UpdateSnippetResponse,
 } from 'src/types'
 
 import { SnippetPlugin } from './plugin.utils'
@@ -47,11 +49,11 @@ class GitLabSnippetPlugin extends SnippetPlugin {
         }
       )
 
-      console.log('gitlab create res', res)
-
       if (!res.data.id) {
         throw new Error('Failed to create gitlab snippet')
       }
+
+      res.data.contents = contents
 
       return {
         isSuccess: true,
@@ -60,7 +62,8 @@ class GitLabSnippetPlugin extends SnippetPlugin {
         },
       }
     } catch (error) {
-      console.error(error)
+      console.error(this.tag, 'failed to create snippet: ' + input)
+
       return {
         isSuccess: false,
       }
@@ -100,9 +103,58 @@ class GitLabSnippetPlugin extends SnippetPlugin {
       }
     }
   }
-  updateSnippet(input: SnippetMutationInput): Promise<Snippet | null> {
-    console.error('Method not implemented.' + this.tag, input)
-    return null
+  async updateSnippet(
+    input: UpdateSnippetInput
+  ): Promise<UpdateSnippetResponse> {
+    if (!this.isEnabled()) {
+      return {
+        isSuccess: false,
+      }
+    }
+
+    const {
+      contents,
+      description,
+      id,
+      newFilename,
+      oldFilename,
+      privacy,
+      title,
+    } = input
+
+    try {
+      const res = await axios.patch<GitLabSnippet>(
+        `${API_URL}/snippets/${id}`,
+        {
+          title,
+          description,
+          visibility: privacy,
+          files: [
+            {
+              action: 'update',
+              previous_path: oldFilename,
+              file_path: newFilename,
+              content: contents,
+            },
+          ],
+        }
+      )
+
+      res.data.contents = contents
+
+      return {
+        isSuccess: true,
+        data: {
+          snippet: await this.transformSnippet(res.data),
+        },
+      }
+    } catch (error) {
+      console.error(this.tag, 'failed to update snippet: ' + input)
+
+      return {
+        isSuccess: false,
+      }
+    }
   }
 
   async getSnippets(): Promise<Snippet[]> {
@@ -126,6 +178,8 @@ class GitLabSnippetPlugin extends SnippetPlugin {
       createdAt: new Date(rawSnippet.created_at),
       updatedAt: new Date(rawSnippet.updated_at),
       contents: await (async () => {
+        if (rawSnippet.contents) return rawSnippet.contents
+
         return await axios
           .get<string>(`${API_URL}/snippets/${rawSnippet.id}/raw`, {
             headers: this.getHeaders(),
@@ -160,6 +214,8 @@ export type GitLabSnippet = {
   title: string
   description: string
   visibility: string
+  /** added by me to use for transform on create/edit where this is known from the input */
+  contents?: string
   author: {
     id: number
     username: string

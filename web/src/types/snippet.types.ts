@@ -54,7 +54,7 @@ export interface ISnippetPlugin {
   deleteSnippet(
     input: SnippetMutationInput
   ): Promise<SnippetMutationResponse<DeleteSnippetResponse>>
-  updateSnippet(input: SnippetMutationInput): Promise<Snippet | null>
+  updateSnippet(input: UpdateSnippetInput): Promise<UpdateSnippetResponse>
   transformSnippet(rawSnippet: unknown): Promise<Snippet>
   isEnabled(): boolean
   getToken(): string
@@ -62,15 +62,6 @@ export interface ISnippetPlugin {
 }
 
 export type SnippetMap = Record<ServiceTag, Snippet[]>
-
-export type CreateSnippetInput = {
-  privacy: SnippetPrivacy
-  title: string
-  description: string
-  /** actual snippet text */
-  contents: string
-  filename: string
-}
 
 export type DeleteSnippetResponse = {
   id: string
@@ -81,6 +72,34 @@ export type SnippetMutationResponse<Data = unknown> = {
   data?: Data
 }
 
+// #region CREATE SNIPPET
+export type CreateSnippetInput = {
+  privacy: SnippetPrivacy
+  title: string
+  description: string
+  /** actual snippet text */
+  contents: string
+  filename: string
+}
+
 export type CreateSnippetResponse = SnippetMutationResponse<{
   snippet?: Snippet
 }>
+// #region CREATE SNIPPET
+
+// #region UPDATE SNIPPET
+export type UpdateSnippetInput = {
+  id: string
+  privacy: SnippetPrivacy
+  title: string
+  description: string
+  /** actual snippet text */
+  contents: string
+  oldFilename: string
+  newFilename: string
+}
+
+export type UpdateSnippetResponse = SnippetMutationResponse<{
+  snippet?: Snippet
+}>
+// #endregion UPDATE SNIPPET
