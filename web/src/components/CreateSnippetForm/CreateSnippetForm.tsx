@@ -6,6 +6,8 @@ import {
   FormControl,
   FormLabel,
   Switch,
+  ButtonGroup,
+  Input as ChakraInput,
 } from '@chakra-ui/react'
 import { useFormik } from 'formik'
 
@@ -38,7 +40,7 @@ export const CreateSnippetForm = ({
   onSave = noop,
   onUpdate = noop,
 }: CreateSnippetFormProps) => {
-  const { handleSubmit, handleChange, setFieldValue, values } = useFormik({
+  const formik = useFormik({
     initialValues: {
       ...defaultValues,
       ...initValues,
@@ -48,29 +50,42 @@ export const CreateSnippetForm = ({
     },
   })
 
-  const { code, description, filename, privacy, title } = values
+  const { code, description, filename, privacy, title } = formik.values
 
-  const updateString = reduceObjectToString(values)
+  const updateString = reduceObjectToString(formik.values)
   useEffect(() => {
-    onUpdate(values)
+    onUpdate(formik.values)
   }, [updateString])
 
+  /** clear form to default values */
+  const clearForm = () => {
+    formik.resetForm({
+      values: defaultValues,
+    })
+  }
+
   return (
-    // @ts-ignore
-    <VStack spacing={12} align="start" as="form" onSubmit={handleSubmit}>
+    <VStack
+      spacing={12}
+      align="start"
+      as="form"
+      // @ts-ignore
+      onSubmit={formik.handleSubmit}
+      onReset={formik.handleReset}
+    >
       <Input
         id="title"
         label="Title"
         value={title}
         isRequired
-        onChange={handleChange}
+        onChange={formik.handleChange}
       />
 
       <Input
         id="description"
         label="Description"
         value={description}
-        onChange={handleChange}
+        onChange={formik.handleChange}
       />
 
       <CodeEditor
@@ -78,8 +93,10 @@ export const CreateSnippetForm = ({
         showHeader
         code={code}
         filename={filename}
-        setFilename={(newFilename) => setFieldValue('filename', newFilename)}
-        setCode={(newCode) => setFieldValue('code', newCode)}
+        setFilename={(newFilename) =>
+          formik.setFieldValue('filename', newFilename)
+        }
+        setCode={(newCode) => formik.setFieldValue('code', newCode)}
       />
 
       <FormControl display="flex" alignItems="center">
@@ -91,7 +108,7 @@ export const CreateSnippetForm = ({
           id="privacy"
           checked={privacy === 'public'}
           onChange={(e) =>
-            setFieldValue(
+            formik.setFieldValue(
               'privacy',
               e.currentTarget.checked ? 'public' : 'private'
             )
@@ -99,7 +116,13 @@ export const CreateSnippetForm = ({
         />
       </FormControl>
 
-      <Button type="submit">Create Snippet</Button>
+      <ButtonGroup>
+        <Button type="submit">Create Snippet</Button>
+        <Button type="reset">Reset</Button>
+        <Button type="button" onClick={clearForm}>
+          Clear
+        </Button>
+      </ButtonGroup>
     </VStack>
   )
 }

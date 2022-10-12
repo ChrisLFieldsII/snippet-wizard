@@ -36,9 +36,7 @@ const CreateSnippetPage = () => {
     },
     {
       onSuccess(data) {
-        const servicesMap = data
-
-        const entries = getEntries(servicesMap)
+        const entries = getEntries(data)
 
         // notify user of any failed services
         entries.forEach(([service, response]) => {
@@ -47,6 +45,8 @@ const CreateSnippetPage = () => {
               title: `Error creating snippet`,
               description: `Failed to create snippet for service ${service}`,
               status: 'error',
+              position: 'top',
+              isClosable: true,
             })
           }
         })
@@ -59,6 +59,8 @@ const CreateSnippetPage = () => {
             title: `Created snippets!`,
             description: `Snippets were created for each of your services`,
             status: 'success',
+            position: 'top',
+            isClosable: true,
           })
         }
       },
@@ -67,6 +69,8 @@ const CreateSnippetPage = () => {
           title: 'Error creating snippets',
           description: 'Failed to create snippets for some reason...',
           status: 'error',
+          position: 'top',
+          isClosable: true,
         })
       },
     }
