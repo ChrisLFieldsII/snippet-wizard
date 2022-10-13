@@ -35,19 +35,43 @@ export const useSnippetManager = () => {
     },
     {
       onSuccess(data) {
-        showNotifications(data, {
-          toast,
-          failure: {
-            title: 'Error creating snippet',
-            getDescription: (service) =>
-              `Failed to create snippet for service ${service}`,
-          },
-          success: {
-            title: 'Created snippets!',
-            getDescription: () =>
-              'Snippets were created for each of your services',
-          },
-        })
+        try {
+          let cachedData = queryClient.getQueryData<SnippetMap>([QUERY_KEY])
+          console.log('cached data', cachedData)
+
+          showNotifications(data, {
+            toast,
+            failure: {
+              title: 'Error creating snippet',
+              getDescription: (service) =>
+                `Failed to create snippet for service ${service}`,
+            },
+            success: {
+              title: 'Created snippets!',
+              getDescription: () =>
+                'Snippets were created for each of your services',
+            },
+          })
+
+          getEntries(data).forEach(([service, createRes]) => {
+            if (!createRes.isSuccess) {
+              return
+            }
+
+            cachedData = produce<SnippetMap>(cachedData, (draft) => {
+              const createdSnippet = data[service].data?.snippet
+              if (createdSnippet) {
+                draft[service].push(createdSnippet)
+              }
+            })
+
+            console.log('set new cached data', cachedData)
+
+            queryClient.setQueryData<SnippetMap>([QUERY_KEY], cachedData)
+          })
+        } catch (error) {
+          console.error('create snippet onSuccess failed', error)
+        }
       },
       onError() {
         toast({
@@ -67,19 +91,48 @@ export const useSnippetManager = () => {
     },
     {
       onSuccess(data) {
-        showNotifications(data, {
-          toast,
-          failure: {
-            title: 'Error updating snippet',
-            getDescription: (service) =>
-              `Failed to update snippet for service ${service}`,
-          },
-          success: {
-            title: 'Successfully updated snippets!',
-            getDescription: () =>
-              'Snippets were updated for each of your services',
-          },
-        })
+        try {
+          let cachedData = queryClient.getQueryData<SnippetMap>([QUERY_KEY])
+          console.log('cached data', cachedData)
+
+          showNotifications(data, {
+            toast,
+            failure: {
+              title: 'Error updating snippet',
+              getDescription: (service) =>
+                `Failed to update snippet for service ${service}`,
+            },
+            success: {
+              title: 'Successfully updated snippets!',
+              getDescription: () =>
+                'Snippets were updated for each of your services',
+            },
+          })
+
+          getEntries(data).forEach(([service, updateRes]) => {
+            if (!updateRes.isSuccess) {
+              return
+            }
+
+            cachedData = produce<SnippetMap>(cachedData, (draft) => {
+              const updatedIndex = draft[service].findIndex(
+                (currSnippet) => currSnippet.id === updateRes.data?.snippet?.id
+              )
+              if (updatedIndex === -1) return
+
+              console.log(
+                `updating cache, service ${service} at index ${updatedIndex}`
+              )
+              draft[service][updatedIndex] = updateRes.data!.snippet!
+            })
+          })
+
+          console.log('set new cached data', cachedData)
+
+          queryClient.setQueryData<SnippetMap>([QUERY_KEY], cachedData)
+        } catch (error) {
+          console.error('update snippet onSuccess failed', error)
+        }
       },
       onError() {
         toast({
