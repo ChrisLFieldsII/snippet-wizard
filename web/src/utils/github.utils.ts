@@ -132,7 +132,7 @@ class GitHubSnippetPlugin extends SnippetPlugin {
     try {
       const rawSnippets = await request('GET /gists', {
         headers: this.getHeaders(),
-        per_page: 5, // TODO: this is temp while testing
+        per_page: 10, // TODO: this is temp while testing
       })
       return Promise.all(
         rawSnippets.data.map((rawSnippet) => this.transformSnippet(rawSnippet))

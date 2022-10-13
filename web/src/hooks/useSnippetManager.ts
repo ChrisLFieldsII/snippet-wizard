@@ -1,5 +1,8 @@
+import { useEffect } from 'react'
+
 import { useToast } from '@chakra-ui/react'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import produce from 'immer'
 
 import { SERVICE_TAGS } from '~/app-constants'
 import { SnippetFormValues } from '~/components'
@@ -7,11 +10,19 @@ import {
   ServiceTag,
   SnippetManagerUpdateInput,
   SnippetMutationResponse,
+  UISnippet,
 } from '~/types'
-import { getEntries, snippetPluginManager } from '~/utils'
+import { getEntries, getKeys, snippetPluginManager } from '~/utils'
+
+export const QUERY_KEY = 'snippets'
 
 export const useSnippetManager = () => {
   const toast = useToast()
+  const queryClient = useQueryClient()
+
+  useEffect(() => {
+    window.queryClient = queryClient
+  }, [])
 
   const createSnippetMutation = useMutation(
     async (input: SnippetFormValues) => {
@@ -63,7 +74,7 @@ export const useSnippetManager = () => {
               `Failed to update snippet for service ${service}`,
           },
           success: {
-            title: 'Updated snippets!',
+            title: 'Successfully updated snippets!',
             getDescription: () =>
               'Snippets were updated for each of your services',
           },
@@ -81,9 +92,87 @@ export const useSnippetManager = () => {
     }
   )
 
+  const deleteSnippetMutation = useMutation(
+    async (snippet: UISnippet) => {
+      const res = await snippetPluginManager.deleteSnippet({
+        services: snippet.servicesMap,
+      })
+      console.log('deleted snippets response', res)
+
+      return res
+    },
+    {
+      onSuccess(data) {
+        try {
+          // #region modify cache
+          // modify cached data w/ deleted ids and set new cached data
+          let cachedData = queryClient.getQueryData<UISnippet[]>([QUERY_KEY])
+          console.log('cached data', cachedData)
+
+          showNotifications(data, {
+            toast,
+            failure: {
+              title: `Error deleting snippet`,
+              getDescription: (service) =>
+                `Failed to delete snippet for service ${service}`,
+            },
+            success: {
+              title: `Successfully deleted snippets!`,
+              getDescription: () =>
+                `Snippets were deleted for each of your services`,
+            },
+          })
+
+          getEntries(data).forEach(([service, deleteRes]) => {
+            if (!deleteRes.isSuccess) {
+              return
+            }
+
+            const idToDelete = deleteRes.data?.id
+            console.log({ service, idToDelete })
+
+            cachedData = produce<UISnippet[]>(cachedData, (draft) => {
+              draft.some((snippet, index) => {
+                if (snippet.servicesMap[service].id === idToDelete) {
+                  delete snippet.servicesMap[service]
+
+                  // can delete this ui snippet
+                  if (getKeys(snippet.servicesMap).length === 0) {
+                    draft.splice(index, 1)
+                  }
+
+                  return true
+                }
+
+                return false
+              })
+            })
+          })
+
+          console.log('set new cached data', cachedData)
+
+          queryClient.setQueryData<UISnippet[]>([QUERY_KEY], cachedData)
+          // #endregion modify cache
+        } catch (error) {
+          console.error('delete snippet onSuccess failed', error)
+        }
+      },
+      onError() {
+        toast({
+          title: `Error deleting snippets`,
+          description: `Failed to delete snippets for some reason...`,
+          status: 'error',
+          position: 'top',
+          isClosable: true,
+        })
+      },
+    }
+  )
+
   return {
     createSnippetMutation,
     updateSnippetMutation,
+    deleteSnippetMutation,
   }
 }
 
