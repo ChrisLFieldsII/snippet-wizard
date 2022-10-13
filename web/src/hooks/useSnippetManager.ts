@@ -9,10 +9,11 @@ import { SnippetFormValues } from '~/components'
 import {
   ServiceTag,
   SnippetManagerUpdateInput,
+  SnippetMap,
   SnippetMutationResponse,
   UISnippet,
 } from '~/types'
-import { getEntries, getKeys, snippetPluginManager } from '~/utils'
+import { getEntries, snippetPluginManager } from '~/utils'
 
 export const QUERY_KEY = 'snippets'
 
@@ -106,7 +107,7 @@ export const useSnippetManager = () => {
         try {
           // #region modify cache
           // modify cached data w/ deleted ids and set new cached data
-          let cachedData = queryClient.getQueryData<UISnippet[]>([QUERY_KEY])
+          let cachedData = queryClient.getQueryData<SnippetMap>([QUERY_KEY])
           console.log('cached data', cachedData)
 
           showNotifications(data, {
@@ -131,27 +132,16 @@ export const useSnippetManager = () => {
             const idToDelete = deleteRes.data?.id
             console.log({ service, idToDelete })
 
-            cachedData = produce<UISnippet[]>(cachedData, (draft) => {
-              draft.some((snippet, index) => {
-                if (snippet.servicesMap[service].id === idToDelete) {
-                  delete snippet.servicesMap[service]
-
-                  // can delete this ui snippet
-                  if (getKeys(snippet.servicesMap).length === 0) {
-                    draft.splice(index, 1)
-                  }
-
-                  return true
-                }
-
-                return false
-              })
+            cachedData = produce<SnippetMap>(cachedData, (draft) => {
+              draft[service] = draft[service].filter(
+                (currSnippet) => currSnippet.id !== idToDelete
+              )
             })
           })
 
           console.log('set new cached data', cachedData)
 
-          queryClient.setQueryData<UISnippet[]>([QUERY_KEY], cachedData)
+          queryClient.setQueryData<SnippetMap>([QUERY_KEY], cachedData)
           // #endregion modify cache
         } catch (error) {
           console.error('delete snippet onSuccess failed', error)

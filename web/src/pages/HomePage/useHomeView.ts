@@ -7,7 +7,7 @@ import { ViewModelProps } from 'react-create-view'
 import { mockSnippets } from '~/../mocks'
 import { QUERY_KEY, useSnippetManager } from '~/hooks'
 import { useStore } from '~/state'
-import { ServiceTag, Snippet, UISnippet } from '~/types'
+import { ServiceTag, Snippet, SnippetMap, UISnippet } from '~/types'
 import { emitter, getKeys, snippetPluginManager } from '~/utils'
 
 export type HomeViewSuccessModel = {
@@ -36,70 +36,13 @@ export const useHomeView = (): HomeViewModelProps => {
       console.log('home page getting snippets')
 
       if (IS_DEBUG) {
-        return [] as UISnippet[]
+        return {} as SnippetMap
       }
 
       const snippetMap = await snippetPluginManager.getSnippets()
       console.log('snippet map', snippetMap)
 
-      // reduce snippet map into combined array of snippets
-      let combinedSnippets: Snippet[] = getKeys(snippetMap).reduce<Snippet[]>(
-        (accum, key) => {
-          return accum.concat(snippetMap[key])
-        },
-        []
-      )
-      if (IS_DEBUG) combinedSnippets = mockSnippets
-
-      // reduce combined snippets array into a map of UI Snippets where the key is the contents to make it unique by contents
-      const snippetsMapByContents = combinedSnippets.reduce<
-        Record<string, UISnippet>
-      >((accum, currSnippet) => {
-        const { contents } = currSnippet
-
-        // snippet isnt present in accum
-        if (!accum[contents]) {
-          accum[contents] = {
-            ...currSnippet,
-            id: cuid(), // give ui snippets a stable id
-            isPublic: currSnippet.privacy === 'public',
-            services: [currSnippet.service],
-            contents: currSnippet.contents.split('\\n').join('\n'), // format contents from service apis
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore - we are okay w/ a partial map here
-            servicesMap: {
-              [currSnippet.service]: {
-                url: currSnippet.url,
-                id: currSnippet.id,
-              },
-            },
-          }
-        } else {
-          const { services } = accum[contents]
-          // `Set` ensures uniqueness
-          accum[contents].services = [
-            ...new Set<ServiceTag>(services.concat(currSnippet.service)),
-          ]
-          accum[contents].description = currSnippet.description
-
-          const mapping = accum[contents].servicesMap[currSnippet.service]
-          if (mapping) {
-            mapping.url = currSnippet.url
-          } else {
-            accum[contents].servicesMap[currSnippet.service] = {
-              id: currSnippet.id,
-              url: currSnippet.url,
-            }
-          }
-        }
-
-        return accum
-      }, {})
-
-      const uiSnippets = Object.values(snippetsMapByContents)
-      console.log('ui snippets', uiSnippets)
-
-      return uiSnippets
+      return snippetMap
     },
     {
       // dont want to abuse service apis. staleTime is longer than usual.
@@ -127,7 +70,64 @@ export const useHomeView = (): HomeViewModelProps => {
     }
   }
 
-  const uiSnippets = query.data || []
+  const snippetMap = query.data
+
+  // reduce snippet map into combined array of snippets
+  let combinedSnippets: Snippet[] = getKeys(snippetMap).reduce<Snippet[]>(
+    (accum, key) => {
+      return accum.concat(snippetMap[key])
+    },
+    []
+  )
+  if (IS_DEBUG) combinedSnippets = mockSnippets
+
+  // reduce combined snippets array into a map of UI Snippets where the key is the contents to make it unique by contents
+  const snippetsMapByContents = combinedSnippets.reduce<
+    Record<string, UISnippet>
+  >((accum, currSnippet) => {
+    const { contents } = currSnippet
+
+    // snippet isnt present in accum
+    if (!accum[contents]) {
+      accum[contents] = {
+        ...currSnippet,
+        id: cuid(), // give ui snippets a stable id
+        isPublic: currSnippet.privacy === 'public',
+        services: [currSnippet.service],
+        contents: currSnippet.contents.split('\\n').join('\n'), // format contents from service apis
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore - we are okay w/ a partial map here
+        servicesMap: {
+          [currSnippet.service]: {
+            url: currSnippet.url,
+            id: currSnippet.id,
+          },
+        },
+      }
+    } else {
+      const { services } = accum[contents]
+      // `Set` ensures uniqueness
+      accum[contents].services = [
+        ...new Set<ServiceTag>(services.concat(currSnippet.service)),
+      ]
+      accum[contents].description = currSnippet.description
+
+      const mapping = accum[contents].servicesMap[currSnippet.service]
+      if (mapping) {
+        mapping.url = currSnippet.url
+      } else {
+        accum[contents].servicesMap[currSnippet.service] = {
+          id: currSnippet.id,
+          url: currSnippet.url,
+        }
+      }
+    }
+
+    return accum
+  }, {})
+
+  const uiSnippets = Object.values(snippetsMapByContents)
+  console.log('ui snippets', uiSnippets)
 
   if (!uiSnippets.length) {
     return {
