@@ -1,30 +1,20 @@
-import { Box, Divider, Heading, useToast } from '@chakra-ui/react'
+import { useToast } from '@chakra-ui/react'
 import { useMutation } from '@tanstack/react-query'
 
-import { Link, routes } from '@redwoodjs/router'
-import { MetaTags } from '@redwoodjs/web'
-
 import { SERVICE_TAGS } from '~/app-constants'
-import { CreateSnippetFormValues, CreateSnippetForm, Card } from '~/components'
-import MainLayout from '~/layouts/MainLayout/MainLayout'
+import { SnippetFormValues } from '~/components'
+import {
+  ServiceTag,
+  SnippetMutationResponse,
+  UpdateSnippetInput,
+} from '~/types'
 import { getEntries, snippetPluginManager } from '~/utils'
-
-const IS_DEBUG = true
-const initValues: CreateSnippetFormValues | undefined = IS_DEBUG
-  ? {
-      code: `echo 'hello world'`,
-      description: 'how to echo hello world in shell',
-      filename: 'example.sh',
-      privacy: 'private',
-      title: 'Echo hello world in shell',
-    }
-  : undefined
 
 export const useSnippetManager = () => {
   const toast = useToast()
 
   const createSnippetMutation = useMutation(
-    async (data: CreateSnippetFormValues) => {
+    async (data: SnippetFormValues) => {
       return snippetPluginManager.createSnippet({
         // TODO: allow user to specify services via UI
         services: SERVICE_TAGS,
@@ -36,33 +26,19 @@ export const useSnippetManager = () => {
     },
     {
       onSuccess(data) {
-        const entries = getEntries(data)
-
-        // notify user of any failed services
-        entries.forEach(([service, response]) => {
-          if (!response.isSuccess) {
-            toast({
-              title: `Error creating snippet`,
-              description: `Failed to create snippet for service ${service}`,
-              status: 'error',
-              position: 'top',
-              isClosable: true,
-            })
-          }
+        showNotifications(data, {
+          toast,
+          failure: {
+            title: 'Error creating snippet',
+            getDescription: (service) =>
+              `Failed to create snippet for service ${service}`,
+          },
+          success: {
+            title: 'Created snippets!',
+            getDescription: () =>
+              'Snippets were created for each of your services',
+          },
         })
-
-        // if there were no failures, show success alert
-        if (
-          entries.filter(([_, response]) => !response.isSuccess).length == 0
-        ) {
-          toast({
-            title: `Created snippets!`,
-            description: `Snippets were created for each of your services`,
-            status: 'success',
-            position: 'top',
-            isClosable: true,
-          })
-        }
       },
       onError() {
         toast({
@@ -76,7 +52,86 @@ export const useSnippetManager = () => {
     }
   )
 
+  const updateSnippetMutation = useMutation(
+    async (data: UpdateSnippetInput) => {
+      return snippetPluginManager.updateSnippet({
+        services: SERVICE_TAGS,
+        input: data,
+      })
+    },
+    {
+      onSuccess(data) {
+        showNotifications(data, {
+          toast,
+          failure: {
+            title: 'Error updating snippet',
+            getDescription: (service) =>
+              `Failed to update snippet for service ${service}`,
+          },
+          success: {
+            title: 'Updated snippets!',
+            getDescription: () =>
+              'Snippets were updated for each of your services',
+          },
+        })
+      },
+      onError() {
+        toast({
+          title: 'Error updating snippets',
+          description: 'Failed to update snippets for some reason...',
+          status: 'error',
+          position: 'top',
+          isClosable: true,
+        })
+      },
+    }
+  )
+
   return {
     createSnippetMutation,
+    updateSnippetMutation,
+  }
+}
+
+type NotificationMsg = {
+  title: string
+  getDescription(service?: ServiceTag): string
+}
+/**
+ * util to show notifications from snippet manager response
+ */
+const showNotifications = (
+  data: Record<ServiceTag, SnippetMutationResponse>,
+  opts: {
+    success: NotificationMsg
+    failure: NotificationMsg
+    toast: ReturnType<typeof useToast>
+  }
+) => {
+  const { failure, success, toast } = opts
+  const entries = getEntries(data)
+
+  // notify user of any failed services
+  entries.forEach(([service, response]) => {
+    if (!response.isSuccess) {
+      toast({
+        title: failure.title,
+        description: failure.getDescription(service),
+        status: 'error',
+        position: 'top',
+        isClosable: true,
+      })
+    }
+  })
+
+  // if there were no failures, show success alert
+  if (entries.filter(([_, response]) => !response.isSuccess).length == 0) {
+    toast({
+      title: success.title,
+      description: success.getDescription(),
+      status: 'success',
+      position: 'top',
+      isClosable: true,
+    })
   }
 }

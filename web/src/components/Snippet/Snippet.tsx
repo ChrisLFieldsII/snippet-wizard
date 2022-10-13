@@ -23,8 +23,11 @@ import {
   MenuButton,
   IconButton,
 } from '@chakra-ui/react'
+import { AiFillEdit } from 'react-icons/ai'
 import { FaTrash } from 'react-icons/fa'
 import { FiMoreHorizontal } from 'react-icons/fi'
+
+import { Link, routes } from '@redwoodjs/router'
 
 import { Card } from '../Card/Card'
 import { CodeEditor } from '../CodeEditor/CodeEditor'
@@ -35,6 +38,7 @@ import { getKnownFileExtension } from '~/utils'
 
 type SnippetProps = UISnippet & {
   onDelete(snippet: UISnippet): void
+  onEdit(snippet: UISnippet): void
 }
 
 export const Snippet = (props: SnippetProps) => {
@@ -49,6 +53,7 @@ export const Snippet = (props: SnippetProps) => {
     updatedAt,
     servicesMap,
     onDelete,
+    onEdit,
   } = props
 
   const codeDisclosure = useDisclosure({
@@ -92,6 +97,15 @@ export const Snippet = (props: SnippetProps) => {
                     variant="outline"
                   />
                   <MenuList>
+                    <MenuItem
+                      as={Link}
+                      to={routes.updateSnippet()}
+                      icon={<AiFillEdit />}
+                      onClick={() => onEdit(props)}
+                    >
+                      Edit
+                    </MenuItem>
+
                     <MenuItem
                       color={'red'}
                       icon={<FaTrash />}

@@ -17,12 +17,12 @@ const initValues: SnippetFormValues | undefined = IS_DEBUG
     }
   : undefined
 
-const CreateSnippetPage = () => {
-  const { createSnippetMutation } = useSnippetManager()
+const UpdateSnippetPage = () => {
+  const { updateSnippetMutation } = useSnippetManager()
 
   return (
     <>
-      <MetaTags title="CreateSnippet" description="CreateSnippet page" />
+      <MetaTags title="UpdateSnippet" description="UpdateSnippet page" />
 
       <MainLayout>
         <Box p={10}>
@@ -33,7 +33,8 @@ const CreateSnippetPage = () => {
           <Divider mt={5} mb={12} />
 
           <CreateSnippetForm
-            onSave={createSnippetMutation.mutate}
+            // TODO: finish this
+            onSave={console.log}
             initValues={initValues}
           />
         </Box>
@@ -42,4 +43,4 @@ const CreateSnippetPage = () => {
   )
 }
 
-export default CreateSnippetPage
+export default UpdateSnippetPage

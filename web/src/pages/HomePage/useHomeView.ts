@@ -13,6 +13,7 @@ import { ServiceTag, Snippet, SnippetMap, UISnippet } from '~/types'
 export type HomeViewSuccessModel = {
   snippets: UISnippet[]
   onDelete(snippet: UISnippet): void
+  onEdit(snippet: UISnippet): void
 }
 
 type HomeViewModelProps = ViewModelProps<HomeViewSuccessModel>
@@ -208,6 +209,9 @@ export const useHomeView = (): HomeViewModelProps => {
         }
 
         await onDeleteMutation.mutateAsync(snippet)
+      },
+      async onEdit(snippet) {
+        console.log('editing snippet', snippet)
       },
     },
   }

@@ -24,9 +24,9 @@ import { List, Snippet } from '~/components'
 import { UISnippet } from '~/types'
 
 const HomeView = createView<HomeViewSuccessModel>({
-  Success({ snippets, onDelete }) {
+  Success({ snippets, onDelete, onEdit }) {
     const renderItem = (snippet: UISnippet) => {
-      return <Snippet {...snippet} onDelete={onDelete} />
+      return <Snippet {...snippet} onDelete={onDelete} onEdit={onEdit} />
     }
 
     return (
