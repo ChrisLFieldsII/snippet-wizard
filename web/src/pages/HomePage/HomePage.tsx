@@ -10,8 +10,13 @@ import {
   VStack,
   Spinner,
   Center,
+  Wrap,
+  Button,
+  IconButton,
+  Tooltip,
 } from '@chakra-ui/react'
 import { createView } from 'react-create-view'
+import { BsArrowsCollapse, BsArrowsExpand } from 'react-icons/bs'
 
 import { MetaTags } from '@redwoodjs/web'
 
@@ -24,13 +29,37 @@ import { List, Snippet } from '~/components'
 import { UISnippet } from '~/types'
 
 const HomeView = createView<HomeViewSuccessModel>({
-  Success({ snippets, onDelete, onEdit }) {
+  Success({ snippets, onDelete, onEdit, onToggleCode }) {
     const renderItem = (snippet: UISnippet) => {
       return <Snippet {...snippet} onDelete={onDelete} onEdit={onEdit} />
     }
 
     return (
       <>
+        <Wrap>
+          <Tooltip
+            aria-label="Close all code blocks"
+            label="Close all code blocks"
+          >
+            <IconButton
+              aria-label="Close all code blocks"
+              icon={<BsArrowsCollapse />}
+              onClick={() => onToggleCode(false)}
+            />
+          </Tooltip>
+
+          <Tooltip
+            aria-label="Open all code blocks"
+            label="Open all code blocks"
+          >
+            <IconButton
+              aria-label="Open all code blocks"
+              icon={<BsArrowsExpand />}
+              onClick={() => onToggleCode(true)}
+            />
+          </Tooltip>
+        </Wrap>
+
         <List items={snippets} renderItem={renderItem} />
       </>
     )

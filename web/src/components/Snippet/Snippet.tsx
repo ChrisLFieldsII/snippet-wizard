@@ -1,3 +1,5 @@
+import { useEffect } from 'react'
+
 import {
   Container,
   Stack,
@@ -32,7 +34,7 @@ import { ServiceBadges } from '../ServiceBadges/ServiceBadges'
 
 import { FILE_UI_MAP } from '~/app-constants'
 import { UISnippet } from '~/types'
-import { getKnownFileExtension } from '~/utils'
+import { emitter, getKnownFileExtension } from '~/utils'
 
 type SnippetProps = UISnippet & {
   onDelete(snippet: UISnippet): void
@@ -63,6 +65,12 @@ export const Snippet = (props: SnippetProps) => {
   const createdAtString = createdAt.toLocaleString()
   const updatedAtString = updatedAt.toLocaleString()
   const showUpdatedAt = createdAtString !== updatedAtString
+
+  useEffect(() => {
+    return emitter.on('toggleCode', ({ isOpen }) => {
+      isOpen ? codeDisclosure.onOpen() : codeDisclosure.onClose()
+    })
+  }, [codeDisclosure])
 
   return (
     <Box>

@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 import { useQuery } from '@tanstack/react-query'
 import cuid from 'cuid'
@@ -14,6 +14,7 @@ export type HomeViewSuccessModel = {
   snippets: UISnippet[]
   onDelete(snippet: UISnippet): void
   onEdit(snippet: UISnippet): void
+  onToggleCode(isOpen: boolean): void
 }
 
 type HomeViewModelProps = ViewModelProps<HomeViewSuccessModel>
@@ -148,6 +149,9 @@ export const useHomeView = (): HomeViewModelProps => {
       },
       async onEdit(snippet) {
         setSnippet(snippet)
+      },
+      onToggleCode(isOpen) {
+        emitter.emit('toggleCode', { isOpen })
       },
     },
   }
