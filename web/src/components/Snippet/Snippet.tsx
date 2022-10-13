@@ -2,15 +2,12 @@ import {
   Container,
   Stack,
   HStack,
-  Link as ChakraLink,
   Heading,
   Text,
   VStack,
   Box,
   Avatar,
   Tag,
-  TagLeftIcon,
-  TagLabel,
   Accordion,
   AccordionItem,
   AccordionButton,
@@ -31,8 +28,9 @@ import { Link, routes } from '@redwoodjs/router'
 
 import { Card } from '../Card/Card'
 import { CodeEditor } from '../CodeEditor/CodeEditor'
+import { ServiceBadges } from '../ServiceBadges/ServiceBadges'
 
-import { FILE_UI_MAP, SERVICES_MAP } from '~/app-constants'
+import { FILE_UI_MAP } from '~/app-constants'
 import { UISnippet } from '~/types'
 import { getKnownFileExtension } from '~/utils'
 
@@ -48,7 +46,6 @@ export const Snippet = (props: SnippetProps) => {
     description,
     filename,
     privacy,
-    services,
     title,
     updatedAt,
     servicesMap,
@@ -130,22 +127,7 @@ export const Snippet = (props: SnippetProps) => {
               </Text>
 
               {/* services badges */}
-              <HStack>
-                {services.map((svc) => {
-                  const mapping = servicesMap[svc]
-                  return (
-                    <ChakraLink key={svc} href={mapping.url} isExternal>
-                      <Tag>
-                        <TagLeftIcon
-                          boxSize="12px"
-                          as={SERVICES_MAP[svc].Icon}
-                        />
-                        <TagLabel>{svc}</TagLabel>
-                      </Tag>
-                    </ChakraLink>
-                  )
-                })}
-              </HStack>
+              <ServiceBadges servicesMap={servicesMap} />
 
               <VStack align="start">
                 <Accordion

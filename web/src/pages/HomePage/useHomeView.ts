@@ -8,6 +8,7 @@ import { ViewModelProps } from 'react-create-view'
 import { emitter, getEntries, getKeys, snippetPluginManager } from 'src/utils'
 
 import { mockSnippets } from '~/../mocks'
+import { useStore } from '~/state'
 import { ServiceTag, Snippet, SnippetMap, UISnippet } from '~/types'
 
 export type HomeViewSuccessModel = {
@@ -29,6 +30,9 @@ const QUERY_KEY = 'snippets'
  */
 export const useHomeView = (): HomeViewModelProps => {
   const toast = useToast()
+  const queryClient = useQueryClient()
+  const setSnippet = useStore((store) => store.setSnippet)
+
   const query = useQuery(
     [QUERY_KEY],
     async () => {
@@ -47,7 +51,6 @@ export const useHomeView = (): HomeViewModelProps => {
       staleTime: 1000 * 60 * 30,
     }
   )
-  const queryClient = useQueryClient()
 
   const onDeleteMutation = useMutation(
     async (snippet: UISnippet) => {
@@ -211,7 +214,7 @@ export const useHomeView = (): HomeViewModelProps => {
         await onDeleteMutation.mutateAsync(snippet)
       },
       async onEdit(snippet) {
-        console.log('editing snippet', snippet)
+        setSnippet(snippet)
       },
     },
   }

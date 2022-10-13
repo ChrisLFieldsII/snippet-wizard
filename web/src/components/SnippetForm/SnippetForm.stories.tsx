@@ -11,19 +11,15 @@
 //
 // See https://storybook.js.org/docs/react/writing-stories/args.
 
-import type { ComponentMeta } from '@storybook/react'
+import type { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { Card } from '../Card/Card'
 
-import CreateSnippetForm from './CreateSnippetForm'
-
-export const generated = () => {
-  return <CreateSnippetForm />
-}
+import SnippetForm from './SnippetForm'
 
 export default {
-  title: 'Components/CreateSnippetForm',
-  component: CreateSnippetForm,
+  title: 'Components/SnippetForm',
+  component: SnippetForm,
   decorators: [
     (Story) => (
       <Card p={10}>
@@ -31,4 +27,13 @@ export default {
       </Card>
     ),
   ],
-} as ComponentMeta<typeof CreateSnippetForm>
+  argTypes: {
+    onUpdate: { action: 'on update' },
+  },
+} as ComponentMeta<typeof SnippetForm>
+
+type SnippetFormStory = ComponentStory<typeof SnippetForm>
+
+export const SnippetFormExample: SnippetFormStory = (args) => (
+  <SnippetForm {...args} />
+)

@@ -24,7 +24,8 @@ class GitHubSnippetPlugin extends SnippetPlugin {
       }
     }
 
-    const { contents, description, filename, privacy } = input
+    // gist doesnt have title, use description field as title
+    const { contents, title: description, filename, privacy } = input
 
     try {
       const rawSnippet = await request('POST /gists', {
@@ -92,7 +93,8 @@ class GitHubSnippetPlugin extends SnippetPlugin {
       }
     }
 
-    const { contents, description, id, newFilename, oldFilename } = input
+    // gist doesnt have title, use description field as title
+    const { contents, title: description, id, newFilename, oldFilename } = input
 
     // github doesnt seem to let you update privacy
 
@@ -106,6 +108,7 @@ class GitHubSnippetPlugin extends SnippetPlugin {
             content: contents,
           },
         },
+        headers: this.getHeaders(),
       })
       return {
         isSuccess: true,

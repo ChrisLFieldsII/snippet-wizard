@@ -14,32 +14,25 @@ import { useFormik } from 'formik'
 import { CodeEditor } from '../CodeEditor/CodeEditor'
 import { Input } from '../Input/Input'
 
-import { FormProps, SnippetPrivacy } from '~/types'
+import { CreateSnippetInput, FormProps, SnippetPrivacy } from '~/types'
 import { noop, reduceObjectToString } from '~/utils'
 
-// TODO: unify this type with `CreateSnippetInput`
-export type SnippetFormValues = {
-  title: string
-  description: string
-  filename: string
-  code: string
-  privacy: SnippetPrivacy
-}
-type CreateSnippetFormProps = FormProps<SnippetFormValues>
+export type SnippetFormValues = CreateSnippetInput
+type SnippetFormProps = FormProps<SnippetFormValues>
 
 const defaultValues: SnippetFormValues = {
   title: '',
   description: '',
   filename: '',
-  code: '',
+  contents: '',
   privacy: 'private' as SnippetPrivacy,
 }
 
-export const CreateSnippetForm = ({
+export const SnippetForm = ({
   initValues = defaultValues,
   onSave = noop,
   onUpdate = noop,
-}: CreateSnippetFormProps) => {
+}: SnippetFormProps) => {
   const formik = useFormik({
     initialValues: {
       ...defaultValues,
@@ -50,7 +43,7 @@ export const CreateSnippetForm = ({
     },
   })
 
-  const { code, description, filename, privacy, title } = formik.values
+  const { contents, description, filename, privacy, title } = formik.values
 
   const updateString = reduceObjectToString(formik.values)
   useEffect(() => {
@@ -91,12 +84,12 @@ export const CreateSnippetForm = ({
       <CodeEditor
         isEditable
         showHeader
-        code={code}
+        code={contents}
         filename={filename}
         setFilename={(newFilename) =>
           formik.setFieldValue('filename', newFilename)
         }
-        setCode={(newCode) => formik.setFieldValue('code', newCode)}
+        setCode={(newCode) => formik.setFieldValue('contents', newCode)}
       />
 
       <FormControl display="flex" alignItems="center">
@@ -117,7 +110,7 @@ export const CreateSnippetForm = ({
       </FormControl>
 
       <ButtonGroup>
-        <Button type="submit">Create Snippet</Button>
+        <Button type="submit">Submit</Button>
         <Button type="reset">Reset</Button>
         <Button type="button" onClick={clearForm}>
           Clear
@@ -127,4 +120,4 @@ export const CreateSnippetForm = ({
   )
 }
 
-export default CreateSnippetForm
+export default SnippetForm

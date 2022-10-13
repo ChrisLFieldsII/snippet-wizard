@@ -5,8 +5,8 @@ import { SERVICE_TAGS } from '~/app-constants'
 import { SnippetFormValues } from '~/components'
 import {
   ServiceTag,
+  SnippetManagerUpdateInput,
   SnippetMutationResponse,
-  UpdateSnippetInput,
 } from '~/types'
 import { getEntries, snippetPluginManager } from '~/utils'
 
@@ -14,14 +14,11 @@ export const useSnippetManager = () => {
   const toast = useToast()
 
   const createSnippetMutation = useMutation(
-    async (data: SnippetFormValues) => {
+    async (input: SnippetFormValues) => {
       return snippetPluginManager.createSnippet({
         // TODO: allow user to specify services via UI
         services: SERVICE_TAGS,
-        input: {
-          ...data,
-          contents: data.code,
-        },
+        input,
       })
     },
     {
@@ -53,11 +50,8 @@ export const useSnippetManager = () => {
   )
 
   const updateSnippetMutation = useMutation(
-    async (data: UpdateSnippetInput) => {
-      return snippetPluginManager.updateSnippet({
-        services: SERVICE_TAGS,
-        input: data,
-      })
+    async (input: SnippetManagerUpdateInput) => {
+      return snippetPluginManager.updateSnippet(input)
     },
     {
       onSuccess(data) {

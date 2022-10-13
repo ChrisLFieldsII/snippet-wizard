@@ -123,7 +123,7 @@ class GitLabSnippetPlugin extends SnippetPlugin {
     } = input
 
     try {
-      const res = await axios.patch<GitLabSnippet>(
+      const res = await axios.put<GitLabSnippet>(
         `${API_URL}/snippets/${id}`,
         {
           title,
@@ -137,7 +137,8 @@ class GitLabSnippetPlugin extends SnippetPlugin {
               content: contents,
             },
           ],
-        }
+        },
+        { headers: this.getHeaders() }
       )
 
       res.data.contents = contents

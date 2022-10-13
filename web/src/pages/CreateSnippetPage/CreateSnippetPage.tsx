@@ -2,14 +2,14 @@ import { Box, Divider, Heading } from '@chakra-ui/react'
 
 import { MetaTags } from '@redwoodjs/web'
 
-import { SnippetFormValues, CreateSnippetForm } from '~/components'
+import { SnippetFormValues, SnippetForm } from '~/components'
 import { useSnippetManager } from '~/hooks'
 import { MainLayout } from '~/layouts'
 
 const IS_DEBUG = true
 const initValues: SnippetFormValues | undefined = IS_DEBUG
   ? {
-      code: `echo 'hello world'`,
+      contents: `echo 'hello world'`,
       description: 'how to echo hello world in shell',
       filename: 'example.sh',
       privacy: 'private',
@@ -32,7 +32,7 @@ const CreateSnippetPage = () => {
 
           <Divider mt={5} mb={12} />
 
-          <CreateSnippetForm
+          <SnippetForm
             onSave={createSnippetMutation.mutate}
             initValues={initValues}
           />

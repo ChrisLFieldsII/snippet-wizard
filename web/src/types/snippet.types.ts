@@ -49,8 +49,8 @@ export type SnippetManagerCreateInput = {
 
 export type SnippetManagerUpdateInput = {
   /** the services want to update snippet for */
-  services: ServiceTag[]
-  input: UpdateSnippetInput
+  services: Record<ServiceTag, { id: string }>
+  input: Omit<UpdateSnippetInput, 'id'>
 }
 
 export interface ISnippetPlugin {
