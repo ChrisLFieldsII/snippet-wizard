@@ -4,7 +4,11 @@ import { Box, Divider, Heading } from '@chakra-ui/react'
 
 import { MetaTags } from '@redwoodjs/web'
 
-import { SnippetFormValues, ServiceBadges, SnippetForm } from '~/components'
+import {
+  SnippetFormValues,
+  SnippetForm,
+  ServiceBadgesWithLinks,
+} from '~/components'
 import { useSnippetManager } from '~/hooks'
 import { MainLayout } from '~/layouts'
 import { useStore } from '~/state'
@@ -49,7 +53,7 @@ const UpdateSnippetPage = () => {
 
           <Divider mt={5} mb={6} />
 
-          <ServiceBadges servicesMap={selectedSnippet.servicesMap} />
+          <ServiceBadgesWithLinks servicesMap={selectedSnippet.servicesMap} />
 
           <Box mb={12} />
 

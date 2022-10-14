@@ -15,8 +15,10 @@ import type { ComponentMeta } from '@storybook/react'
 
 import { ServiceBadges } from './ServiceBadges'
 
+import { SERVICE_TAGS } from '~/app-constants'
+
 export const generated = () => {
-  return <ServiceBadges />
+  return <ServiceBadges services={SERVICE_TAGS} />
 }
 
 export default {

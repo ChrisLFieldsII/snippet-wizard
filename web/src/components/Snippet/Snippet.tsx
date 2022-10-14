@@ -25,12 +25,13 @@ import {
 import { AiFillEdit } from 'react-icons/ai'
 import { FaTrash } from 'react-icons/fa'
 import { FiMoreHorizontal } from 'react-icons/fi'
+import { IoDuplicate } from 'react-icons/io5'
 
 import { Link, routes } from '@redwoodjs/router'
 
 import { Card } from '../Card/Card'
 import { CodeEditor } from '../CodeEditor/CodeEditor'
-import { ServiceBadges } from '../ServiceBadges/ServiceBadges'
+import { ServiceBadgesWithLinks } from '../ServiceBadges/ServiceBadges'
 
 import { FILE_UI_MAP } from '~/app-constants'
 import { UISnippet } from '~/types'
@@ -39,6 +40,7 @@ import { emitter, getKnownFileExtension } from '~/utils'
 type SnippetProps = UISnippet & {
   onDelete(snippet: UISnippet): void
   onEdit(snippet: UISnippet): void
+  onClone(snippet: UISnippet): void
 }
 
 export const Snippet = (props: SnippetProps) => {
@@ -53,6 +55,7 @@ export const Snippet = (props: SnippetProps) => {
     servicesMap,
     onDelete,
     onEdit,
+    onClone,
   } = props
 
   const codeDisclosure = useDisclosure({
@@ -105,15 +108,22 @@ export const Snippet = (props: SnippetProps) => {
                     <MenuItem
                       as={Link}
                       to={routes.updateSnippet()}
-                      icon={<AiFillEdit />}
+                      icon={<AiFillEdit size={16} />}
                       onClick={() => onEdit(props)}
                     >
                       Edit
                     </MenuItem>
 
                     <MenuItem
+                      icon={<IoDuplicate size={16} />}
+                      onClick={() => onClone(props)}
+                    >
+                      Clone
+                    </MenuItem>
+
+                    <MenuItem
                       color={'red'}
-                      icon={<FaTrash />}
+                      icon={<FaTrash size={16} />}
                       onClick={() => onDelete(props)}
                     >
                       Delete
@@ -135,7 +145,7 @@ export const Snippet = (props: SnippetProps) => {
               </Text>
 
               {/* services badges */}
-              <ServiceBadges servicesMap={servicesMap} />
+              <ServiceBadgesWithLinks servicesMap={servicesMap} />
 
               <VStack align="start">
                 <Accordion

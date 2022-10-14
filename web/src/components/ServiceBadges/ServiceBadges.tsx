@@ -1,33 +1,85 @@
+import { useMemo } from 'react'
+
 import {
-  HStack,
   Link as ChakraLink,
   Tag,
   TagLeftIcon,
   TagLabel,
+  Wrap as ChakraWrap,
 } from '@chakra-ui/react'
 
 import { SERVICES_MAP } from '~/app-constants'
-import { UISnippet } from '~/types'
-import { getEntries } from '~/utils'
+import { ServiceTag, UISnippet } from '~/types'
+import { getKeys } from '~/utils'
 
 type ServiceBadgesProps = {
-  servicesMap: UISnippet['servicesMap']
+  services: ServiceTag[]
+  Wrapper?: (props: {
+    children: React.ReactNode
+    service: ServiceTag
+  }) => JSX.Element
 }
 
-export const ServiceBadges = ({ servicesMap }: ServiceBadgesProps) => {
+const DefaultWrapper: ServiceBadgesProps['Wrapper'] = ({ children }) => {
+  return <>{children}</>
+}
+
+export const ServiceBadges = ({
+  services,
+  Wrapper = DefaultWrapper,
+}: ServiceBadgesProps) => {
   return (
-    <HStack>
-      {getEntries(servicesMap).map(([svc]) => {
-        const mapping = servicesMap[svc]
+    <ChakraWrap>
+      {services.map((svc) => {
         return (
-          <ChakraLink key={svc} href={mapping.url} isExternal>
+          <Wrapper key={svc} service={svc}>
             <Tag>
               <TagLeftIcon boxSize="12px" as={SERVICES_MAP[svc].Icon} />
               <TagLabel>{svc}</TagLabel>
             </Tag>
-          </ChakraLink>
+          </Wrapper>
         )
       })}
-    </HStack>
+    </ChakraWrap>
+  )
+}
+
+export const ServiceBadgesWithLinks = ({
+  servicesMap,
+}: {
+  servicesMap: UISnippet['servicesMap']
+}) => {
+  const Wrapper: ServiceBadgesProps['Wrapper'] = useMemo(() => {
+    return ({ children, service }) => {
+      const mapping = servicesMap[service]
+
+      return (
+        <ChakraLink href={mapping.url} isExternal>
+          {children}
+        </ChakraLink>
+      )
+    }
+  }, [])
+
+  return <ServiceBadges services={getKeys(servicesMap)} Wrapper={Wrapper} />
+}
+
+type ServiceSelectorProps = {
+  allServices: ServiceTag[]
+  alreadyServices: ServiceTag[]
+  selectedServices: ServiceTag[]
+  onSelect(service: ServiceTag): void
+}
+
+export const ServiceSelector = ({
+  allServices,
+  alreadyServices,
+  selectedServices,
+  onSelect,
+}: ServiceSelectorProps) => {
+  return (
+    <>
+      <p>service selector</p>
+    </>
   )
 }
