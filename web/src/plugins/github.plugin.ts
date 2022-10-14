@@ -11,8 +11,9 @@ import {
   UpdateSnippetResponse,
 } from 'src/types'
 
-import { getKeys } from './general.utils'
-import { SnippetPlugin } from './plugin.utils'
+import { getKeys } from '../utils/general.utils'
+
+import { SnippetPlugin } from './plugin'
 
 class GitHubSnippetPlugin extends SnippetPlugin {
   async createSnippet(

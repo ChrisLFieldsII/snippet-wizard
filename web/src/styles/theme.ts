@@ -1,5 +1,5 @@
 import { theme as proTheme } from '@chakra-ui/pro-theme'
-import { extendTheme, withDefaultColorScheme } from '@chakra-ui/react'
+import { extendTheme } from '@chakra-ui/react'
 import '@fontsource/inter/variable.css'
 
 export const theme = extendTheme(

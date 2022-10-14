@@ -7,7 +7,6 @@ import {
   FormLabel,
   Switch,
   ButtonGroup,
-  Input as ChakraInput,
 } from '@chakra-ui/react'
 import { useFormik } from 'formik'
 

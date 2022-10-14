@@ -1,5 +1,4 @@
 import {
-  SnippetMutationInput,
   ServiceTag,
   SnippetMap,
   SnippetMutationResponse,
@@ -11,10 +10,11 @@ import {
   UpdateSnippetResponse,
 } from 'src/types'
 
-import { getKeys } from './general.utils'
-import { githubSnippetPlugin } from './github.utils'
-import { gitlabSnippetPlugin } from './gitlab.utils'
-import { SnippetPlugin } from './plugin.utils'
+import { getKeys } from '../utils/general.utils'
+
+import { githubSnippetPlugin } from './github.plugin'
+import { gitlabSnippetPlugin } from './gitlab.plugin'
+import { SnippetPlugin } from './plugin'
 
 /** THE PLUGIN MANGER */
 interface ISnippetPluginManager {

@@ -11,7 +11,7 @@ import {
   UpdateSnippetResponse,
 } from 'src/types'
 
-import { SnippetPlugin } from './plugin.utils'
+import { SnippetPlugin } from './plugin'
 
 const API_URL = 'https://gitlab.com/api/v4'
 

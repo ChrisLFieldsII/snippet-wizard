@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 
 import { useQuery } from '@tanstack/react-query'
 import cuid from 'cuid'
@@ -6,9 +6,10 @@ import { ViewModelProps } from 'react-create-view'
 
 import { mockSnippets } from '~/../mocks'
 import { QUERY_KEY, useSnippetManager } from '~/hooks'
+import { snippetPluginManager } from '~/plugins'
 import { useStore } from '~/state'
 import { ServiceTag, Snippet, SnippetMap, UISnippet } from '~/types'
-import { emitter, getKeys, snippetPluginManager } from '~/utils'
+import { emitter, getKeys } from '~/utils'
 
 export type HomeViewSuccessModel = {
   snippets: UISnippet[]

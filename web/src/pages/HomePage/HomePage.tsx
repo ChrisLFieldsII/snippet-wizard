@@ -11,7 +11,6 @@ import {
   Spinner,
   Center,
   Wrap,
-  Button,
   IconButton,
   Tooltip,
 } from '@chakra-ui/react'

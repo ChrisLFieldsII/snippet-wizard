@@ -6,6 +6,7 @@ import produce from 'immer'
 
 import { SERVICE_TAGS } from '~/app-constants'
 import { SnippetFormValues } from '~/components'
+import { snippetPluginManager } from '~/plugins'
 import {
   ServiceTag,
   SnippetManagerUpdateInput,
@@ -13,7 +14,7 @@ import {
   SnippetMutationResponse,
   UISnippet,
 } from '~/types'
-import { getEntries, snippetPluginManager } from '~/utils'
+import { getEntries } from '~/utils'
 
 export const QUERY_KEY = 'snippets'
 

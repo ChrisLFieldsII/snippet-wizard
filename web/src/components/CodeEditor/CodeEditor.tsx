@@ -1,12 +1,11 @@
 import { useMemo } from 'react'
 
-import { Center, Flex, Text, Input as ChakraInput } from '@chakra-ui/react'
+import { Flex, Input as ChakraInput } from '@chakra-ui/react'
 import { Extension } from '@codemirror/state'
 import { langs } from '@uiw/codemirror-extensions-langs'
 import CodeMirror from '@uiw/react-codemirror'
 
 import { Card } from '../Card/Card'
-import Input from '../Input/Input'
 
 import { FILE_UI_MAP } from '~/app-constants'
 import { getKnownFileExtension, noop } from '~/utils'
