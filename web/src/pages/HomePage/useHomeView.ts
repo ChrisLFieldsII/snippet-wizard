@@ -87,6 +87,7 @@ export const useHomeView = (): HomeViewModelProps => {
     },
     []
   )
+
   if (IS_DEBUG) combinedSnippets = mockSnippets
 
   // reduce combined snippets array into a map of UI Snippets where the key is the contents to make it unique by contents

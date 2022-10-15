@@ -93,14 +93,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
               </Stack>
 
               {/* content box */}
-              <Box
-                bg="bg-surface"
-                borderRadius="lg"
-                borderWidth="1px"
-                height="full"
-              >
-                {children}
-              </Box>
+              <main>{children}</main>
             </Stack>
           </Container>
         </Box>
@@ -228,28 +221,6 @@ export const ToggleButton = (props: ToggleButtonProps) => {
   )
 }
 
-interface UserProfileProps {
-  name: string
-  image: string
-  email: string
-}
-
-export const UserProfile = (props: UserProfileProps) => {
-  const { name, image, email } = props
-  return (
-    <HStack spacing="3" ps="2">
-      <Avatar name={name} src={image} boxSize="10" />
-      <Box>
-        <Text fontWeight="medium" fontSize="sm">
-          {name}
-        </Text>
-        <Text color="muted" fontSize="sm">
-          {email}
-        </Text>
-      </Box>
-    </HStack>
-  )
-}
 export const Sidebar = () => {
   const services = useStore((store) => store.services)
 
