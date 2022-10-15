@@ -1,5 +1,3 @@
-import { useState } from 'react'
-
 import {
   Alert,
   AlertIcon,
@@ -16,15 +14,6 @@ import {
   IconButton,
   Tooltip,
   useDisclosure,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  Button,
-  Divider,
 } from '@chakra-ui/react'
 import { createView } from 'react-create-view'
 import { BsArrowsCollapse, BsArrowsExpand } from 'react-icons/bs'
@@ -36,8 +25,8 @@ import MainLayout from 'src/layouts/MainLayout/MainLayout'
 import { useHomeView, HomeViewSuccessModel } from './useHomeView'
 
 import { SERVICES_MAP, SERVICE_TAGS } from '~/app-constants'
-import { List, ServiceSelector, Snippet, Spacer } from '~/components'
-import { ServiceTag, UISnippet } from '~/types'
+import { List, Snippet, CloneSnippetModal } from '~/components'
+import { UISnippet } from '~/types'
 
 const HomeView = createView<HomeViewSuccessModel>({
   Success({
@@ -50,8 +39,6 @@ const HomeView = createView<HomeViewSuccessModel>({
     onFinishCloning,
   }) {
     const cloneDisclosure = useDisclosure()
-    /** the services selected for stuff like cloning */
-    const [selectedServices, setSelectedServices] = useState<ServiceTag[]>([])
 
     const onClone = (snippet: UISnippet) => {
       onStartCloning(snippet)
@@ -97,58 +84,12 @@ const HomeView = createView<HomeViewSuccessModel>({
 
         <List items={snippets} renderItem={renderItem} />
 
-        <Modal
+        <CloneSnippetModal
           isOpen={cloneDisclosure.isOpen}
           onClose={cloneDisclosure.onClose}
-          size="4xl"
-          closeOnOverlayClick={false}
-        >
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>
-              Clone snippet
-              <Text color="muted" fontSize={'md'}>
-                Select the badges below to determine which services to clone
-                your snippet too
-              </Text>
-            </ModalHeader>
-
-            <ModalCloseButton />
-            <ModalBody>
-              <ServiceSelector
-                allServices={SERVICE_TAGS}
-                alreadyServices={selectedSnippet?.services || []}
-                selectedServices={selectedServices}
-                onSelect={setSelectedServices}
-              />
-
-              <Spacer size={20} />
-
-              <Divider />
-
-              <Snippet
-                {...selectedSnippet}
-                defaultIsCodeOpen={false}
-                showMenu={false}
-              />
-            </ModalBody>
-
-            <ModalFooter>
-              <Button mr={3} onClick={cloneDisclosure.onClose}>
-                Close
-              </Button>
-
-              <Button
-                variant="ghost"
-                onClick={() =>
-                  onFinishCloning(selectedSnippet, selectedServices)
-                }
-              >
-                Clone Snippet
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
+          onClone={onFinishCloning}
+          snippet={selectedSnippet}
+        />
       </>
     )
   },
