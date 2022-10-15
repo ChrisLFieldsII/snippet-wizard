@@ -21,7 +21,7 @@ export type HomeViewSuccessModel = {
   /** called when user starts cloning process for a snippet */
   onStartCloning(snippet: UISnippet): void
   /** called when user completes cloning process for a snippet */
-  onFinishCloning(snippet: UISnippet): void
+  onFinishCloning(snippet: UISnippet, services: ServiceTag[]): void
   /** called when user cancels cloning process for a snippet */
   // onCancelCloning(snippet: UISnippet): void
 }
@@ -166,10 +166,9 @@ export const useHomeView = (): HomeViewModelProps => {
       },
       onStartCloning(snippet) {
         setSnippet(snippet)
-        // TODO: open clone snippet modal. ui shows way for users to select services they want to clone too
       },
-      async onFinishCloning(snippet) {
-        console.log('finished cloning')
+      async onFinishCloning(snippet, services) {
+        console.log('make cloning service call', { snippet, services })
       },
     },
   }

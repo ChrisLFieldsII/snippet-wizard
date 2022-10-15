@@ -36,7 +36,7 @@ import MainLayout from 'src/layouts/MainLayout/MainLayout'
 import { useHomeView, HomeViewSuccessModel } from './useHomeView'
 
 import { SERVICES_MAP, SERVICE_TAGS } from '~/app-constants'
-import { CodeEditor, List, ServiceSelector, Snippet } from '~/components'
+import { List, ServiceSelector, Snippet, Spacer } from '~/components'
 import { ServiceTag, UISnippet } from '~/types'
 
 const HomeView = createView<HomeViewSuccessModel>({
@@ -47,8 +47,10 @@ const HomeView = createView<HomeViewSuccessModel>({
     onEdit,
     onToggleCode,
     onStartCloning,
+    onFinishCloning,
   }) {
     const cloneDisclosure = useDisclosure()
+    /** the services selected for stuff like cloning */
     const [selectedServices, setSelectedServices] = useState<ServiceTag[]>([])
 
     const onClone = (snippet: UISnippet) => {
@@ -99,10 +101,18 @@ const HomeView = createView<HomeViewSuccessModel>({
           isOpen={cloneDisclosure.isOpen}
           onClose={cloneDisclosure.onClose}
           size="4xl"
+          closeOnOverlayClick={false}
         >
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader>Cloning snippet</ModalHeader>
+            <ModalHeader>
+              Clone snippet
+              <Text color="muted" fontSize={'md'}>
+                Select the badges below to determine which services to clone
+                your snippet too
+              </Text>
+            </ModalHeader>
+
             <ModalCloseButton />
             <ModalBody>
               <ServiceSelector
@@ -111,6 +121,8 @@ const HomeView = createView<HomeViewSuccessModel>({
                 selectedServices={selectedServices}
                 onSelect={setSelectedServices}
               />
+
+              <Spacer size={20} />
 
               <Divider />
 
@@ -122,14 +134,18 @@ const HomeView = createView<HomeViewSuccessModel>({
             </ModalBody>
 
             <ModalFooter>
-              <Button
-                colorScheme="blue"
-                mr={3}
-                onClick={cloneDisclosure.onClose}
-              >
+              <Button mr={3} onClick={cloneDisclosure.onClose}>
                 Close
               </Button>
-              <Button variant="ghost">Secondary Action</Button>
+
+              <Button
+                variant="ghost"
+                onClick={() =>
+                  onFinishCloning(selectedSnippet, selectedServices)
+                }
+              >
+                Clone Snippet
+              </Button>
             </ModalFooter>
           </ModalContent>
         </Modal>

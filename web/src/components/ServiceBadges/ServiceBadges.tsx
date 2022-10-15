@@ -6,10 +6,7 @@ import {
   TagLeftIcon,
   TagLabel,
   Wrap as ChakraWrap,
-  Button,
   TagProps,
-  Box,
-  Flex,
 } from '@chakra-ui/react'
 
 import { SERVICES_MAP } from '~/app-constants'
@@ -43,7 +40,7 @@ export const ServiceBadges = ({
       {services.map((svc) => {
         return (
           <Wrapper key={svc} service={svc}>
-            <Tag {...getBadgeProps(svc)}>
+            <Tag borderRadius={'full'} {...getBadgeProps(svc)}>
               <TagLeftIcon boxSize="12px" as={SERVICES_MAP[svc].Icon} />
               <TagLabel>{svc}</TagLabel>
             </Tag>
@@ -95,16 +92,11 @@ export const ServiceSelector = ({
 }: ServiceSelectorProps) => {
   const Wrapper: ServiceBadgesProps['Wrapper'] = useMemo(() => {
     return ({ children, service }) => {
-      console.log({ allServices, alreadyServices, selectedServices })
       const alreadyHasService = alreadyServices.includes(service)
       const hasSelectedService = selectedServices.includes(service)
 
       if (alreadyHasService) {
-        return (
-          <Flex align={'center'} title={`${service} already has this snippet`}>
-            {children}
-          </Flex>
-        )
+        return null
       }
 
       return (
@@ -129,19 +121,10 @@ export const ServiceSelector = ({
   }, [selectedServices, alreadyServices, onSelect, allServices])
 
   const getBadgeProps: ServiceBadgesProps['getBadgeProps'] = (service) => {
-    const alreadyHasService = alreadyServices.includes(service)
-
-    if (alreadyHasService) {
-      return {
-        variant: 'subtle',
-        colorScheme: 'green',
-        cursor: 'not-allowed',
-      }
-    }
-
     if (selectedServices.includes(service)) {
       return {
         variant: 'subtle',
+        colorScheme: 'green',
       }
     }
 
