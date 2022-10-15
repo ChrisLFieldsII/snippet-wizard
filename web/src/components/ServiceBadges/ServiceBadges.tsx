@@ -7,6 +7,7 @@ import {
   TagLabel,
   Wrap as ChakraWrap,
   TagProps,
+  Text,
 } from '@chakra-ui/react'
 
 import { SERVICES_MAP } from '~/app-constants'
@@ -15,10 +16,15 @@ import { getKeys } from '~/utils'
 
 type ServiceBadgesProps = {
   services: ServiceTag[]
+  /**
+   * the wrapper component for each rendered service badge. allows dynamic wrapper functionality
+   * like using a wrapper that makes an anchor, or enables badge selection, etc
+   */
   Wrapper?: (props: {
     children: React.ReactNode
     service: ServiceTag
   }) => JSX.Element
+  /** get props for each rendered badge */
   getBadgeProps?: (svc: ServiceTag) => TagProps
 }
 
@@ -35,6 +41,10 @@ export const ServiceBadges = ({
   // @ts-ignore
   getBadgeProps = () => {},
 }: ServiceBadgesProps) => {
+  if (!services.length) {
+    return <Text>No service badges to select 🙁</Text>
+  }
+
   return (
     <ChakraWrap>
       {services.map((svc) => {
@@ -92,12 +102,7 @@ export const ServiceSelector = ({
 }: ServiceSelectorProps) => {
   const Wrapper: ServiceBadgesProps['Wrapper'] = useMemo(() => {
     return ({ children, service }) => {
-      const alreadyHasService = alreadyServices.includes(service)
       const hasSelectedService = selectedServices.includes(service)
-
-      if (alreadyHasService) {
-        return null
-      }
 
       return (
         <button
@@ -118,7 +123,7 @@ export const ServiceSelector = ({
         </button>
       )
     }
-  }, [selectedServices, alreadyServices, onSelect, allServices])
+  }, [selectedServices, onSelect])
 
   const getBadgeProps: ServiceBadgesProps['getBadgeProps'] = (service) => {
     if (selectedServices.includes(service)) {
@@ -133,9 +138,12 @@ export const ServiceSelector = ({
     }
   }
 
+  // filter out services user is already enrolled in
+  const services = allServices.filter((svc) => !alreadyServices.includes(svc))
+
   return (
     <ServiceBadges
-      services={allServices}
+      services={services}
       Wrapper={Wrapper}
       getBadgeProps={getBadgeProps}
     />
