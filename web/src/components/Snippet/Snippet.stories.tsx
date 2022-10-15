@@ -23,6 +23,7 @@ export default {
         url: 'https://gitlab.com/gamestopcorp/ecom/native-app/gs-mobile-app-v2.0/-/snippets/2424054',
       },
     },
+    // defaultIsCodeOpen: false,
   },
 } as ComponentMeta<typeof Snippet>
 

@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 
+import { useDisclosure } from '@chakra-ui/react'
 import { useQuery } from '@tanstack/react-query'
 import cuid from 'cuid'
 import { ViewModelProps } from 'react-create-view'
@@ -13,9 +14,16 @@ import { emitter, getKeys } from '~/utils'
 
 export type HomeViewSuccessModel = {
   snippets: UISnippet[]
+  selectedSnippet: UISnippet | null
   onDelete(snippet: UISnippet): void
   onEdit(snippet: UISnippet): void
   onToggleCode(isOpen: boolean): void
+  /** called when user starts cloning process for a snippet */
+  onStartCloning(snippet: UISnippet): void
+  /** called when user completes cloning process for a snippet */
+  onFinishCloning(snippet: UISnippet): void
+  /** called when user cancels cloning process for a snippet */
+  // onCancelCloning(snippet: UISnippet): void
 }
 
 type HomeViewModelProps = ViewModelProps<HomeViewSuccessModel>
@@ -30,6 +38,7 @@ const IS_DEBUG = false
  */
 export const useHomeView = (): HomeViewModelProps => {
   const setSnippet = useStore((store) => store.setSnippet)
+  const selectedSnippet = useStore((store) => store.snippet)
   const { deleteSnippetMutation } = useSnippetManager()
 
   const query = useQuery(
@@ -141,6 +150,7 @@ export const useHomeView = (): HomeViewModelProps => {
     status: 'success',
     model: {
       snippets: uiSnippets,
+      selectedSnippet,
       async onDelete(snippet) {
         if (!confirm(`Delete snippet "${snippet.title}"?`)) {
           return
@@ -153,6 +163,13 @@ export const useHomeView = (): HomeViewModelProps => {
       },
       onToggleCode(isOpen) {
         emitter.emit('toggleCode', { isOpen })
+      },
+      onStartCloning(snippet) {
+        setSnippet(snippet)
+        // TODO: open clone snippet modal. ui shows way for users to select services they want to clone too
+      },
+      async onFinishCloning(snippet) {
+        console.log('finished cloning')
       },
     },
   }

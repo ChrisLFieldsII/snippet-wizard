@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import {
   Alert,
   AlertIcon,
@@ -13,6 +15,16 @@ import {
   Wrap,
   IconButton,
   Tooltip,
+  useDisclosure,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  Button,
+  Divider,
 } from '@chakra-ui/react'
 import { createView } from 'react-create-view'
 import { BsArrowsCollapse, BsArrowsExpand } from 'react-icons/bs'
@@ -24,13 +36,35 @@ import MainLayout from 'src/layouts/MainLayout/MainLayout'
 import { useHomeView, HomeViewSuccessModel } from './useHomeView'
 
 import { SERVICES_MAP, SERVICE_TAGS } from '~/app-constants'
-import { List, Snippet } from '~/components'
-import { UISnippet } from '~/types'
+import { CodeEditor, List, ServiceSelector, Snippet } from '~/components'
+import { ServiceTag, UISnippet } from '~/types'
 
 const HomeView = createView<HomeViewSuccessModel>({
-  Success({ snippets, onDelete, onEdit, onToggleCode }) {
+  Success({
+    snippets,
+    selectedSnippet,
+    onDelete,
+    onEdit,
+    onToggleCode,
+    onStartCloning,
+  }) {
+    const cloneDisclosure = useDisclosure()
+    const [selectedServices, setSelectedServices] = useState<ServiceTag[]>([])
+
+    const onClone = (snippet: UISnippet) => {
+      onStartCloning(snippet)
+      cloneDisclosure.onOpen()
+    }
+
     const renderItem = (snippet: UISnippet) => {
-      return <Snippet {...snippet} onDelete={onDelete} onEdit={onEdit} />
+      return (
+        <Snippet
+          {...snippet}
+          onDelete={onDelete}
+          onEdit={onEdit}
+          onClone={onClone}
+        />
+      )
     }
 
     return (
@@ -60,6 +94,45 @@ const HomeView = createView<HomeViewSuccessModel>({
         </Wrap>
 
         <List items={snippets} renderItem={renderItem} />
+
+        <Modal
+          isOpen={cloneDisclosure.isOpen}
+          onClose={cloneDisclosure.onClose}
+          size="4xl"
+        >
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Cloning snippet</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <ServiceSelector
+                allServices={SERVICE_TAGS}
+                alreadyServices={selectedSnippet?.services || []}
+                selectedServices={selectedServices}
+                onSelect={setSelectedServices}
+              />
+
+              <Divider />
+
+              <Snippet
+                {...selectedSnippet}
+                defaultIsCodeOpen={false}
+                showMenu={false}
+              />
+            </ModalBody>
+
+            <ModalFooter>
+              <Button
+                colorScheme="blue"
+                mr={3}
+                onClick={cloneDisclosure.onClose}
+              >
+                Close
+              </Button>
+              <Button variant="ghost">Secondary Action</Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
       </>
     )
   },

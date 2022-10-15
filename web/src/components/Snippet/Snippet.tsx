@@ -35,12 +35,14 @@ import { ServiceBadgesWithLinks } from '../ServiceBadges/ServiceBadges'
 
 import { FILE_UI_MAP } from '~/app-constants'
 import { UISnippet } from '~/types'
-import { emitter, getKnownFileExtension } from '~/utils'
+import { emitter, getKnownFileExtension, noop } from '~/utils'
 
 type SnippetProps = UISnippet & {
-  onDelete(snippet: UISnippet): void
-  onEdit(snippet: UISnippet): void
-  onClone(snippet: UISnippet): void
+  onDelete?(snippet: UISnippet): void
+  onEdit?(snippet: UISnippet): void
+  onClone?(snippet: UISnippet): void
+  showMenu?: boolean
+  defaultIsCodeOpen?: boolean
 }
 
 export const Snippet = (props: SnippetProps) => {
@@ -53,13 +55,15 @@ export const Snippet = (props: SnippetProps) => {
     title,
     updatedAt,
     servicesMap,
-    onDelete,
-    onEdit,
-    onClone,
+    onDelete = noop,
+    onEdit = noop,
+    onClone = noop,
+    showMenu = true,
+    defaultIsCodeOpen = true,
   } = props
 
   const codeDisclosure = useDisclosure({
-    defaultIsOpen: true,
+    defaultIsOpen: defaultIsCodeOpen,
   })
 
   const fileExtension = getKnownFileExtension(filename)
@@ -97,39 +101,41 @@ export const Snippet = (props: SnippetProps) => {
                 </HStack>
 
                 {/* snippet actions */}
-                <Menu>
-                  <MenuButton
-                    as={IconButton}
-                    aria-label="Options"
-                    icon={<FiMoreHorizontal />}
-                    variant="outline"
-                  />
-                  <MenuList>
-                    <MenuItem
-                      as={Link}
-                      to={routes.updateSnippet()}
-                      icon={<AiFillEdit size={16} />}
-                      onClick={() => onEdit(props)}
-                    >
-                      Edit
-                    </MenuItem>
+                {showMenu ? (
+                  <Menu>
+                    <MenuButton
+                      as={IconButton}
+                      aria-label="Options"
+                      icon={<FiMoreHorizontal />}
+                      variant="outline"
+                    />
+                    <MenuList>
+                      <MenuItem
+                        as={Link}
+                        to={routes.updateSnippet()}
+                        icon={<AiFillEdit size={16} />}
+                        onClick={() => onEdit(props)}
+                      >
+                        Edit
+                      </MenuItem>
 
-                    <MenuItem
-                      icon={<IoDuplicate size={16} />}
-                      onClick={() => onClone(props)}
-                    >
-                      Clone
-                    </MenuItem>
+                      <MenuItem
+                        icon={<IoDuplicate size={16} />}
+                        onClick={() => onClone(props)}
+                      >
+                        Clone
+                      </MenuItem>
 
-                    <MenuItem
-                      color={'red'}
-                      icon={<FaTrash size={16} />}
-                      onClick={() => onDelete(props)}
-                    >
-                      Delete
-                    </MenuItem>
-                  </MenuList>
-                </Menu>
+                      <MenuItem
+                        color={'red'}
+                        icon={<FaTrash size={16} />}
+                        onClick={() => onDelete(props)}
+                      >
+                        Delete
+                      </MenuItem>
+                    </MenuList>
+                  </Menu>
+                ) : null}
               </Stack>
 
               <Text

@@ -6,6 +6,10 @@ import {
   TagLeftIcon,
   TagLabel,
   Wrap as ChakraWrap,
+  Button,
+  TagProps,
+  Box,
+  Flex,
 } from '@chakra-ui/react'
 
 import { SERVICES_MAP } from '~/app-constants'
@@ -18,22 +22,28 @@ type ServiceBadgesProps = {
     children: React.ReactNode
     service: ServiceTag
   }) => JSX.Element
+  getBadgeProps?: (svc: ServiceTag) => TagProps
 }
 
 const DefaultWrapper: ServiceBadgesProps['Wrapper'] = ({ children }) => {
   return <>{children}</>
 }
 
+/**
+ * Render service badges with no action
+ */
 export const ServiceBadges = ({
   services,
   Wrapper = DefaultWrapper,
+  // @ts-ignore
+  getBadgeProps = () => {},
 }: ServiceBadgesProps) => {
   return (
     <ChakraWrap>
       {services.map((svc) => {
         return (
           <Wrapper key={svc} service={svc}>
-            <Tag>
+            <Tag {...getBadgeProps(svc)}>
               <TagLeftIcon boxSize="12px" as={SERVICES_MAP[svc].Icon} />
               <TagLabel>{svc}</TagLabel>
             </Tag>
@@ -44,6 +54,9 @@ export const ServiceBadges = ({
   )
 }
 
+/**
+ * Render service badges with links to snippet for each service
+ */
 export const ServiceBadgesWithLinks = ({
   servicesMap,
 }: {
@@ -68,18 +81,80 @@ type ServiceSelectorProps = {
   allServices: ServiceTag[]
   alreadyServices: ServiceTag[]
   selectedServices: ServiceTag[]
-  onSelect(service: ServiceTag): void
+  onSelect(newServices: ServiceTag[]): void
 }
 
+/**
+ * Render service badges with ability to (de)select services
+ */
 export const ServiceSelector = ({
   allServices,
   alreadyServices,
   selectedServices,
   onSelect,
 }: ServiceSelectorProps) => {
+  const Wrapper: ServiceBadgesProps['Wrapper'] = useMemo(() => {
+    return ({ children, service }) => {
+      console.log({ allServices, alreadyServices, selectedServices })
+      const alreadyHasService = alreadyServices.includes(service)
+      const hasSelectedService = selectedServices.includes(service)
+
+      if (alreadyHasService) {
+        return (
+          <Flex align={'center'} title={`${service} already has this snippet`}>
+            {children}
+          </Flex>
+        )
+      }
+
+      return (
+        <button
+          onClick={() => {
+            const newServices = hasSelectedService
+              ? selectedServices.filter((svc) => svc !== service)
+              : selectedServices.concat(service)
+
+            onSelect(newServices)
+          }}
+          title={
+            hasSelectedService
+              ? `Remove ${service} from selections`
+              : `Add ${service} to selections`
+          }
+        >
+          {children}
+        </button>
+      )
+    }
+  }, [selectedServices, alreadyServices, onSelect, allServices])
+
+  const getBadgeProps: ServiceBadgesProps['getBadgeProps'] = (service) => {
+    const alreadyHasService = alreadyServices.includes(service)
+
+    if (alreadyHasService) {
+      return {
+        variant: 'subtle',
+        colorScheme: 'green',
+        cursor: 'not-allowed',
+      }
+    }
+
+    if (selectedServices.includes(service)) {
+      return {
+        variant: 'subtle',
+      }
+    }
+
+    return {
+      variant: 'outline',
+    }
+  }
+
   return (
-    <>
-      <p>service selector</p>
-    </>
+    <ServiceBadges
+      services={allServices}
+      Wrapper={Wrapper}
+      getBadgeProps={getBadgeProps}
+    />
   )
 }
