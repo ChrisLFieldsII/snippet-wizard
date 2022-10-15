@@ -254,7 +254,7 @@ export const Sidebar = () => {
   const services = useStore((store) => store.services)
 
   return (
-    <Flex as="section" minH="100vh" bg="bg-canvas">
+    <Flex as="section" h="100vh" bg="bg-canvas" pos="sticky" top={0}>
       <Flex
         flex="1"
         bg="bg-surface"
