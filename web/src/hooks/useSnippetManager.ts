@@ -5,9 +5,9 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import produce from 'immer'
 
 import { SERVICE_TAGS } from '~/app-constants'
-import { SnippetFormValues } from '~/components'
 import { snippetPluginManager } from '~/plugins'
 import {
+  CreateSnippetInput,
   ServiceTag,
   SnippetManagerUpdateInput,
   SnippetMap,
@@ -27,15 +27,29 @@ export const useSnippetManager = () => {
   }, [])
 
   const createSnippetMutation = useMutation(
-    async (input: SnippetFormValues) => {
+    async ({
+      input,
+      services = SERVICE_TAGS,
+    }: {
+      input: CreateSnippetInput
+      services?: ServiceTag[]
+    }) => {
       return snippetPluginManager.createSnippet({
-        // TODO: allow user to specify services via UI
-        services: SERVICE_TAGS,
         input,
+        services,
       })
     },
     {
       onSuccess(data) {
+        // clean undefined from data. createRes can be undefined for example in cloning process
+        getEntries(data).forEach(([service, createRes]) => {
+          if (!createRes) {
+            delete data[service]
+          }
+        })
+
+        console.log('create snippet mutation on success data', data)
+
         try {
           let cachedData = queryClient.getQueryData<SnippetMap>([QUERY_KEY])
           console.log('cached data', cachedData)

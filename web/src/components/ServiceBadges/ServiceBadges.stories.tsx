@@ -11,6 +11,7 @@
 //
 // See https://storybook.js.org/docs/react/writing-stories/args.
 
+import { Text } from '@chakra-ui/react'
 import type { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import {
@@ -59,4 +60,17 @@ SelectServices.args = {
 }
 SelectServices.argTypes = {
   onSelect: { action: 'on select' },
+}
+
+export const Empty: ComponentStory<typeof ServiceBadges> = () => {
+  return <ServiceBadges services={[]} />
+}
+
+export const EmptyRender: ComponentStory<typeof ServiceBadges> = () => {
+  return (
+    <ServiceBadges
+      services={[]}
+      renderEmpty={() => <Text>There are no service badges</Text>}
+    />
+  )
 }

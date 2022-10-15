@@ -36,13 +36,21 @@ const HomeView = createView<HomeViewSuccessModel>({
     onEdit,
     onToggleCode,
     onStartCloning,
-    onFinishCloning,
+    ...props
   }) {
     const cloneDisclosure = useDisclosure()
 
     const onClone = (snippet: UISnippet) => {
       onStartCloning(snippet)
       cloneDisclosure.onOpen()
+    }
+
+    const onFinishCloning: HomeViewSuccessModel['onFinishCloning'] = async (
+      snippet,
+      services
+    ) => {
+      await props.onFinishCloning(snippet, services)
+      cloneDisclosure.onClose()
     }
 
     const renderItem = (snippet: UISnippet) => {

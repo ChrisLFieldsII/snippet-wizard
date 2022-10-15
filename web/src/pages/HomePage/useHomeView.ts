@@ -1,6 +1,5 @@
 import { useEffect } from 'react'
 
-import { useDisclosure } from '@chakra-ui/react'
 import { useQuery } from '@tanstack/react-query'
 import cuid from 'cuid'
 import { ViewModelProps } from 'react-create-view'
@@ -22,8 +21,6 @@ export type HomeViewSuccessModel = {
   onStartCloning(snippet: UISnippet): void
   /** called when user completes cloning process for a snippet */
   onFinishCloning(snippet: UISnippet, services: ServiceTag[]): void
-  /** called when user cancels cloning process for a snippet */
-  // onCancelCloning(snippet: UISnippet): void
 }
 
 type HomeViewModelProps = ViewModelProps<HomeViewSuccessModel>
@@ -39,7 +36,7 @@ const IS_DEBUG = false
 export const useHomeView = (): HomeViewModelProps => {
   const setSnippet = useStore((store) => store.setSnippet)
   const selectedSnippet = useStore((store) => store.snippet)
-  const { deleteSnippetMutation } = useSnippetManager()
+  const { deleteSnippetMutation, createSnippetMutation } = useSnippetManager()
 
   const query = useQuery(
     [QUERY_KEY],
@@ -167,8 +164,15 @@ export const useHomeView = (): HomeViewModelProps => {
       onStartCloning(snippet) {
         setSnippet(snippet)
       },
+      // TODO: improve with passing loading status
       async onFinishCloning(snippet, services) {
         console.log('make cloning service call', { snippet, services })
+
+        // cloning just delegates to create for specified services
+        await createSnippetMutation.mutateAsync({
+          input: snippet,
+          services,
+        })
       },
     },
   }

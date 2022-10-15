@@ -33,7 +33,7 @@ const CreateSnippetPage = () => {
           <Divider mt={5} mb={12} />
 
           <SnippetForm
-            onSave={createSnippetMutation.mutate}
+            onSave={(input) => createSnippetMutation.mutate({ input })}
             initValues={initValues}
           />
         </Box>

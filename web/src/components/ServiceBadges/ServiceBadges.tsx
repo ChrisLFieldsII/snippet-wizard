@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 
 import {
   Link as ChakraLink,
@@ -7,12 +7,13 @@ import {
   TagLabel,
   Wrap as ChakraWrap,
   TagProps,
-  Text,
+  Alert,
+  AlertIcon,
 } from '@chakra-ui/react'
 
 import { SERVICES_MAP } from '~/app-constants'
 import { ServiceTag, UISnippet } from '~/types'
-import { getKeys } from '~/utils'
+import { getKeys, RenderNull } from '~/utils'
 
 type ServiceBadgesProps = {
   services: ServiceTag[]
@@ -26,6 +27,7 @@ type ServiceBadgesProps = {
   }) => JSX.Element
   /** get props for each rendered badge */
   getBadgeProps?: (svc: ServiceTag) => TagProps
+  renderEmpty?: () => JSX.Element
 }
 
 const DefaultWrapper: ServiceBadgesProps['Wrapper'] = ({ children }) => {
@@ -40,9 +42,10 @@ export const ServiceBadges = ({
   Wrapper = DefaultWrapper,
   // @ts-ignore
   getBadgeProps = () => {},
+  renderEmpty = RenderNull,
 }: ServiceBadgesProps) => {
   if (!services.length) {
-    return <Text>No service badges to select 🙁</Text>
+    return renderEmpty()
   }
 
   return (
@@ -141,11 +144,21 @@ export const ServiceSelector = ({
   // filter out services user is already enrolled in
   const services = allServices.filter((svc) => !alreadyServices.includes(svc))
 
+  const renderEmpty = useCallback(() => {
+    return (
+      <Alert status="success">
+        <AlertIcon />
+        This snippet is in all of the registered services! 🥳
+      </Alert>
+    )
+  }, [])
+
   return (
     <ServiceBadges
       services={services}
       Wrapper={Wrapper}
       getBadgeProps={getBadgeProps}
+      renderEmpty={renderEmpty}
     />
   )
 }

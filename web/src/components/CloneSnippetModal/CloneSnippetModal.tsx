@@ -35,7 +35,6 @@ export const CloneSnippetModal = ({
 }: CloneSnippetModalProps) => {
   /** the services selected for stuff like cloning */
   const [selectedServices, setSelectedServices] = useState<ServiceTag[]>([])
-  console.log({ selectedServices })
 
   const onClose = () => {
     props.onClose()
@@ -63,7 +62,7 @@ export const CloneSnippetModal = ({
         <ModalBody>
           <ServiceSelector
             allServices={SERVICE_TAGS}
-            alreadyServices={snippet.services}
+            alreadyServices={snippet?.services || []}
             selectedServices={selectedServices}
             onSelect={setSelectedServices}
           />
