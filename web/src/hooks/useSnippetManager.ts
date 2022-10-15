@@ -41,12 +41,7 @@ export const useSnippetManager = () => {
     },
     {
       onSuccess(data) {
-        // clean undefined from data. createRes can be undefined for example in cloning process
-        getEntries(data).forEach(([service, createRes]) => {
-          if (!createRes) {
-            delete data[service]
-          }
-        })
+        cleanData(data)
 
         console.log('create snippet mutation on success data', data)
 
@@ -106,6 +101,8 @@ export const useSnippetManager = () => {
     },
     {
       onSuccess(data) {
+        cleanData(data)
+
         try {
           let cachedData = queryClient.getQueryData<SnippetMap>([QUERY_KEY])
           console.log('cached data', cachedData)
@@ -172,6 +169,8 @@ export const useSnippetManager = () => {
     },
     {
       onSuccess(data) {
+        cleanData(data)
+
         try {
           // #region modify cache
           // modify cached data w/ deleted ids and set new cached data
@@ -275,4 +274,13 @@ const showNotifications = (
       isClosable: true,
     })
   }
+}
+
+// clean undefined from data. createRes can be undefined for example in cloning process
+const cleanData = (data: Record<ServiceTag, SnippetMutationResponse>) => {
+  getEntries(data).forEach(([service, createRes]) => {
+    if (!createRes) {
+      delete data[service]
+    }
+  })
 }
