@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 
 import { useQuery, useInfiniteQuery } from '@tanstack/react-query'
 import cuid from 'cuid'
@@ -85,6 +85,11 @@ export const useHomeView = (): HomeViewModelProps => {
       },
     }
   )
+
+  const fetchNextPage = useCallback(() => {
+    console.log(`fetching page: ${++pageRef.current}`)
+    query.fetchNextPage()
+  }, [])
 
   useEffect(() => {
     return emitter.on('getSnippets', () => {
@@ -184,10 +189,7 @@ export const useHomeView = (): HomeViewModelProps => {
         hasNextPage: query.hasNextPage || false,
         isNextPageLoading: query.isLoading,
         items: uiSnippets,
-        fetchNextPage: () => {
-          console.log(`fetching page: ${++pageRef.current}`)
-          query.fetchNextPage()
-        },
+        fetchNextPage,
       },
       async onDelete(snippet) {
         if (!confirm(`Delete snippet "${snippet.title}"?`)) {
