@@ -30,7 +30,6 @@ const HomeView = createView<HomeViewSuccessModel>({
     selectedSnippet,
     onDelete,
     onEdit,
-    onToggleCode,
     onStartCloning,
     ...props
   }) {

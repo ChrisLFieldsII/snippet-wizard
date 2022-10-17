@@ -35,6 +35,7 @@ export type UISnippet = Omit<Snippet, 'service' | 'url'> & {
   isPublic: boolean
   /** contents clipped to 10 LOC for quick display */
   contentsShort: string
+  hasMoreContentsToDisplay: boolean
 }
 
 /** delete input for snippet manager */

@@ -10,17 +10,14 @@ import {
   Box,
   Avatar,
   Tag,
-  Accordion,
-  AccordionItem,
-  AccordionButton,
-  AccordionPanel,
-  AccordionIcon,
   useDisclosure,
   Menu,
   MenuList,
   MenuItem,
   MenuButton,
   IconButton,
+  Button,
+  Spacer,
 } from '@chakra-ui/react'
 import { AiFillEdit } from 'react-icons/ai'
 import { FaTrash } from 'react-icons/fa'
@@ -56,11 +53,12 @@ export const Snippet = (props: SnippetProps) => {
     title,
     updatedAt,
     servicesMap,
+    hasMoreContentsToDisplay,
     onDelete = noop,
     onEdit = noop,
     onClone = noop,
     showMenu = true,
-    defaultIsCodeOpen = true,
+    defaultIsCodeOpen = false,
   } = props
 
   const codeDisclosure = useDisclosure({
@@ -79,6 +77,25 @@ export const Snippet = (props: SnippetProps) => {
       isOpen ? codeDisclosure.onOpen() : codeDisclosure.onClose()
     })
   }, [codeDisclosure])
+
+  const renderCodeEditorHeader = () => {
+    if (!hasMoreContentsToDisplay) return null
+
+    return (
+      <Card
+        p={2}
+        borderBottomRadius={0}
+        w="full"
+        display="flex"
+        justifyContent={'end'}
+      >
+        <Spacer />
+        <Button variant={'ghost'} size="xs" onClick={codeDisclosure.onToggle}>
+          {`Show ${codeDisclosure.isOpen ? 'less' : 'more'} code`}
+        </Button>
+      </Card>
+    )
+  }
 
   return (
     <Box>
@@ -154,7 +171,11 @@ export const Snippet = (props: SnippetProps) => {
               {/* services badges */}
               <ServiceBadgesWithLinks servicesMap={servicesMap} />
 
-              <CodeEditor code={contentsShort} filename={filename} />
+              <CodeEditor
+                code={codeDisclosure.isOpen ? contents : contentsShort}
+                filename={filename}
+                renderHeader={renderCodeEditorHeader}
+              />
 
               <VStack alignItems={'end'}>
                 <VStack alignItems={'start'}>

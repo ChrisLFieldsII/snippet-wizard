@@ -24,13 +24,12 @@ import {
   DrawerOverlay,
   useDisclosure,
   useBreakpointValue,
-  Container,
-  Heading,
   InputProps,
-  Spacer,
+  Wrap,
+  Tooltip,
 } from '@chakra-ui/react'
 import { IconType } from 'react-icons'
-import { FiDownloadCloud } from 'react-icons/fi'
+import { BsArrowsCollapse, BsArrowsExpand } from 'react-icons/bs'
 
 import { Link, routes } from '@redwoodjs/router'
 
@@ -46,6 +45,10 @@ type MainLayoutProps = {
 export const MainLayout = ({ children }: MainLayoutProps) => {
   const isDesktop = useBreakpointValue({ base: false, lg: true })
 
+  const onToggleCode = (isOpen: boolean) => {
+    emitter.emit('toggleCode', { isOpen })
+  }
+
   return (
     <Flex
       as="section"
@@ -60,7 +63,30 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
       <Flex direction={'column'} w="full">
         {/* header */}
         <Flex justify={'space-between'} p={3} h="8vh">
-          <Spacer />
+          <Wrap>
+            <Tooltip
+              aria-label="Close all code blocks"
+              label="Close all code blocks"
+            >
+              <IconButton
+                aria-label="Close all code blocks"
+                icon={<BsArrowsCollapse />}
+                onClick={() => onToggleCode(false)}
+              />
+            </Tooltip>
+
+            <Tooltip
+              aria-label="Open all code blocks"
+              label="Open all code blocks"
+            >
+              <IconButton
+                aria-label="Open all code blocks"
+                icon={<BsArrowsExpand />}
+                onClick={() => onToggleCode(true)}
+              />
+            </Tooltip>
+          </Wrap>
+
           <Link to={routes.createSnippet()}>
             <Button variant="primary">Create</Button>
           </Link>

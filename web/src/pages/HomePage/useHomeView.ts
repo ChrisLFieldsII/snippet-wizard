@@ -11,12 +11,14 @@ import { useStore } from '~/state'
 import { ServiceTag, Snippet, SnippetMap, UISnippet } from '~/types'
 import { emitter, getEntries, getKeys, InfiniteQueryAdapter } from '~/utils'
 
+/** max # of LOC to display for code editors in list view */
+const MAX_LOC_TO_DISPLAY = 10
+
 export type HomeViewSuccessModel = {
   selectedSnippet: UISnippet | null
   infiniteQuery: InfiniteQueryAdapter<UISnippet>
   onDelete(snippet: UISnippet): void
   onEdit(snippet: UISnippet): void
-  onToggleCode(isOpen: boolean): void
   /** called when user starts cloning process for a snippet */
   onStartCloning(snippet: UISnippet): void
   /** called when user completes cloning process for a snippet */
@@ -132,6 +134,7 @@ export const useHomeView = (): HomeViewModelProps => {
     const { contents } = currSnippet
     // format contents from service apis. it returns data with `\\n` and double backslashes cause probs in code editor component. format to `\n`
     const formattedContents = currSnippet.contents.split('\\n').join('\n')
+    const linesArr = formattedContents.split('\n')
 
     // snippet isnt present in accum
     if (!accum[contents]) {
@@ -141,7 +144,8 @@ export const useHomeView = (): HomeViewModelProps => {
         isPublic: currSnippet.privacy === 'public',
         services: [currSnippet.service],
         contents: formattedContents,
-        contentsShort: formattedContents.split('\n').slice(0, 10).join('\n'),
+        contentsShort: linesArr.slice(0, MAX_LOC_TO_DISPLAY).join('\n'),
+        hasMoreContentsToDisplay: linesArr.length > MAX_LOC_TO_DISPLAY,
         // @ts-ignore - we are okay w/ a partial map here
         servicesMap: {
           [currSnippet.service]: {
@@ -200,9 +204,6 @@ export const useHomeView = (): HomeViewModelProps => {
       },
       async onEdit(snippet) {
         setSnippet(snippet)
-      },
-      onToggleCode(isOpen) {
-        emitter.emit('toggleCode', { isOpen })
       },
       onStartCloning(snippet) {
         setSnippet(snippet)
