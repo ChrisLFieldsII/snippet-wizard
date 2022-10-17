@@ -7113,24 +7113,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/react-virtual@npm:^3.0.0-alpha.0":
-  version: 3.0.0-beta.18
-  resolution: "@tanstack/react-virtual@npm:3.0.0-beta.18"
-  dependencies:
-    "@tanstack/virtual-core": 3.0.0-beta.18
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
-  checksum: 1539a861b2342efba12054158a25767b3516d1b939d706da2123df76a995a87b2128e7ac3af728c656e0beede9fe5406288d54ac3ff48a2b782058711b2a04a9
-  languageName: node
-  linkType: hard
-
-"@tanstack/virtual-core@npm:3.0.0-beta.18":
-  version: 3.0.0-beta.18
-  resolution: "@tanstack/virtual-core@npm:3.0.0-beta.18"
-  checksum: 0ff0308cdccfc91da5305fbc0b48d6149ecd15ac88cd4f716cd0c07cb6f88cf46918937bccd10fd13c69323369cc364af1dc6d75584012e9dcd5aaebc61c7c52
-  languageName: node
-  linkType: hard
-
 "@testing-library/dom@npm:^8.0.0, @testing-library/dom@npm:^8.11.1":
   version: 8.18.1
   resolution: "@testing-library/dom@npm:8.18.1"
@@ -7860,34 +7842,6 @@ __metadata:
   dependencies:
     "@types/react": "*"
   checksum: 01c1fad823d421a036c24412a664c0372c9ca668650645714114f0f8d29f6848d796e55800ab0049bea121c4f4312348a55707d2213a7e9b89efc24534c64566
-  languageName: node
-  linkType: hard
-
-"@types/react-virtualized-auto-sizer@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "@types/react-virtualized-auto-sizer@npm:1.0.1"
-  dependencies:
-    "@types/react": "*"
-  checksum: 50322517d4484672f8faf3901a661a4c1294db27c9a205d76faecaf78be59f6864391650b2dc6e28788ebcc9fef6eba01dffba5ae122cd438006025af498f1fe
-  languageName: node
-  linkType: hard
-
-"@types/react-window-infinite-loader@npm:^1.0.6":
-  version: 1.0.6
-  resolution: "@types/react-window-infinite-loader@npm:1.0.6"
-  dependencies:
-    "@types/react": "*"
-    "@types/react-window": "*"
-  checksum: 1d7a26a046a64240e2ed42653b7677ed5b48b218562322c5fd2a9cce232e56ac5842d5e9161b631563d53b131f33053cb636d0b7a942e3e6d30b8e59026108cb
-  languageName: node
-  linkType: hard
-
-"@types/react-window@npm:*, @types/react-window@npm:^1.8.5":
-  version: 1.8.5
-  resolution: "@types/react-window@npm:1.8.5"
-  dependencies:
-    "@types/react": "*"
-  checksum: 911ea6dddbe04cb8f30520aaaefdfbd597407229ba2065f6942788a9afe749e2d858b9056fa759d5da01719be824c2656291f82a61af9a8a07fde0b32dabe466
   languageName: node
   linkType: hard
 
@@ -18836,13 +18790,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"memoize-one@npm:>=3.1.1 <6":
-  version: 5.2.1
-  resolution: "memoize-one@npm:5.2.1"
-  checksum: fd22dbe9a978a2b4f30d6a491fc02fb90792432ad0dab840dc96c1734d2bd7c9cdeb6a26130ec60507eb43230559523615873168bcbe8fafab221c30b11d54c1
-  languageName: node
-  linkType: hard
-
 "memoizerific@npm:^1.11.3":
   version: 1.11.3
   resolution: "memoizerific@npm:1.11.3"
@@ -21969,39 +21916,6 @@ __metadata:
     "@types/react":
       optional: true
   checksum: 6d66f3bdb65e1ec79089f80314da97c9a005087a04ee034255a5de129a4c0d9fd0bf99fa7bf642781ac2dc745ca687aae3de082bd8afdd0d117bc953241e15ad
-  languageName: node
-  linkType: hard
-
-"react-virtualized-auto-sizer@npm:^1.0.7":
-  version: 1.0.7
-  resolution: "react-virtualized-auto-sizer@npm:1.0.7"
-  peerDependencies:
-    react: ^15.3.0 || ^16.0.0-alpha || ^17.0.0 || ^18.0.0-rc
-    react-dom: ^15.3.0 || ^16.0.0-alpha || ^17.0.0 || ^18.0.0-rc
-  checksum: 91e8d7924bace7d1ba48f54580e14b2cfea71c7af6f5472d40f2d9499f85fa0e9a6712ee0ba60ff9dd3d7566593cb1e681e44aaeddd956e5a19b20a79f8c322a
-  languageName: node
-  linkType: hard
-
-"react-window-infinite-loader@npm:^1.0.8":
-  version: 1.0.8
-  resolution: "react-window-infinite-loader@npm:1.0.8"
-  peerDependencies:
-    react: ^15.3.0 || ^16.0.0-alpha || ^17.0.0 || ^18.0.0
-    react-dom: ^15.3.0 || ^16.0.0-alpha || ^17.0.0 || ^18.0.0
-  checksum: 53108e3b4d38a49511ef90ddf75851f82570242b53f199a5bd1f477e4147a978d0d837065da300cc5aba23bc6ace4e7aff5ce0e6231964c06d00c5052db14629
-  languageName: node
-  linkType: hard
-
-"react-window@npm:^1.8.7":
-  version: 1.8.7
-  resolution: "react-window@npm:1.8.7"
-  dependencies:
-    "@babel/runtime": ^7.0.0
-    memoize-one: ">=3.1.1 <6"
-  peerDependencies:
-    react: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
-    react-dom: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
-  checksum: b36a5df21aa665db4a9674d37e933025c6dabc09ee38c364a8beba334e3aec9d3ab0d30dd18972c927dfb0a8e4ee8b0bf0822759d3181c578268e3523a097c01
   languageName: node
   linkType: hard
 
@@ -25810,11 +25724,7 @@ __metadata:
     "@redwoodjs/router": 3.1.1
     "@redwoodjs/web": 3.1.1
     "@tanstack/react-query": ^4.10.3
-    "@tanstack/react-virtual": ^3.0.0-alpha.0
     "@types/react-syntax-highlighter": ^15.5.5
-    "@types/react-virtualized-auto-sizer": ^1.0.1
-    "@types/react-window": ^1.8.5
-    "@types/react-window-infinite-loader": ^1.0.6
     "@uiw/codemirror-extensions-langs": ^4.12.4
     "@uiw/react-codemirror": ^4.12.4
     axios: ^1.1.2
@@ -25829,9 +25739,6 @@ __metadata:
     react-create-view: ^1.0.0
     react-dom: 17.0.2
     react-infinite-scroll-hook: ^4.0.4
-    react-virtualized-auto-sizer: ^1.0.7
-    react-window: ^1.8.7
-    react-window-infinite-loader: ^1.0.8
     zustand: ^4.1.1
   languageName: unknown
   linkType: soft
