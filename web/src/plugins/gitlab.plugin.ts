@@ -9,6 +9,7 @@ import {
   DeleteSnippetResponse,
   UpdateSnippetInput,
   UpdateSnippetResponse,
+  GetSnippetsInput,
 } from 'src/types'
 
 import { SnippetPlugin } from './plugin'
@@ -16,6 +17,32 @@ import { SnippetPlugin } from './plugin'
 const API_URL = 'https://gitlab.com/api/v4'
 
 class GitLabSnippetPlugin extends SnippetPlugin {
+  async getSnippets(input: GetSnippetsInput): Promise<Snippet[]> {
+    if (!this.isEnabled()) {
+      return []
+    }
+
+    const { page = 1, perPage = 20 } = input
+    const params = new URLSearchParams()
+    params.set('page', page.toString())
+    params.set('per_page', perPage.toString())
+
+    try {
+      const rawSnippets = await axios.get<GitLabSnippet[]>(
+        `${API_URL}/snippets?${params}`,
+        {
+          headers: this.getHeaders(),
+        }
+      )
+      return Promise.all(
+        rawSnippets.data.map((rawSnippet) => this.transformSnippet(rawSnippet))
+      )
+    } catch (error) {
+      console.error(this.tag, 'failed to get snippets')
+      return []
+    }
+  }
+
   async createSnippet(
     input: CreateSnippetInput
   ): Promise<CreateSnippetResponse> {
@@ -155,27 +182,6 @@ class GitLabSnippetPlugin extends SnippetPlugin {
       return {
         isSuccess: false,
       }
-    }
-  }
-
-  async getSnippets(): Promise<Snippet[]> {
-    if (!this.isEnabled()) {
-      return []
-    }
-
-    try {
-      const rawSnippets = await axios.get<GitLabSnippet[]>(
-        `${API_URL}/snippets?per_page=5`, // TODO: per_page is temp while testing
-        {
-          headers: this.getHeaders(),
-        }
-      )
-      return Promise.all(
-        rawSnippets.data.map((rawSnippet) => this.transformSnippet(rawSnippet))
-      )
-    } catch (error) {
-      console.error(this.tag, 'failed to get snippets')
-      return []
     }
   }
 

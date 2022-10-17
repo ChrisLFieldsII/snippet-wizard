@@ -10,13 +10,9 @@ import {
   VStack,
   Spinner,
   Center,
-  Wrap,
-  IconButton,
-  Tooltip,
   useDisclosure,
 } from '@chakra-ui/react'
 import { createView } from 'react-create-view'
-import { BsArrowsCollapse, BsArrowsExpand } from 'react-icons/bs'
 
 import { MetaTags } from '@redwoodjs/web'
 
@@ -25,12 +21,12 @@ import MainLayout from 'src/layouts/MainLayout/MainLayout'
 import { useHomeView, HomeViewSuccessModel } from './useHomeView'
 
 import { SERVICES_MAP, SERVICE_TAGS } from '~/app-constants'
-import { List, Snippet, CloneSnippetModal } from '~/components'
+import { Snippet, CloneSnippetModal, InfiniteList } from '~/components'
 import { UISnippet } from '~/types'
 
 const HomeView = createView<HomeViewSuccessModel>({
   Success({
-    snippets,
+    infiniteQuery,
     selectedSnippet,
     onDelete,
     onEdit,
@@ -53,7 +49,12 @@ const HomeView = createView<HomeViewSuccessModel>({
       cloneDisclosure.onClose()
     }
 
-    const renderItem = (snippet: UISnippet) => {
+    const renderItem = ({
+      item: snippet,
+    }: {
+      item: UISnippet
+      index: number
+    }) => {
       return (
         <Snippet
           {...snippet}
@@ -66,31 +67,11 @@ const HomeView = createView<HomeViewSuccessModel>({
 
     return (
       <>
-        <Wrap>
-          <Tooltip
-            aria-label="Close all code blocks"
-            label="Close all code blocks"
-          >
-            <IconButton
-              aria-label="Close all code blocks"
-              icon={<BsArrowsCollapse />}
-              onClick={() => onToggleCode(false)}
-            />
-          </Tooltip>
-
-          <Tooltip
-            aria-label="Open all code blocks"
-            label="Open all code blocks"
-          >
-            <IconButton
-              aria-label="Open all code blocks"
-              icon={<BsArrowsExpand />}
-              onClick={() => onToggleCode(true)}
-            />
-          </Tooltip>
-        </Wrap>
-
-        <List items={snippets} renderItem={renderItem} />
+        <InfiniteList
+          {...infiniteQuery}
+          renderItem={renderItem}
+          renderLoading={() => <Spinner />}
+        />
 
         <CloneSnippetModal
           isOpen={cloneDisclosure.isOpen}

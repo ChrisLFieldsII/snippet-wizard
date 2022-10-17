@@ -9,6 +9,7 @@ import {
   DeleteSnippetResponse,
   UpdateSnippetInput,
   UpdateSnippetResponse,
+  GetSnippetsInput,
 } from 'src/types'
 
 import { getKeys } from '../utils/general.utils'
@@ -125,15 +126,18 @@ class GitHubSnippetPlugin extends SnippetPlugin {
     }
   }
 
-  async getSnippets(): Promise<Snippet[]> {
+  async getSnippets(input: GetSnippetsInput): Promise<Snippet[]> {
     if (!this.isEnabled()) {
       return []
     }
 
+    const { page = 1, perPage = 20 } = input
+
     try {
       const rawSnippets = await request('GET /gists', {
         headers: this.getHeaders(),
-        per_page: 10, // TODO: this is temp while testing
+        per_page: perPage,
+        page,
       })
       return Promise.all(
         rawSnippets.data.map((rawSnippet) => this.transformSnippet(rawSnippet))

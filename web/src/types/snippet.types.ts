@@ -33,6 +33,8 @@ export type UISnippet = Omit<Snippet, 'service' | 'url'> & {
   services: ServiceTag[]
   servicesMap: Record<ServiceTag, { url: string; id: string }>
   isPublic: boolean
+  /** contents clipped to 10 LOC for quick display */
+  contentsShort: string
 }
 
 /** delete input for snippet manager */
@@ -55,7 +57,7 @@ export type SnippetManagerUpdateInput = {
 
 export interface ISnippetPlugin {
   tag: ServiceTag
-  getSnippets(): Promise<Snippet[]>
+  getSnippets(input: GetSnippetsInput): Promise<Snippet[]>
   createSnippet(input: CreateSnippetInput): Promise<CreateSnippetResponse>
   deleteSnippet(
     input: SnippetMutationInput
@@ -109,3 +111,28 @@ export type UpdateSnippetResponse = SnippetMutationResponse<{
   snippet?: Snippet
 }>
 // #endregion UPDATE SNIPPET
+
+// #region GET SNIPPET
+export type GetSnippetsInput = {
+  page?: number
+  perPage?: number
+}
+// #endregion GET SNIPPET
+
+export interface ISnippetPluginManager {
+  // TODO: define input
+  getSnippets(input: GetSnippetsInput): Promise<SnippetMap>
+  createSnippet(
+    input: SnippetManagerCreateInput
+  ): Promise<Record<ServiceTag, CreateSnippetResponse>>
+  /**
+   * @input Takes in a map of services to the snippet id to delete.
+   * @returns a map of services to success response
+   */
+  deleteSnippet(
+    input: SnippetManagerDeleteInput
+  ): Promise<Record<ServiceTag, SnippetMutationResponse<DeleteSnippetResponse>>>
+  updateSnippet(
+    input: SnippetManagerUpdateInput
+  ): Promise<Record<ServiceTag, UpdateSnippetResponse>>
+}

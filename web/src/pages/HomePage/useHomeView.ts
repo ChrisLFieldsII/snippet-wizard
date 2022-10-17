@@ -1,6 +1,6 @@
-import { useEffect } from 'react'
+import { useEffect, useState, useRef } from 'react'
 
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useInfiniteQuery } from '@tanstack/react-query'
 import cuid from 'cuid'
 import { ViewModelProps } from 'react-create-view'
 
@@ -9,11 +9,11 @@ import { QUERY_KEY, useSnippetManager } from '~/hooks'
 import { snippetPluginManager } from '~/plugins'
 import { useStore } from '~/state'
 import { ServiceTag, Snippet, SnippetMap, UISnippet } from '~/types'
-import { emitter, getKeys } from '~/utils'
+import { emitter, getEntries, getKeys, InfiniteQueryAdapter } from '~/utils'
 
 export type HomeViewSuccessModel = {
-  snippets: UISnippet[]
   selectedSnippet: UISnippet | null
+  infiniteQuery: InfiniteQueryAdapter<UISnippet>
   onDelete(snippet: UISnippet): void
   onEdit(snippet: UISnippet): void
   onToggleCode(isOpen: boolean): void
@@ -34,11 +34,14 @@ const IS_DEBUG = false
  * Reduce `SnippetMap` down to UI models.
  */
 export const useHomeView = (): HomeViewModelProps => {
+  const pageRef = useRef(1)
+  const [perPage] = useState(20) // TODO: create UI
+
   const setSnippet = useStore((store) => store.setSnippet)
   const selectedSnippet = useStore((store) => store.snippet)
   const { deleteSnippetMutation, createSnippetMutation } = useSnippetManager()
 
-  const query = useQuery(
+  const query = useInfiniteQuery(
     [QUERY_KEY],
     async () => {
       console.log('home page getting snippets')
@@ -47,7 +50,10 @@ export const useHomeView = (): HomeViewModelProps => {
         return {} as SnippetMap
       }
 
-      const snippetMap = await snippetPluginManager.getSnippets()
+      const snippetMap = await snippetPluginManager.getSnippets({
+        page: pageRef.current,
+        perPage,
+      })
       console.log('snippet map', snippetMap)
 
       return snippetMap
@@ -57,6 +63,31 @@ export const useHomeView = (): HomeViewModelProps => {
       // cacheTime is infinite to preserve data. will manage cache on operations
       cacheTime: Infinity,
       staleTime: 1000 * 60 * 30,
+      // my page params are just numbers like page 1, 2, 3, ...
+      getNextPageParam: (lastPage, pages) => {
+        // we know there might be a next page if one of the services still returned some snippets
+        const hasNextPage = getEntries(lastPage).some(([service, snippets]) => {
+          if (snippets.length) {
+            console.log(`service ${service} still has snippets to fetch`)
+            return true
+          }
+        })
+
+        console.log(
+          `has next page to fetch: ${hasNextPage}`,
+          `currently on page: ${pageRef.current}`
+        )
+
+        return // FIXME: below code is buggy
+
+        if (hasNextPage) {
+          const nextPage = pageRef.current + 1
+          pageRef.current++
+          console.log(`fetching next page: ${nextPage}`)
+
+          return nextPage
+        }
+      },
     }
   )
 
@@ -78,15 +109,17 @@ export const useHomeView = (): HomeViewModelProps => {
     }
   }
 
-  const snippetMap = query.data
+  // reduce each pages snippet map into one big array
+  let combinedSnippets: Snippet[] = query.data.pages?.reduce((accum, page) => {
+    const pageCombinedSnippets = getKeys(page).reduce<Snippet[]>(
+      (accum, key) => {
+        return accum.concat(page[key])
+      },
+      []
+    )
 
-  // reduce snippet map into combined array of snippets
-  let combinedSnippets: Snippet[] = getKeys(snippetMap).reduce<Snippet[]>(
-    (accum, key) => {
-      return accum.concat(snippetMap[key])
-    },
-    []
-  )
+    return accum.concat(pageCombinedSnippets)
+  }, [])
 
   if (IS_DEBUG) combinedSnippets = mockSnippets
 
@@ -95,6 +128,8 @@ export const useHomeView = (): HomeViewModelProps => {
     Record<string, UISnippet>
   >((accum, currSnippet) => {
     const { contents } = currSnippet
+    // format contents from service apis. it returns data with `\\n` and double backslashes cause probs in code editor component. format to `\n`
+    const formattedContents = currSnippet.contents.split('\\n').join('\n')
 
     // snippet isnt present in accum
     if (!accum[contents]) {
@@ -103,8 +138,8 @@ export const useHomeView = (): HomeViewModelProps => {
         id: cuid(), // give ui snippets a stable id
         isPublic: currSnippet.privacy === 'public',
         services: [currSnippet.service],
-        contents: currSnippet.contents.split('\\n').join('\n'), // format contents from service apis
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        contents: formattedContents,
+        contentsShort: formattedContents.split('\n').slice(0, 10).join('\n'),
         // @ts-ignore - we are okay w/ a partial map here
         servicesMap: {
           [currSnippet.service]: {
@@ -147,8 +182,13 @@ export const useHomeView = (): HomeViewModelProps => {
   return {
     status: 'success',
     model: {
-      snippets: uiSnippets,
       selectedSnippet,
+      infiniteQuery: {
+        hasNextPage: query.hasNextPage || false,
+        isNextPageLoading: query.isLoading,
+        items: uiSnippets,
+        fetchNextPage: query.fetchNextPage,
+      },
       async onDelete(snippet) {
         if (!confirm(`Delete snippet "${snippet.title}"?`)) {
           return

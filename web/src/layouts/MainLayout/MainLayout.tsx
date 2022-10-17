@@ -6,7 +6,6 @@ import {
   Box,
   IconButton,
   IconButtonProps,
-  Avatar,
   HStack,
   Text,
   Button,
@@ -93,7 +92,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
               </Stack>
 
               {/* content box */}
-              <main>{children}</main>
+              <main style={{ height: '100%' }}>{children}</main>
             </Stack>
           </Container>
         </Box>

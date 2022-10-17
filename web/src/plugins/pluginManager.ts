@@ -8,6 +8,8 @@ import {
   DeleteSnippetResponse,
   SnippetManagerUpdateInput,
   UpdateSnippetResponse,
+  ISnippetPluginManager,
+  GetSnippetsInput,
 } from 'src/types'
 
 import { getKeys } from '../utils/general.utils'
@@ -17,22 +19,6 @@ import { gitlabSnippetPlugin } from './gitlab.plugin'
 import { SnippetPlugin } from './plugin'
 
 /** THE PLUGIN MANGER */
-interface ISnippetPluginManager {
-  getSnippets(): Promise<SnippetMap>
-  createSnippet(
-    input: SnippetManagerCreateInput
-  ): Promise<Record<ServiceTag, CreateSnippetResponse>>
-  /**
-   * @input Takes in a map of services to the snippet id to delete.
-   * @returns a map of services to success response
-   */
-  deleteSnippet(
-    input: SnippetManagerDeleteInput
-  ): Promise<Record<ServiceTag, SnippetMutationResponse<DeleteSnippetResponse>>>
-  updateSnippet(
-    input: SnippetManagerUpdateInput
-  ): Promise<Record<ServiceTag, UpdateSnippetResponse>>
-}
 
 export class SnippetPluginManager implements ISnippetPluginManager {
   private tags: ServiceTag[] = []
@@ -43,8 +29,10 @@ export class SnippetPluginManager implements ISnippetPluginManager {
     this.plugins = plugins
   }
 
-  async getSnippets(): Promise<SnippetMap> {
-    const promises = await this.plugins.map((plugin) => plugin.getSnippets())
+  async getSnippets(input: GetSnippetsInput): Promise<SnippetMap> {
+    const promises = await this.plugins.map((plugin) =>
+      plugin.getSnippets(input)
+    )
     // TODO: improve with allSettled
     const snippets = await Promise.all(promises)
     const snippetMap = this.tags.reduce((accum, tag, index) => {

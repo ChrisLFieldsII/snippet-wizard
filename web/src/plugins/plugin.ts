@@ -11,6 +11,7 @@ import {
   DeleteSnippetResponse,
   UpdateSnippetResponse,
   UpdateSnippetInput,
+  GetSnippetsInput,
 } from '~/types'
 
 export abstract class SnippetPlugin implements ISnippetPlugin {
@@ -20,7 +21,7 @@ export abstract class SnippetPlugin implements ISnippetPlugin {
     this.tag = tag
   }
 
-  abstract getSnippets(): Promise<Snippet[]>
+  abstract getSnippets(input: GetSnippetsInput): Promise<Snippet[]>
 
   abstract createSnippet(
     input: CreateSnippetInput

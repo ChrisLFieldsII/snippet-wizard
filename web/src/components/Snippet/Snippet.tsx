@@ -48,6 +48,7 @@ type SnippetProps = UISnippet & {
 export const Snippet = (props: SnippetProps) => {
   const {
     contents,
+    contentsShort,
     createdAt,
     description,
     filename,
@@ -153,29 +154,7 @@ export const Snippet = (props: SnippetProps) => {
               {/* services badges */}
               <ServiceBadgesWithLinks servicesMap={servicesMap} />
 
-              <VStack align="start">
-                <Accordion
-                  w="full"
-                  borderColor="transparent"
-                  index={codeDisclosure.isOpen ? 0 : 1}
-                >
-                  <AccordionItem>
-                    <h2>
-                      <AccordionButton onClick={codeDisclosure.onToggle}>
-                        <Box flex="1" textAlign="left">
-                          <Text color="muted" fontSize={'xs'}>
-                            {`${codeDisclosure.isOpen ? 'Close' : 'Open'} code`}
-                          </Text>
-                        </Box>
-                        <AccordionIcon />
-                      </AccordionButton>
-                    </h2>
-                    <AccordionPanel>
-                      <CodeEditor code={contents} filename={filename} />
-                    </AccordionPanel>
-                  </AccordionItem>
-                </Accordion>
-              </VStack>
+              <CodeEditor code={contentsShort} filename={filename} />
 
               <VStack alignItems={'end'}>
                 <VStack alignItems={'start'}>
