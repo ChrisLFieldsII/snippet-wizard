@@ -13,13 +13,13 @@
 
 import type { ComponentMeta } from '@storybook/react'
 
-import { InfiniteList } from './InfiniteList'
+import { InfiniteWindowList } from './InfiniteWindowList'
 
 export const generated = () => {
-  return <InfiniteList />
+  return <InfiniteWindowList />
 }
 
 export default {
   title: 'Components/InfiniteList',
-  component: InfiniteList,
-} as ComponentMeta<typeof InfiniteList>
+  component: InfiniteWindowList,
+} as ComponentMeta<typeof InfiniteWindowList>

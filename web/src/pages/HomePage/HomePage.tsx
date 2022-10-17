@@ -21,7 +21,7 @@ import MainLayout from 'src/layouts/MainLayout/MainLayout'
 import { useHomeView, HomeViewSuccessModel } from './useHomeView'
 
 import { SERVICES_MAP, SERVICE_TAGS } from '~/app-constants'
-import { Snippet, CloneSnippetModal, InfiniteList } from '~/components'
+import { Snippet, CloneSnippetModal, InfiniteWindowList } from '~/components'
 import { UISnippet } from '~/types'
 
 const HomeView = createView<HomeViewSuccessModel>({
@@ -67,10 +67,14 @@ const HomeView = createView<HomeViewSuccessModel>({
 
     return (
       <>
-        <InfiniteList
+        <InfiniteWindowList
           {...infiniteQuery}
           renderItem={renderItem}
           renderLoading={() => <Spinner />}
+          getItemSize={() => {
+            return 500
+          }}
+          useDynamicSizing={false}
         />
 
         <CloneSnippetModal

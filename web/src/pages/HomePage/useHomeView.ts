@@ -86,9 +86,9 @@ export const useHomeView = (): HomeViewModelProps => {
     }
   )
 
-  const fetchNextPage = useCallback(() => {
+  const fetchNextPage = useCallback(async () => {
     console.log(`fetching page: ${++pageRef.current}`)
-    query.fetchNextPage()
+    await query.fetchNextPage()
   }, [])
 
   useEffect(() => {

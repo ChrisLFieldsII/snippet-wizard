@@ -11,18 +11,29 @@ const keyExtractor = (index, data: any[]) => {
   return data?.[index]?.id || index
 }
 
-type InfiniteListProps<T> = InfiniteQueryAdapter<T> & {
-  renderItem(args: { item: T; index: number }): React.ReactNode
-  renderLoading(): React.ReactNode
+type ListRenderItemArgs<T> = {
+  item: T
+  index: number
 }
 
-export const InfiniteList = <T,>({
+type InfiniteListProps<T> = InfiniteQueryAdapter<T> & {
+  renderItem(args: ListRenderItemArgs<T>): React.ReactNode
+  renderLoading(): React.ReactNode
+  /** callback to determine item size. can be an estimate */
+  getItemSize(args: ListRenderItemArgs<T>): number
+  /** try to use dynamic item sizing. may result in UI overlapping bugs... */
+  useDynamicSizing?: boolean
+}
+
+export const InfiniteWindowList = <T,>({
   fetchNextPage,
   hasNextPage,
   isNextPageLoading,
   items,
   renderItem,
   renderLoading,
+  getItemSize,
+  useDynamicSizing = true,
 }: InfiniteListProps<T>) => {
   const [sentryRef] = useInfiniteScroll({
     loading: isNextPageLoading,
@@ -50,10 +61,6 @@ export const InfiniteList = <T,>({
   const getIsItemLoaded = (index: number) =>
     !hasNextPage || index < items.length
 
-  // callback to determine item size. 400 is size of snippet with 10 LOC.
-  // FIXME: this makes component less reusable. should move this to a prop
-  const getItemSize = (_index: number) => 400
-
   const Item = ({
     index,
     style,
@@ -75,11 +82,16 @@ export const InfiniteList = <T,>({
   const rowVirtualizer = useVirtualizer({
     count: itemCount,
     getScrollElement: () => parentRef.current,
-    estimateSize: getItemSize,
+    estimateSize: (index) => getItemSize({ item: items[index], index }),
     getItemKey: (index) => keyExtractor(index, items),
-    // enableSmoothScroll: false,
+    // measureElement(el: HTMLDivElement, instance) {
+    //   console.log('measure element', el.clientHeight)
+
+    //   return el.clientHeight + 50
+    // },
   })
   const virtualItems = rowVirtualizer.getVirtualItems()
+  window.rowVirtualizer = rowVirtualizer
 
   return (
     <div
@@ -99,7 +111,7 @@ export const InfiniteList = <T,>({
           return (
             <div
               key={key}
-              ref={measureElement}
+              ref={useDynamicSizing ? measureElement : undefined}
               style={{
                 position: 'absolute',
                 top: 0,
