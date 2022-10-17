@@ -76,6 +76,8 @@ export const ServiceBadgesWithLinks = ({
     return ({ children, service }) => {
       const mapping = servicesMap[service]
 
+      if (!mapping) return null
+
       return (
         <ChakraLink href={mapping.url} isExternal>
           {children}
