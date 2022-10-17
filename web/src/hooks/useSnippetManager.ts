@@ -18,6 +18,7 @@ import { getEntries } from '~/utils'
 
 export const QUERY_KEY = 'snippets'
 
+// FIXME: cache updates need to account for infinite query structure
 export const useSnippetManager = () => {
   const toast = useToast()
   const queryClient = useQueryClient()

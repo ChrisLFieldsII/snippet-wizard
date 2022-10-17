@@ -41,7 +41,7 @@ export class SnippetPluginManager implements ISnippetPluginManager {
         [tag]: snippets[index],
       }
     }, {} as SnippetMap)
-    console.log(snippetMap)
+    console.log('plugin manager snippet map', snippetMap)
 
     return snippetMap
   }

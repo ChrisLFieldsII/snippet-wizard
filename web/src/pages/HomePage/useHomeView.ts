@@ -34,9 +34,9 @@ const IS_DEBUG = false
  * Reduce `SnippetMap` down to UI models.
  */
 export const useHomeView = (): HomeViewModelProps => {
-  const pageRef = useRef(1)
-  const [perPage] = useState(20) // TODO: create UI
+  const [perPage] = useState(5) // TODO: create UI
 
+  const pageRef = useRef(1)
   const setSnippet = useStore((store) => store.setSnippet)
   const selectedSnippet = useStore((store) => store.snippet)
   const { deleteSnippetMutation, createSnippetMutation } = useSnippetManager()
@@ -54,7 +54,6 @@ export const useHomeView = (): HomeViewModelProps => {
         page: pageRef.current,
         perPage,
       })
-      console.log('snippet map', snippetMap)
 
       return snippetMap
     },
@@ -72,18 +71,14 @@ export const useHomeView = (): HomeViewModelProps => {
             return true
           }
         })
+        const currPage = pageRef.current
 
-        console.log(
-          `has next page to fetch: ${hasNextPage}`,
-          `currently on page: ${pageRef.current}`
-        )
-
-        return // FIXME: below code is buggy
+        console.log({ hasNextPage, currPage })
 
         if (hasNextPage) {
-          const nextPage = pageRef.current + 1
-          pageRef.current++
-          console.log(`fetching next page: ${nextPage}`)
+          // NOTE: we actually increment pageRef when `fetchNextPage` is called as `getNextPageParam` can get spammed and called many times...
+          const nextPage = currPage + 1
+          console.log(`next page to fetch will be: ${nextPage}`)
 
           return nextPage
         }
@@ -108,6 +103,8 @@ export const useHomeView = (): HomeViewModelProps => {
       status: 'error',
     }
   }
+
+  console.log('raw infinite query data', query.data)
 
   // reduce each pages snippet map into one big array
   let combinedSnippets: Snippet[] = query.data.pages?.reduce((accum, page) => {
@@ -171,7 +168,7 @@ export const useHomeView = (): HomeViewModelProps => {
   }, {})
 
   const uiSnippets = Object.values(snippetsMapByContents)
-  console.log('ui snippets', uiSnippets)
+  console.log('ui snippets array', uiSnippets)
 
   if (!uiSnippets.length) {
     return {
@@ -187,7 +184,10 @@ export const useHomeView = (): HomeViewModelProps => {
         hasNextPage: query.hasNextPage || false,
         isNextPageLoading: query.isLoading,
         items: uiSnippets,
-        fetchNextPage: query.fetchNextPage,
+        fetchNextPage: () => {
+          console.log(`fetching page: ${++pageRef.current}`)
+          query.fetchNextPage()
+        },
       },
       async onDelete(snippet) {
         if (!confirm(`Delete snippet "${snippet.title}"?`)) {
