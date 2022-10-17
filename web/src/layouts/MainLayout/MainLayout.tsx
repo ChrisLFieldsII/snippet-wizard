@@ -49,6 +49,29 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
     emitter.emit('toggleCode', { isOpen })
   }
 
+  // add keyboard listener to toggle code
+  React.useEffect(() => {
+    const fn = (e: KeyboardEvent) => {
+      const { key } = e
+      const keys = ['[', ']']
+      const target = e.target as HTMLElement
+
+      if (!keys.includes(key)) return
+      if (/^(?:input|textarea|select|button)$/i.test(target.tagName)) return
+
+      e.preventDefault()
+
+      if (key === '[') onToggleCode(false)
+      else if (key === ']') onToggleCode(true)
+    }
+
+    document.addEventListener('keyup', fn)
+
+    return () => {
+      document.removeEventListener('keyup', fn)
+    }
+  }, [])
+
   return (
     <Flex
       as="section"
@@ -62,7 +85,13 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
       {/* FIXME: vh needs to account for `isDesktop` */}
       <Flex direction={'column'} w="full">
         {/* header */}
-        <Flex justify={'space-between'} p={3} h="8vh">
+        <Flex
+          justify={'space-between'}
+          p={3}
+          h="8vh"
+          bg="bg-surface"
+          boxShadow={useColorModeValue('sm', 'sm-dark')}
+        >
           <Wrap>
             <Tooltip
               aria-label="Close all code blocks"
