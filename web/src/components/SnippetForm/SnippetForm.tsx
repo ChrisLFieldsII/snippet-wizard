@@ -7,9 +7,11 @@ import {
   FormLabel,
   Switch,
   ButtonGroup,
+  Input as ChakraInput,
 } from '@chakra-ui/react'
 import { useFormik } from 'formik'
 
+import { Card } from '../Card/Card'
 import { CodeEditor } from '../CodeEditor/CodeEditor'
 import { Input } from '../Input/Input'
 
@@ -56,6 +58,23 @@ export const SnippetForm = ({
     })
   }
 
+  const renderCodeEditorHeader = () => {
+    return (
+      <Card p={2} flexDir={'row'} borderBottomRadius={0} w="full">
+        <ChakraInput
+          id="filename"
+          value={filename}
+          onChange={(e) =>
+            formik.setFieldValue('filename', e.currentTarget.value)
+          }
+          size={'xs'}
+          isRequired
+          placeholder="enter filename with extension (example.ts)"
+        />
+      </Card>
+    )
+  }
+
   return (
     <VStack
       spacing={12}
@@ -82,13 +101,10 @@ export const SnippetForm = ({
 
       <CodeEditor
         isEditable
-        showHeader
         code={contents}
         filename={filename}
-        setFilename={(newFilename) =>
-          formik.setFieldValue('filename', newFilename)
-        }
         setCode={(newCode) => formik.setFieldValue('contents', newCode)}
+        renderHeader={renderCodeEditorHeader}
       />
 
       <FormControl display="flex" alignItems="center">

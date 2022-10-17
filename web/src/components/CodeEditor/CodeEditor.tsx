@@ -1,11 +1,9 @@
 import { useMemo } from 'react'
 
-import { Flex, Input as ChakraInput } from '@chakra-ui/react'
+import { Flex } from '@chakra-ui/react'
 import { Extension } from '@codemirror/state'
 import { langs } from '@uiw/codemirror-extensions-langs'
 import CodeMirror from '@uiw/react-codemirror'
-
-import { Card } from '../Card/Card'
 
 import { FILE_UI_MAP } from '~/app-constants'
 import { getKnownFileExtension, noop } from '~/utils'
@@ -17,8 +15,7 @@ type CodeEditorProps = {
   filename: string
   isEditable?: boolean
   placeholder?: string
-  setFilename?(filename: string): void
-  showHeader?: boolean
+  renderHeader?(): React.ReactNode
 }
 
 export const CodeEditor = (props: CodeEditorProps) => {
@@ -28,8 +25,6 @@ export const CodeEditor = (props: CodeEditorProps) => {
     filename,
     isEditable = false,
     placeholder = `console.log('time to enter some sweet code')`,
-    setFilename = noop,
-    showHeader = false,
   } = props
 
   const fileExtension = getKnownFileExtension(filename)
@@ -41,20 +36,9 @@ export const CodeEditor = (props: CodeEditorProps) => {
   }, [fileExtension, filename])
 
   const renderHeader = () => {
-    if (!showHeader) return null
+    if (!props.renderHeader) return null
 
-    return (
-      <Card p={2} flexDir={'row'} borderBottomRadius={0}>
-        <ChakraInput
-          id="filename"
-          value={filename}
-          onChange={(e) => setFilename(e.currentTarget.value)}
-          size={'xs'}
-          isRequired
-          placeholder="enter filename with extension (example.ts)"
-        />
-      </Card>
-    )
+    return props.renderHeader()
   }
 
   return (
