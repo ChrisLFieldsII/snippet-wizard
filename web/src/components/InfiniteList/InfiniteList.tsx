@@ -1,3 +1,5 @@
+import { useVirtualizer } from '@tanstack/react-virtual'
+import useInfiniteScroll from 'react-infinite-scroll-hook'
 import AutoSizer from 'react-virtualized-auto-sizer'
 import { VariableSizeList as WindowList } from 'react-window'
 import InfiniteLoader from 'react-window-infinite-loader'
@@ -22,6 +24,21 @@ export const InfiniteList = <T,>({
   renderItem,
   renderLoading,
 }: InfiniteListProps<T>) => {
+  const [sentryRef] = useInfiniteScroll({
+    loading: isNextPageLoading,
+    hasNextPage,
+    onLoadMore: fetchNextPage,
+    // When there is an error, we stop infinite loading.
+    // It can be reactivated by setting "error" state as undefined.
+    disabled: false,
+    // `rootMargin` is passed to `IntersectionObserver`.
+    // We can use it to trigger 'onLoadMore' when the sentry comes near to become
+    // visible, instead of becoming fully visible on the screen.
+    rootMargin: '0px 0px 400px 0px',
+  })
+
+  const parentRef = React.useRef<HTMLDivElement>(null)
+
   // If there are more items to be loaded then add an extra row to hold a loading indicator.
   const itemCount = hasNextPage ? items.length + 1 : items.length
 
@@ -54,6 +71,54 @@ export const InfiniteList = <T,>({
 
     return <div style={style}>{content}</div>
   }
+
+  const rowVirtualizer = useVirtualizer({
+    count: itemCount,
+    getScrollElement: () => parentRef.current,
+    estimateSize: getItemSize,
+    getItemKey: (index) => keyExtractor(index, items),
+    // enableSmoothScroll: false,
+  })
+  const virtualItems = rowVirtualizer.getVirtualItems()
+
+  return (
+    <div
+      ref={parentRef}
+      style={{ width: '100%', height: '100%', overflow: 'auto' }}
+    >
+      <div
+        style={{
+          height: rowVirtualizer.getTotalSize(),
+          width: '100%',
+          position: 'relative',
+        }}
+      >
+        {virtualItems.map(({ index, measureElement, start, key }) => {
+          const isLoaderRow = index > items.length - 1
+
+          return (
+            <div
+              key={key}
+              ref={measureElement}
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                transform: `translateY(${start}px)`,
+              }}
+            >
+              {isLoaderRow ? (
+                <div ref={sentryRef}>{renderLoading()}</div>
+              ) : (
+                renderItem({ item: items[index], index })
+              )}
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
 
   return (
     <InfiniteLoader

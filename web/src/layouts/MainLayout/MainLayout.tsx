@@ -27,6 +27,7 @@ import {
   Container,
   Heading,
   InputProps,
+  Spacer,
 } from '@chakra-ui/react'
 import { IconType } from 'react-icons'
 import { FiDownloadCloud } from 'react-icons/fi'
@@ -51,52 +52,23 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
       direction={{ base: 'column', lg: 'row' }}
       height="100vh"
       bg="bg-canvas"
-      overflowY="auto"
+      // overflowY="auto"
     >
       {isDesktop ? <Sidebar /> : <Navbar />}
 
-      <Box bg="bg-surface" pt={{ base: '0', lg: '3' }} flex="1">
-        <Box
-          bg="bg-canvas"
-          borderTopLeftRadius={{ base: 'none', lg: '2rem' }}
-          height="full"
-        >
-          <Container py="8" height="full">
-            <Stack spacing={{ base: '8', lg: '6' }} height="full">
-              <Stack
-                spacing="4"
-                direction={{ base: 'column', lg: 'row' }}
-                justify="space-between"
-                align={{ base: 'start', lg: 'center' }}
-              >
-                <Stack spacing="1">
-                  <Heading
-                    size={useBreakpointValue({ base: 'xs', lg: 'sm' })}
-                    fontWeight="medium"
-                  >
-                    Dashboard
-                  </Heading>
-                  <Text color="muted">All important metrics at a glance</Text>
-                </Stack>
-                <HStack spacing="3">
-                  <Button
-                    variant="secondary"
-                    leftIcon={<FiDownloadCloud fontSize="1.25rem" />}
-                  >
-                    Download
-                  </Button>
-                  <Link to={routes.createSnippet()}>
-                    <Button variant="primary">Create</Button>
-                  </Link>
-                </HStack>
-              </Stack>
+      {/* FIXME: vh needs to account for `isDesktop` */}
+      <Flex direction={'column'} w="full">
+        {/* header */}
+        <Flex justify={'space-between'} p={3} h="8vh">
+          <Spacer />
+          <Link to={routes.createSnippet()}>
+            <Button variant="primary">Create</Button>
+          </Link>
+        </Flex>
 
-              {/* content box */}
-              <main style={{ height: '100%' }}>{children}</main>
-            </Stack>
-          </Container>
-        </Box>
-      </Box>
+        {/* main content */}
+        <main style={{ height: '92vh', overflow: 'auto' }}>{children}</main>
+      </Flex>
     </Flex>
   )
 }
