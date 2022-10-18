@@ -17,6 +17,7 @@ import {
   ServiceTag,
   Snippet,
   SnippetManagerCreateInput,
+  SnippetManagerUpdateInput,
   SnippetMap,
   UISnippet,
 } from '~/types'
@@ -45,6 +46,11 @@ export type HomeViewSuccessModel = {
     unknown,
     SnippetManagerCreateInput
   >
+  updateSnippetMutation: MutationAdapter<
+    Awaited<ReturnType<ISnippetPluginManager['updateSnippet']>>,
+    unknown,
+    SnippetManagerUpdateInput
+  >
   drawers: Drawers<DrawerType>
 }
 
@@ -72,7 +78,11 @@ export const useHomeView = (): HomeViewModelProps => {
     }),
     shallow
   )
-  const { deleteSnippetMutation, createSnippetMutation } = useSnippetManager()
+  const {
+    deleteSnippetMutation,
+    createSnippetMutation,
+    updateSnippetMutation,
+  } = useSnippetManager()
 
   const query = useInfiniteQuery(
     [QUERY_KEY],
@@ -235,6 +245,7 @@ export const useHomeView = (): HomeViewModelProps => {
       },
       async onEdit(snippet) {
         setSnippet(snippet)
+        drawers.openDrawer('update-snippet')
       },
       onStartCloning(snippet) {
         setSnippet(snippet)
@@ -250,6 +261,7 @@ export const useHomeView = (): HomeViewModelProps => {
         })
       },
       createSnippetMutation: mutationAdapter(createSnippetMutation),
+      updateSnippetMutation: mutationAdapter(updateSnippetMutation),
       drawers,
     },
   }

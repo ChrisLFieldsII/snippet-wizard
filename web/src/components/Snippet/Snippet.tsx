@@ -129,8 +129,6 @@ export const Snippet = (props: SnippetProps) => {
                     />
                     <MenuList>
                       <MenuItem
-                        as={Link}
-                        to={routes.updateSnippet()}
                         icon={<AiFillEdit size={16} />}
                         onClick={() => onEdit(props)}
                       >

@@ -11,12 +11,6 @@ import {
   Spinner,
   Center,
   useDisclosure,
-  Drawer,
-  DrawerBody,
-  DrawerHeader,
-  DrawerOverlay,
-  DrawerContent,
-  DrawerCloseButton,
 } from '@chakra-ui/react'
 import { createView } from 'react-create-view'
 
@@ -31,9 +25,9 @@ import {
   Snippet,
   CloneSnippetModal,
   InfiniteList,
-  SnippetForm,
   SnippetFormValues,
   CreateSnippetDrawer,
+  UpdateSnippetDrawer,
 } from '~/components'
 import { UISnippet } from '~/types'
 
@@ -56,6 +50,7 @@ const HomeView = createView<HomeViewSuccessModel>({
     onEdit,
     onStartCloning,
     createSnippetMutation,
+    updateSnippetMutation,
     drawers,
     ...props
   }) {
@@ -121,6 +116,26 @@ const HomeView = createView<HomeViewSuccessModel>({
             })
           }
           initValues={initValues}
+        />
+
+        <UpdateSnippetDrawer
+          isOpen={drawers.drawer === 'update-snippet'}
+          onClose={drawers.closeDrawer}
+          onSave={(formValues: SnippetFormValues) => {
+            updateSnippetMutation
+              .mutate({
+                input: {
+                  ...formValues,
+                  oldFilename: selectedSnippet.filename,
+                  newFilename: formValues.filename,
+                },
+                services: selectedSnippet.servicesMap,
+              })
+              .then(console.log)
+              .catch(console.error)
+          }}
+          initValues={selectedSnippet}
+          snippet={selectedSnippet}
         />
       </>
     )

@@ -27,7 +27,7 @@ export type Drawers<T extends string> = {
   closeDrawer(): void
 }
 
-export type DrawerType = 'create-snippet'
+export type DrawerType = 'create-snippet' | 'update-snippet'
 
 export type DrawerProps = {
   isOpen: boolean
