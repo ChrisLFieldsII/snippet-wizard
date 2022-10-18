@@ -33,6 +33,7 @@ import {
   InfiniteList,
   SnippetForm,
   SnippetFormValues,
+  CreateSnippetDrawer,
 } from '~/components'
 import { UISnippet } from '~/types'
 
@@ -110,31 +111,17 @@ const HomeView = createView<HomeViewSuccessModel>({
           snippet={selectedSnippet}
         />
 
-        {/* create snippet drawer */}
-        <Drawer
+        <CreateSnippetDrawer
           isOpen={drawers.drawer === 'create-snippet'}
-          placement="right"
           onClose={drawers.closeDrawer}
-          size="full"
-        >
-          <DrawerOverlay />
-          <DrawerContent>
-            <DrawerCloseButton />
-            <DrawerHeader>Create Snippet</DrawerHeader>
-
-            <DrawerBody p={50}>
-              <SnippetForm
-                onSave={(input) =>
-                  createSnippetMutation.mutate({
-                    input,
-                    services: SERVICE_TAGS,
-                  })
-                }
-                initValues={initValues}
-              />
-            </DrawerBody>
-          </DrawerContent>
-        </Drawer>
+          onSave={(input) =>
+            createSnippetMutation.mutate({
+              input,
+              services: SERVICE_TAGS,
+            })
+          }
+          initValues={initValues}
+        />
       </>
     )
   },

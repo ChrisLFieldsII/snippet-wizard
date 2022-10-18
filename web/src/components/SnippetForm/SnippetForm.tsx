@@ -19,7 +19,7 @@ import { CreateSnippetInput, FormProps, SnippetPrivacy } from '~/types'
 import { noop, reduceObjectToString } from '~/utils'
 
 export type SnippetFormValues = CreateSnippetInput
-type SnippetFormProps = FormProps<SnippetFormValues>
+export type SnippetFormProps = FormProps<SnippetFormValues>
 
 const defaultValues: SnippetFormValues = {
   title: '',
