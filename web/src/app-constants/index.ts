@@ -1,2 +1,2 @@
 export * from './services.const'
-export * from './ui.const'
+export * from './file.const'

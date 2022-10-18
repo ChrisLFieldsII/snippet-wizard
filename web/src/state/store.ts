@@ -2,7 +2,13 @@ import produce from 'immer'
 import create from 'zustand'
 
 import { SERVICES_MAP } from 'src/app-constants'
-import { ServiceTag, ServicesMap, UISnippet } from 'src/types'
+import {
+  ServiceTag,
+  ServicesMap,
+  UISnippet,
+  Drawers,
+  DrawerType,
+} from 'src/types'
 
 import { getKeys } from '~/utils'
 
@@ -20,7 +26,7 @@ const createEmptyServicesMap = (): ServicesMap => {
   }, {} as ServicesMap)
 }
 
-interface AppState {
+type AppState = Drawers<DrawerType> & {
   services: ServicesMap
   setToken(service: ServiceTag, token: string): void
 
@@ -30,7 +36,7 @@ interface AppState {
   setSnippet(snippet: UISnippet | null): void
 }
 
-export const useStore = create<AppState>()((set) => ({
+export const useStore = create<AppState>()((set, get) => ({
   services: createEmptyServicesMap(),
   setToken(service, token: string) {
     console.log(`setting token for ${service} to ${token}`)
@@ -47,6 +53,22 @@ export const useStore = create<AppState>()((set) => ({
     set(
       produce<AppState>((draft) => {
         draft.snippet = snippet
+      })
+    )
+  },
+
+  drawer: undefined,
+  openDrawer(drawer) {
+    set(
+      produce<AppState>((draft) => {
+        draft.drawer = drawer
+      })
+    )
+  },
+  closeDrawer() {
+    set(
+      produce<AppState>((draft) => {
+        draft.drawer = undefined
       })
     )
   },

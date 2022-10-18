@@ -44,6 +44,7 @@ type MainLayoutProps = {
 
 export const MainLayout = ({ children }: MainLayoutProps) => {
   const isDesktop = useBreakpointValue({ base: false, lg: true })
+  const openDrawer = useStore((store) => store.openDrawer)
 
   const onToggleCode = (isOpen: boolean) => {
     emitter.emit('toggleCode', { isOpen })
@@ -116,9 +117,12 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
             </Tooltip>
           </Wrap>
 
-          <Link to={routes.createSnippet()}>
-            <Button variant="primary">Create</Button>
-          </Link>
+          <Button
+            variant="primary"
+            onClick={() => openDrawer('create-snippet')}
+          >
+            Create
+          </Button>
         </Flex>
 
         {/* main content */}

@@ -1,15 +1,32 @@
 import { useEffect, useState, useRef, useCallback } from 'react'
 
-import { useQuery, useInfiniteQuery } from '@tanstack/react-query'
+import { useInfiniteQuery } from '@tanstack/react-query'
 import cuid from 'cuid'
 import { ViewModelProps } from 'react-create-view'
+import shallow from 'zustand/shallow'
 
 import { mockSnippets } from '~/../mocks'
 import { QUERY_KEY, useSnippetManager } from '~/hooks'
 import { snippetPluginManager } from '~/plugins'
 import { useStore } from '~/state'
-import { ServiceTag, Snippet, SnippetMap, UISnippet } from '~/types'
-import { emitter, getEntries, getKeys, InfiniteQueryAdapter } from '~/utils'
+import {
+  Drawers,
+  DrawerType,
+  ISnippetPluginManager,
+  MutationAdapter,
+  ServiceTag,
+  Snippet,
+  SnippetManagerCreateInput,
+  SnippetMap,
+  UISnippet,
+} from '~/types'
+import {
+  emitter,
+  getEntries,
+  getKeys,
+  InfiniteQueryAdapter,
+  mutationAdapter,
+} from '~/utils'
 
 /** max # of LOC to display for code editors in list view */
 const MAX_LOC_TO_DISPLAY = 10
@@ -23,6 +40,12 @@ export type HomeViewSuccessModel = {
   onStartCloning(snippet: UISnippet): void
   /** called when user completes cloning process for a snippet */
   onFinishCloning(snippet: UISnippet, services: ServiceTag[]): void
+  createSnippetMutation: MutationAdapter<
+    Awaited<ReturnType<ISnippetPluginManager['createSnippet']>>,
+    unknown,
+    SnippetManagerCreateInput
+  >
+  drawers: Drawers<DrawerType>
 }
 
 type HomeViewModelProps = ViewModelProps<HomeViewSuccessModel>
@@ -41,6 +64,14 @@ export const useHomeView = (): HomeViewModelProps => {
   const pageRef = useRef(1)
   const setSnippet = useStore((store) => store.setSnippet)
   const selectedSnippet = useStore((store) => store.snippet)
+  const drawers: HomeViewSuccessModel['drawers'] = useStore(
+    (store) => ({
+      drawer: store.drawer,
+      closeDrawer: store.closeDrawer,
+      openDrawer: store.openDrawer,
+    }),
+    shallow
+  )
   const { deleteSnippetMutation, createSnippetMutation } = useSnippetManager()
 
   const query = useInfiniteQuery(
@@ -218,6 +249,8 @@ export const useHomeView = (): HomeViewModelProps => {
           services,
         })
       },
+      createSnippetMutation: mutationAdapter(createSnippetMutation),
+      drawers,
     },
   }
 }

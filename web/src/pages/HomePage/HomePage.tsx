@@ -11,6 +11,12 @@ import {
   Spinner,
   Center,
   useDisclosure,
+  Drawer,
+  DrawerBody,
+  DrawerHeader,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerCloseButton,
 } from '@chakra-ui/react'
 import { createView } from 'react-create-view'
 
@@ -21,8 +27,25 @@ import MainLayout from 'src/layouts/MainLayout/MainLayout'
 import { useHomeView, HomeViewSuccessModel } from './useHomeView'
 
 import { SERVICES_MAP, SERVICE_TAGS } from '~/app-constants'
-import { Snippet, CloneSnippetModal, InfiniteList } from '~/components'
+import {
+  Snippet,
+  CloneSnippetModal,
+  InfiniteList,
+  SnippetForm,
+  SnippetFormValues,
+} from '~/components'
 import { UISnippet } from '~/types'
+
+const IS_DEBUG = true
+const initValues: SnippetFormValues | undefined = IS_DEBUG
+  ? {
+      contents: `echo 'hello world'`,
+      description: 'how to echo hello world in shell',
+      filename: 'example.sh',
+      privacy: 'private',
+      title: 'Echo hello world in shell',
+    }
+  : undefined
 
 const HomeView = createView<HomeViewSuccessModel>({
   Success({
@@ -31,6 +54,8 @@ const HomeView = createView<HomeViewSuccessModel>({
     onDelete,
     onEdit,
     onStartCloning,
+    createSnippetMutation,
+    drawers,
     ...props
   }) {
     const cloneDisclosure = useDisclosure()
@@ -84,6 +109,32 @@ const HomeView = createView<HomeViewSuccessModel>({
           onClone={onFinishCloning}
           snippet={selectedSnippet}
         />
+
+        {/* create snippet drawer */}
+        <Drawer
+          isOpen={drawers.drawer === 'create-snippet'}
+          placement="right"
+          onClose={drawers.closeDrawer}
+          size="full"
+        >
+          <DrawerOverlay />
+          <DrawerContent>
+            <DrawerCloseButton />
+            <DrawerHeader>Create Snippet</DrawerHeader>
+
+            <DrawerBody p={50}>
+              <SnippetForm
+                onSave={(input) =>
+                  createSnippetMutation.mutate({
+                    input,
+                    services: SERVICE_TAGS,
+                  })
+                }
+                initValues={initValues}
+              />
+            </DrawerBody>
+          </DrawerContent>
+        </Drawer>
       </>
     )
   },
