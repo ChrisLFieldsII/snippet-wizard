@@ -146,18 +146,10 @@ export const useSnippetManager = () => {
             const updatedSnippet = updateRes.data?.snippet
 
             cachedData = produce<SnippetsCacheData>(cachedData, (draft) => {
-              let snippetIndex = -1
-              const pageIndex = draft.pages.findIndex((page) =>
-                page[service].some((snippet, index) => {
-                  const foundMatch = snippet.id === updatedSnippet?.id
-                  if (foundMatch) {
-                    snippetIndex = index
-                  }
-                  return foundMatch
-                })
-              )
+              const { pageIndex, foundMatch, snippetIndex } =
+                getIndexesFromCache(draft, service, updatedSnippet?.id)
 
-              if (pageIndex === -1 || snippetIndex === -1) return
+              if (!foundMatch) return
 
               console.log(
                 `updating cache for service ${service} in page ${pageIndex + 1}`
@@ -202,7 +194,9 @@ export const useSnippetManager = () => {
         try {
           // #region modify cache
           // modify cached data w/ deleted ids and set new cached data
-          let cachedData = queryClient.getQueryData<SnippetMap>([QUERY_KEY])
+          let cachedData = queryClient.getQueryData<SnippetsCacheData>([
+            QUERY_KEY,
+          ])
           console.log('cached data', cachedData)
 
           showNotifications(data, {
@@ -227,16 +221,19 @@ export const useSnippetManager = () => {
             const idToDelete = deleteRes.data?.id
             console.log({ service, idToDelete })
 
-            cachedData = produce<SnippetMap>(cachedData, (draft) => {
-              draft[service] = draft[service].filter(
-                (currSnippet) => currSnippet.id !== idToDelete
-              )
+            cachedData = produce<SnippetsCacheData>(cachedData, (draft) => {
+              const { pageIndex, foundMatch, snippetIndex } =
+                getIndexesFromCache(draft, service, idToDelete)
+
+              if (!foundMatch) return
+
+              draft.pages[pageIndex][service].splice(snippetIndex, 1)
             })
           })
 
           console.log('set new cached data', cachedData)
 
-          queryClient.setQueryData<SnippetMap>([QUERY_KEY], cachedData)
+          queryClient.setQueryData<SnippetsCacheData>([QUERY_KEY], cachedData)
           // #endregion modify cache
         } catch (error) {
           console.error('delete snippet onSuccess failed', error)
@@ -311,4 +308,24 @@ const cleanData = (data: Record<ServiceTag, SnippetMutationResponse>) => {
       delete data[service]
     }
   })
+}
+
+/** helper to get the page & snippet index a snippet belongs to in infinite data cache response. */
+const getIndexesFromCache = (
+  cache: SnippetsCacheData,
+  service: ServiceTag,
+  snippetId: string
+) => {
+  let snippetIndex = -1
+  const pageIndex = cache.pages.findIndex((page) =>
+    page[service].some((snippet, index) => {
+      const foundMatch = snippet.id === snippetId
+      if (foundMatch) {
+        snippetIndex = index
+      }
+      return foundMatch
+    })
+  )
+
+  return { pageIndex, snippetIndex, foundMatch: pageIndex !== -1 }
 }
