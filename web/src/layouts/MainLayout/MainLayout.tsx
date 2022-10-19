@@ -27,6 +27,7 @@ import {
   InputProps,
   Wrap,
   Tooltip,
+  Code,
 } from '@chakra-ui/react'
 import { IconType } from 'react-icons'
 import { BsArrowsCollapse, BsArrowsExpand } from 'react-icons/bs'
@@ -62,8 +63,8 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
 
       e.preventDefault()
 
-      if (key === '[') onToggleCode(false)
-      else if (key === ']') onToggleCode(true)
+      if (key === '[') onToggleCode(true)
+      else if (key === ']') onToggleCode(false)
     }
 
     document.addEventListener('keyup', fn)
@@ -95,24 +96,38 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
         >
           <Wrap>
             <Tooltip
-              aria-label="Close all code blocks"
-              label="Close all code blocks"
-            >
-              <IconButton
-                aria-label="Close all code blocks"
-                icon={<BsArrowsCollapse />}
-                onClick={() => onToggleCode(false)}
-              />
-            </Tooltip>
-
-            <Tooltip
               aria-label="Open all code blocks"
-              label="Open all code blocks"
+              label={
+                <HStack>
+                  <Text>{'Open all code blocks'}</Text>
+                  <Code fontWeight={'extrabold'} colorScheme={'blue'}>
+                    {'['}
+                  </Code>
+                </HStack>
+              }
             >
               <IconButton
                 aria-label="Open all code blocks"
                 icon={<BsArrowsExpand />}
                 onClick={() => onToggleCode(true)}
+              />
+            </Tooltip>
+
+            <Tooltip
+              aria-label="Close all code blocks"
+              label={
+                <HStack>
+                  <Text>{'Close all code blocks'}</Text>
+                  <Code fontWeight={'extrabold'} colorScheme={'blue'}>
+                    {']'}
+                  </Code>
+                </HStack>
+              }
+            >
+              <IconButton
+                aria-label="Close all code blocks"
+                icon={<BsArrowsCollapse />}
+                onClick={() => onToggleCode(false)}
               />
             </Tooltip>
           </Wrap>
