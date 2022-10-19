@@ -1,7 +1,11 @@
 import { useEffect } from 'react'
 
 import { useToast } from '@chakra-ui/react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import {
+  InfiniteData,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query'
 import produce from 'immer'
 
 import { SERVICE_TAGS } from '~/app-constants'
@@ -18,12 +22,15 @@ import { getEntries } from '~/utils'
 
 export const QUERY_KEY = 'snippets'
 
+type SnippetsCacheData = InfiniteData<SnippetMap>
+
 // FIXME: cache updates need to account for infinite query structure
 export const useSnippetManager = () => {
   const toast = useToast()
   const queryClient = useQueryClient()
 
   useEffect(() => {
+    // @ts-ignore
     window.queryClient = queryClient
   }, [])
 
@@ -47,7 +54,9 @@ export const useSnippetManager = () => {
         console.log('create snippet mutation on success data', data)
 
         try {
-          let cachedData = queryClient.getQueryData<SnippetMap>([QUERY_KEY])
+          let cachedData = queryClient.getQueryData<SnippetsCacheData>([
+            QUERY_KEY,
+          ])
           console.log('cached data', cachedData)
 
           showNotifications(data, {
@@ -69,16 +78,21 @@ export const useSnippetManager = () => {
               return
             }
 
-            cachedData = produce<SnippetMap>(cachedData, (draft) => {
-              const createdSnippet = data[service].data?.snippet
+            const createdSnippet = data[service].data?.snippet
+
+            // modify cache for each service that successfully created a snippet
+            cachedData = produce<SnippetsCacheData>(cachedData, (draft) => {
+              const lastPageIndex = cachedData.pages.length - 1
+
               if (createdSnippet) {
-                draft[service].push(createdSnippet)
+                // add snippet to last page
+                draft.pages[lastPageIndex][service].push(createdSnippet)
               }
             })
 
             console.log('set new cached data', cachedData)
 
-            queryClient.setQueryData<SnippetMap>([QUERY_KEY], cachedData)
+            queryClient.setQueryData<SnippetsCacheData>([QUERY_KEY], cachedData)
           })
         } catch (error) {
           console.error('create snippet onSuccess failed', error)
