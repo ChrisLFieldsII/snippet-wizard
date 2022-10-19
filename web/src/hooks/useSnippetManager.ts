@@ -86,6 +86,10 @@ export const useSnippetManager = () => {
 
               if (createdSnippet) {
                 // add snippet to last page
+                const hasArray = !!draft.pages[lastPageIndex][service]
+                if (!hasArray) {
+                  draft.pages[lastPageIndex][service] = []
+                }
                 draft.pages[lastPageIndex][service].push(createdSnippet)
               }
             })
