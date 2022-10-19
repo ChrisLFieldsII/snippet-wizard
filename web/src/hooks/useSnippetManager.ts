@@ -119,7 +119,9 @@ export const useSnippetManager = () => {
         cleanData(data)
 
         try {
-          let cachedData = queryClient.getQueryData<SnippetMap>([QUERY_KEY])
+          let cachedData = queryClient.getQueryData<SnippetsCacheData>([
+            QUERY_KEY,
+          ])
           console.log('cached data', cachedData)
 
           showNotifications(data, {
@@ -141,22 +143,33 @@ export const useSnippetManager = () => {
               return
             }
 
-            cachedData = produce<SnippetMap>(cachedData, (draft) => {
-              const updatedIndex = draft[service].findIndex(
-                (currSnippet) => currSnippet.id === updateRes.data?.snippet?.id
+            const updatedSnippet = updateRes.data?.snippet
+
+            cachedData = produce<SnippetsCacheData>(cachedData, (draft) => {
+              let snippetIndex = -1
+              const pageIndex = draft.pages.findIndex((page) =>
+                page[service].some((snippet, index) => {
+                  const foundMatch = snippet.id === updatedSnippet?.id
+                  if (foundMatch) {
+                    snippetIndex = index
+                  }
+                  return foundMatch
+                })
               )
-              if (updatedIndex === -1) return
+
+              if (pageIndex === -1 || snippetIndex === -1) return
 
               console.log(
-                `updating cache, service ${service} at index ${updatedIndex}`
+                `updating cache for service ${service} in page ${pageIndex + 1}`
               )
-              draft[service][updatedIndex] = updateRes.data!.snippet!
+
+              draft.pages[pageIndex][service][snippetIndex] = updatedSnippet
             })
           })
 
           console.log('set new cached data', cachedData)
 
-          queryClient.setQueryData<SnippetMap>([QUERY_KEY], cachedData)
+          queryClient.setQueryData<SnippetsCacheData>([QUERY_KEY], cachedData)
         } catch (error) {
           console.error('update snippet onSuccess failed', error)
         }
