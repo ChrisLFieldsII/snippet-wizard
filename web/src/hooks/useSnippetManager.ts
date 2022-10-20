@@ -12,6 +12,7 @@ import { SERVICE_TAGS } from '~/app-constants'
 import { snippetPluginManager } from '~/plugins'
 import {
   CreateSnippetInput,
+  ISnippetPluginManager,
   ServiceTag,
   SnippetManagerUpdateInput,
   SnippetMap,
@@ -35,17 +36,8 @@ export const useSnippetManager = () => {
   }, [])
 
   const createSnippetMutation = useMutation(
-    async ({
-      input,
-      services = SERVICE_TAGS,
-    }: {
-      input: CreateSnippetInput
-      services?: ServiceTag[]
-    }) => {
-      return snippetPluginManager.createSnippet({
-        input,
-        services,
-      })
+    async (params: Parameters<ISnippetPluginManager['createSnippet']>[0]) => {
+      return snippetPluginManager.createSnippet(params)
     },
     {
       onSuccess(data) {
@@ -183,9 +175,9 @@ export const useSnippetManager = () => {
   )
 
   const deleteSnippetMutation = useMutation(
-    async (snippet: UISnippet) => {
+    async (servicesMap: UISnippet['servicesMap']) => {
       const res = await snippetPluginManager.deleteSnippet({
-        services: snippet.servicesMap,
+        services: servicesMap,
       })
       console.log('deleted snippets response', res)
 

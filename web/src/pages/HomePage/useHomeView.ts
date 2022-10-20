@@ -51,6 +51,11 @@ export type HomeViewSuccessModel = {
     unknown,
     SnippetManagerUpdateInput
   >
+  deleteSnippetMutation: MutationAdapter<
+    Awaited<ReturnType<ISnippetPluginManager['deleteSnippet']>>,
+    unknown,
+    Partial<Record<ServiceTag, { id: string }>>
+  >
   drawers: Drawers<DrawerType>
   userServices: ReturnType<typeof useServices>
 }
@@ -70,7 +75,26 @@ export const useHomeView = (): HomeViewModelProps => {
 
   const pageRef = useRef(1)
   const setSnippet = useStore((store) => store.setSnippet)
-  const selectedSnippet = useStore((store) => store.snippet)
+  const selectedSnippetNullable = useStore((store) => store.snippet)
+  const selectedSnippet: UISnippet = (() => {
+    if (selectedSnippetNullable) return selectedSnippetNullable
+
+    return {
+      contents: '',
+      contentsShort: '',
+      createdAt: new Date(),
+      description: '',
+      filename: '',
+      hasMoreContentsToDisplay: false,
+      id: '',
+      isPublic: false,
+      privacy: 'private',
+      services: [],
+      servicesMap: {},
+      title: '',
+      updatedAt: new Date(),
+    }
+  })()
   const drawers: HomeViewSuccessModel['drawers'] = useStore(
     (store) => ({
       drawer: store.drawer,
@@ -81,8 +105,6 @@ export const useHomeView = (): HomeViewModelProps => {
   )
 
   const userServices = useServices()
-
-  console.log({ userServices })
 
   const {
     deleteSnippetMutation,
@@ -243,11 +265,8 @@ export const useHomeView = (): HomeViewModelProps => {
         fetchNextPage,
       },
       async onDelete(snippet) {
-        if (!confirm(`Delete snippet "${snippet.title}"?`)) {
-          return
-        }
-
-        await deleteSnippetMutation.mutateAsync(snippet)
+        setSnippet(snippet)
+        drawers.openDrawer('delete-snippet')
       },
       async onEdit(snippet) {
         setSnippet(snippet)
@@ -268,6 +287,7 @@ export const useHomeView = (): HomeViewModelProps => {
       },
       createSnippetMutation: mutationAdapter(createSnippetMutation),
       updateSnippetMutation: mutationAdapter(updateSnippetMutation),
+      deleteSnippetMutation: mutationAdapter(deleteSnippetMutation),
       drawers: {
         ...drawers,
         closeDrawer() {

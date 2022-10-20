@@ -31,7 +31,7 @@ export type Snippet = {
 export type UISnippet = Omit<Snippet, 'service' | 'url'> & {
   /** the services the snippet is in */
   services: ServiceTag[]
-  servicesMap: Record<ServiceTag, { url: string; id: string }>
+  servicesMap: Partial<Record<ServiceTag, { url: string; id: string }>>
   isPublic: boolean
   /** contents clipped to 10 LOC for quick display */
   contentsShort: string
@@ -41,7 +41,7 @@ export type UISnippet = Omit<Snippet, 'service' | 'url'> & {
 /** delete input for snippet manager */
 export type SnippetManagerDeleteInput = {
   /** input is a map of the service to the snippet id to delete */
-  services: Record<ServiceTag, { id: string }>
+  services: Partial<Record<ServiceTag, { id: string }>>
 }
 
 export type SnippetManagerCreateInput = {
@@ -52,7 +52,7 @@ export type SnippetManagerCreateInput = {
 
 export type SnippetManagerUpdateInput = {
   /** the services want to update snippet for */
-  services: Record<ServiceTag, { id: string }>
+  services: Partial<Record<ServiceTag, { id: string }>>
   input: Omit<UpdateSnippetInput, 'id'>
 }
 
@@ -132,7 +132,9 @@ export interface ISnippetPluginManager {
    */
   deleteSnippet(
     input: SnippetManagerDeleteInput
-  ): Promise<Record<ServiceTag, SnippetMutationResponse<DeleteSnippetResponse>>>
+  ): Promise<
+    Partial<Record<ServiceTag, SnippetMutationResponse<DeleteSnippetResponse>>>
+  >
   updateSnippet(
     input: SnippetManagerUpdateInput
   ): Promise<Record<ServiceTag, UpdateSnippetResponse>>

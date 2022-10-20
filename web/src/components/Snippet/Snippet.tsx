@@ -98,7 +98,7 @@ export const Snippet = (props: SnippetProps) => {
   }
 
   return (
-    <Box>
+    <Box w="full">
       <Box as="section" py={{ base: '4', md: '8' }}>
         <Container maxW="3xl">
           <Card>

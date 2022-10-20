@@ -28,6 +28,7 @@ import {
   SnippetFormValues,
   CreateSnippetDrawer,
   UpdateSnippetDrawer,
+  DeleteSnippetDrawer,
 } from '~/components'
 import { UISnippet } from '~/types'
 import { isEmpty } from '~/utils'
@@ -52,6 +53,7 @@ const HomeView = createView<HomeViewSuccessModel>({
     onStartCloning,
     createSnippetMutation,
     updateSnippetMutation,
+    deleteSnippetMutation,
     drawers,
     userServices,
     ...props
@@ -141,6 +143,15 @@ const HomeView = createView<HomeViewSuccessModel>({
           }}
           initValues={selectedSnippet}
           snippet={selectedSnippet}
+        />
+
+        {/* TODO: pass delete mutation adapater. compose delete mutation from hook with ability to determine which services to delete! (the drawer shouldnt do this logic) */}
+        <DeleteSnippetDrawer
+          isOpen={drawers.drawer === 'delete-snippet'}
+          onClose={drawers.closeDrawer}
+          snippet={selectedSnippet}
+          {...userServices}
+          deleteSnippetMutation={deleteSnippetMutation}
         />
       </>
     )
