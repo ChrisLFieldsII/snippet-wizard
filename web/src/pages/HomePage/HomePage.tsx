@@ -30,6 +30,7 @@ import {
   UpdateSnippetDrawer,
 } from '~/components'
 import { UISnippet } from '~/types'
+import { isEmpty } from '~/utils'
 
 const IS_DEBUG = true
 const initValues: SnippetFormValues | undefined = IS_DEBUG
@@ -52,6 +53,7 @@ const HomeView = createView<HomeViewSuccessModel>({
     createSnippetMutation,
     updateSnippetMutation,
     drawers,
+    userServices,
     ...props
   }) {
     const cloneDisclosure = useDisclosure()
@@ -112,10 +114,13 @@ const HomeView = createView<HomeViewSuccessModel>({
           onSave={(input) =>
             createSnippetMutation.mutate({
               input,
-              services: SERVICE_TAGS,
+              services: isEmpty(userServices.selectedServices)
+                ? userServices.registeredServices
+                : userServices.selectedServices,
             })
           }
           initValues={initValues}
+          {...userServices}
         />
 
         <UpdateSnippetDrawer

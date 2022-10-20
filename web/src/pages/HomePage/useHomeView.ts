@@ -6,7 +6,7 @@ import { ViewModelProps } from 'react-create-view'
 import shallow from 'zustand/shallow'
 
 import { mockSnippets } from '~/../mocks'
-import { QUERY_KEY, useSnippetManager } from '~/hooks'
+import { QUERY_KEY, useServices, useSnippetManager } from '~/hooks'
 import { snippetPluginManager } from '~/plugins'
 import { useStore } from '~/state'
 import {
@@ -52,6 +52,7 @@ export type HomeViewSuccessModel = {
     SnippetManagerUpdateInput
   >
   drawers: Drawers<DrawerType>
+  userServices: ReturnType<typeof useServices>
 }
 
 type HomeViewModelProps = ViewModelProps<HomeViewSuccessModel>
@@ -78,6 +79,11 @@ export const useHomeView = (): HomeViewModelProps => {
     }),
     shallow
   )
+
+  const userServices = useServices()
+
+  console.log({ userServices })
+
   const {
     deleteSnippetMutation,
     createSnippetMutation,
@@ -262,7 +268,14 @@ export const useHomeView = (): HomeViewModelProps => {
       },
       createSnippetMutation: mutationAdapter(createSnippetMutation),
       updateSnippetMutation: mutationAdapter(updateSnippetMutation),
-      drawers,
+      drawers: {
+        ...drawers,
+        closeDrawer() {
+          drawers.closeDrawer()
+          userServices.setSelectedServices([]) // need to clear selected services when closing drawer to prevent bugs on snippet creation
+        },
+      },
+      userServices,
     },
   }
 }

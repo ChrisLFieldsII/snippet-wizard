@@ -13,7 +13,7 @@ import {
 
 import { SERVICES_MAP } from '~/app-constants'
 import { ServiceTag, UISnippet } from '~/types'
-import { getKeys, RenderNull } from '~/utils'
+import { getKeys, renderNull } from '~/utils'
 
 type ServiceBadgesProps = {
   services: ServiceTag[]
@@ -42,7 +42,7 @@ export const ServiceBadges = ({
   Wrapper = DefaultWrapper,
   // @ts-ignore
   getBadgeProps = () => {},
-  renderEmpty = RenderNull,
+  renderEmpty = renderNull,
 }: ServiceBadgesProps) => {
   if (!services.length) {
     return renderEmpty()
@@ -89,9 +89,9 @@ export const ServiceBadgesWithLinks = ({
   return <ServiceBadges services={getKeys(servicesMap)} Wrapper={Wrapper} />
 }
 
-type ServiceSelectorProps = {
+export type ServiceSelectorProps = {
   allServices: ServiceTag[]
-  alreadyServices: ServiceTag[]
+  alreadyServices?: ServiceTag[]
   selectedServices: ServiceTag[]
   onSelect(newServices: ServiceTag[]): void
 }
@@ -101,7 +101,7 @@ type ServiceSelectorProps = {
  */
 export const ServiceSelector = ({
   allServices,
-  alreadyServices,
+  alreadyServices = [],
   selectedServices,
   onSelect,
 }: ServiceSelectorProps) => {

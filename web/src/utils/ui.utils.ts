@@ -2,7 +2,7 @@ import { UseMutationResult } from '@tanstack/react-query'
 
 import { MutationAdapter } from '~/types'
 
-export const RenderNull = () => null
+export const renderNull = () => null
 
 export type InfiniteQueryAdapter<TData, TError = unknown> = {
   hasNextPage: boolean

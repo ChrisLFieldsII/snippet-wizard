@@ -13,3 +13,7 @@ export const reduceObjectToString = (obj: object) => {
     .map((value) => value + '')
     .join()
 }
+
+export const isEmpty = (array: unknown[]) => {
+  return array.length === 0
+}

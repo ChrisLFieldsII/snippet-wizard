@@ -11,15 +11,21 @@
 //
 // See https://storybook.js.org/docs/react/writing-stories/args.
 
-import type { ComponentMeta } from '@storybook/react'
+import type { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { CreateSnippetDrawer } from './CreateSnippetDrawer'
-
-export const generated = () => {
-  return <CreateSnippetDrawer />
-}
 
 export default {
   title: 'Components/CreateSnippetDrawer',
   component: CreateSnippetDrawer,
+  args: {
+    isOpen: true,
+    allServices: ['github'],
+  },
 } as ComponentMeta<typeof CreateSnippetDrawer>
+
+type Story = ComponentStory<typeof CreateSnippetDrawer>
+
+export const generated: Story = (args) => {
+  return <CreateSnippetDrawer {...args} />
+}

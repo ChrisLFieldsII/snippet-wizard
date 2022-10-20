@@ -16,10 +16,13 @@ import { CodeEditor } from '../CodeEditor/CodeEditor'
 import { Input } from '../Input/Input'
 
 import { CreateSnippetInput, FormProps, SnippetPrivacy } from '~/types'
-import { noop, reduceObjectToString } from '~/utils'
+import { noop, reduceObjectToString, renderNull } from '~/utils'
 
 export type SnippetFormValues = CreateSnippetInput
-export type SnippetFormProps = FormProps<SnippetFormValues>
+export type SnippetFormProps = FormProps<SnippetFormValues> & {
+  /** used to render extra content at bottom of form above action buttons */
+  renderExtra?(): React.ReactNode
+}
 
 const defaultValues: SnippetFormValues = {
   title: '',
@@ -33,6 +36,7 @@ export const SnippetForm = ({
   initValues = defaultValues,
   onSave = noop,
   onUpdate = noop,
+  renderExtra = renderNull,
 }: SnippetFormProps) => {
   const formik = useFormik({
     initialValues: {
@@ -123,6 +127,8 @@ export const SnippetForm = ({
           }
         />
       </FormControl>
+
+      {renderExtra()}
 
       <ButtonGroup>
         <Button type="submit">Submit</Button>
