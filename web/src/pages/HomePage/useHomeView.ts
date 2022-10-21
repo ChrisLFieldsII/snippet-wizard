@@ -39,8 +39,6 @@ export type HomeViewSuccessModel = {
   onEdit(snippet: UISnippet): void
   /** called when user starts cloning process for a snippet */
   onStartCloning(snippet: UISnippet): void
-  /** called when user completes cloning process for a snippet */
-  onFinishCloning(snippet: UISnippet, services: ServiceTag[]): void
   createSnippetMutation: MutationAdapter<
     Awaited<ReturnType<ISnippetPluginManager['createSnippet']>>,
     unknown,
@@ -101,7 +99,7 @@ export const useHomeView = (): HomeViewModelProps => {
       closeDrawer: store.closeDrawer,
       openDrawer: store.openDrawer,
     }),
-    shallow
+    shallow,
   )
 
   const userServices = useServices()
@@ -154,7 +152,7 @@ export const useHomeView = (): HomeViewModelProps => {
           return nextPage
         }
       },
-    }
+    },
   )
 
   const fetchNextPage = useCallback(async () => {
@@ -188,7 +186,7 @@ export const useHomeView = (): HomeViewModelProps => {
       (accum, key) => {
         return accum.concat(page[key])
       },
-      []
+      [],
     )
 
     return accum.concat(pageCombinedSnippets)
@@ -274,16 +272,7 @@ export const useHomeView = (): HomeViewModelProps => {
       },
       onStartCloning(snippet) {
         setSnippet(snippet)
-      },
-      // TODO: improve with passing loading status
-      async onFinishCloning(snippet, services) {
-        console.log('make cloning service call', { snippet, services })
-
-        // cloning just delegates to create for specified services
-        await createSnippetMutation.mutateAsync({
-          input: snippet,
-          services,
-        })
+        drawers.openDrawer('clone-snippet')
       },
       createSnippetMutation: mutationAdapter(createSnippetMutation),
       updateSnippetMutation: mutationAdapter(updateSnippetMutation),

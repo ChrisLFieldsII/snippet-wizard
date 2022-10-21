@@ -12,7 +12,7 @@ export type FormProps<T> = {
 export type MutationAdapter<
   TData = unknown,
   TError = unknown,
-  TVariables = void
+  TVariables = void,
 > = {
   mutate: UseMutateAsyncFunction<TData, TError, TVariables, unknown>
   error?: TError
@@ -27,7 +27,11 @@ export type Drawers<T extends string> = {
   closeDrawer(): void
 }
 
-export type DrawerType = 'create-snippet' | 'update-snippet' | 'delete-snippet'
+export type DrawerType =
+  | 'create-snippet'
+  | 'update-snippet'
+  | 'delete-snippet'
+  | 'clone-snippet'
 
 export type DrawerProps = {
   isOpen: boolean

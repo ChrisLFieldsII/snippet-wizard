@@ -10,7 +10,6 @@ import {
   VStack,
   Spinner,
   Center,
-  useDisclosure,
 } from '@chakra-ui/react'
 import { createView } from 'react-create-view'
 
@@ -23,12 +22,12 @@ import { useHomeView, HomeViewSuccessModel } from './useHomeView'
 import { SERVICES_MAP, SERVICE_TAGS } from '~/app-constants'
 import {
   Snippet,
-  CloneSnippetModal,
   InfiniteList,
   SnippetFormValues,
   CreateSnippetDrawer,
   UpdateSnippetDrawer,
   DeleteSnippetDrawer,
+  CloneSnippetDrawer,
 } from '~/components'
 import { UISnippet } from '~/types'
 import { isEmpty } from '~/utils'
@@ -56,23 +55,7 @@ const HomeView = createView<HomeViewSuccessModel>({
     deleteSnippetMutation,
     drawers,
     userServices,
-    ...props
   }) {
-    const cloneDisclosure = useDisclosure()
-
-    const onClone = (snippet: UISnippet) => {
-      onStartCloning(snippet)
-      cloneDisclosure.onOpen()
-    }
-
-    const onFinishCloning: HomeViewSuccessModel['onFinishCloning'] = async (
-      snippet,
-      services
-    ) => {
-      await props.onFinishCloning(snippet, services)
-      cloneDisclosure.onClose()
-    }
-
     const renderItem = ({
       item: snippet,
     }: {
@@ -84,7 +67,7 @@ const HomeView = createView<HomeViewSuccessModel>({
           {...snippet}
           onDelete={onDelete}
           onEdit={onEdit}
-          onClone={onClone}
+          onClone={onStartCloning}
         />
       )
     }
@@ -101,13 +84,6 @@ const HomeView = createView<HomeViewSuccessModel>({
           {...infiniteQuery}
           renderItem={(item, index) => renderItem({ item, index })}
           renderLoading={renderLoading}
-        />
-
-        <CloneSnippetModal
-          isOpen={cloneDisclosure.isOpen}
-          onClose={cloneDisclosure.onClose}
-          onClone={onFinishCloning}
-          snippet={selectedSnippet}
         />
 
         <CreateSnippetDrawer
@@ -152,6 +128,14 @@ const HomeView = createView<HomeViewSuccessModel>({
           snippet={selectedSnippet}
           {...userServices}
           deleteSnippetMutation={deleteSnippetMutation}
+        />
+
+        <CloneSnippetDrawer
+          isOpen={drawers.drawer === 'clone-snippet'}
+          onClose={drawers.closeDrawer}
+          snippet={selectedSnippet}
+          {...userServices}
+          cloneSnippetMutation={createSnippetMutation}
         />
       </>
     )

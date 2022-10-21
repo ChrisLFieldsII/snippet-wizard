@@ -4,8 +4,8 @@
 // ```tsx
 // import type { ComponentStory } from '@storybook/react'
 //
-// export const generated: ComponentStory<typeof CloneSnippetModal> = (args) => {
-//   return <CloneSnippetModal {...args} />
+// export const generated: ComponentStory<typeof CloneSnippetDrawer> = (args) => {
+//   return <CloneSnippetDrawer {...args} />
 // }
 // ```
 //
@@ -13,13 +13,13 @@
 
 import type { ComponentMeta } from '@storybook/react'
 
-import { CloneSnippetModal } from './CloneSnippetModal'
+import CloneSnippetDrawer from './CloneSnippetDrawer'
 
 export const generated = () => {
-  return <CloneSnippetModal />
+  return <CloneSnippetDrawer />
 }
 
 export default {
-  title: 'Components/CloneSnippetModal',
-  component: CloneSnippetModal,
-} as ComponentMeta<typeof CloneSnippetModal>
+  title: 'Components/CloneSnippetDrawer',
+  component: CloneSnippetDrawer,
+} as ComponentMeta<typeof CloneSnippetDrawer>

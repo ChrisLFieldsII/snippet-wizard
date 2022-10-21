@@ -8,10 +8,8 @@ import {
 } from '@tanstack/react-query'
 import produce from 'immer'
 
-import { SERVICE_TAGS } from '~/app-constants'
 import { snippetPluginManager } from '~/plugins'
 import {
-  CreateSnippetInput,
   ISnippetPluginManager,
   ServiceTag,
   SnippetManagerUpdateInput,
@@ -103,7 +101,7 @@ export const useSnippetManager = () => {
           isClosable: true,
         })
       },
-    }
+    },
   )
 
   const updateSnippetMutation = useMutation(
@@ -148,7 +146,9 @@ export const useSnippetManager = () => {
               if (!foundMatch) return
 
               console.log(
-                `updating cache for service ${service} in page ${pageIndex + 1}`
+                `updating cache for service ${service} in page ${
+                  pageIndex + 1
+                }`,
               )
 
               draft.pages[pageIndex][service][snippetIndex] = updatedSnippet
@@ -171,7 +171,7 @@ export const useSnippetManager = () => {
           isClosable: true,
         })
       },
-    }
+    },
   )
 
   const deleteSnippetMutation = useMutation(
@@ -244,7 +244,7 @@ export const useSnippetManager = () => {
           isClosable: true,
         })
       },
-    }
+    },
   )
 
   return {
@@ -267,7 +267,7 @@ const showNotifications = (
     success: NotificationMsg
     failure: NotificationMsg
     toast: ReturnType<typeof useToast>
-  }
+  },
 ) => {
   const { failure, success, toast } = opts
   const entries = getEntries(data)
@@ -310,7 +310,7 @@ const cleanData = (data: Record<ServiceTag, SnippetMutationResponse>) => {
 const getIndexesFromCache = (
   cache: SnippetsCacheData,
   service: ServiceTag,
-  snippetId: string
+  snippetId: string,
 ) => {
   let snippetIndex = -1
   const pageIndex = cache.pages.findIndex((page) =>
@@ -320,7 +320,7 @@ const getIndexesFromCache = (
         snippetIndex = index
       }
       return foundMatch
-    })
+    }),
   )
 
   return { pageIndex, snippetIndex, foundMatch: pageIndex !== -1 }
