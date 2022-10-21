@@ -75,7 +75,9 @@ export const CloneSnippetDrawer = ({
                   cloneSnippetMutation.mutate({
                     input: snippet,
                     services: isEmpty(selectedServices)
-                      ? registeredServices
+                      ? registeredServices.filter(
+                          (svc) => !snippet.services.includes(svc),
+                        )
                       : selectedServices,
                   })
                 }}
