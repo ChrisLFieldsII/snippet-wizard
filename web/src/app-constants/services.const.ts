@@ -10,7 +10,7 @@ type ServiceConfig = {
   name: string
 }
 
-export const SERVICES_MAP: Record<ServiceTag, ServiceConfig> = {
+export const SERVICES_CONFIG: Record<ServiceTag, ServiceConfig> = {
   // GIT HUB
   github: {
     Icon: AiFillGithub,
@@ -26,4 +26,4 @@ export const SERVICES_MAP: Record<ServiceTag, ServiceConfig> = {
     name: 'GitLab',
   },
 }
-export const SERVICE_TAGS = Object.keys(SERVICES_MAP) as ServiceTag[]
+export const SERVICE_TAGS = Object.keys(SERVICES_CONFIG) as ServiceTag[]

@@ -59,7 +59,12 @@ export type HomeViewSuccessModel = {
   userServices: ReturnType<typeof useServices>
 }
 
-type HomeViewModelProps = ViewModelProps<HomeViewSuccessModel>
+type HomeViewModelProps = ViewModelProps<
+  HomeViewSuccessModel,
+  {},
+  {},
+  HomeViewSuccessModel
+>
 
 const IS_DEBUG = false
 
@@ -244,7 +249,7 @@ export const useHomeView = (): HomeViewModelProps => {
 
   useEffect(() => {
     return emitter.on('clickedCreate', () => {
-      if (uiSnippets.length) {
+      if (userServices.registeredServices.length) {
         drawers.openDrawer('create-snippet')
       } else {
         toast({
@@ -256,7 +261,7 @@ export const useHomeView = (): HomeViewModelProps => {
         })
       }
     })
-  }, [uiSnippets.length])
+  }, [userServices.registeredServices.length])
 
   if (query.isLoading) {
     return {
@@ -270,14 +275,10 @@ export const useHomeView = (): HomeViewModelProps => {
     }
   }
 
-  if (!uiSnippets.length) {
-    return {
-      status: 'empty',
-    }
-  }
+  const isEmpty = !uiSnippets.length
 
   return {
-    status: 'success',
+    status: isEmpty ? 'empty' : 'success',
     model: {
       selectedSnippet,
       infiniteQuery: {

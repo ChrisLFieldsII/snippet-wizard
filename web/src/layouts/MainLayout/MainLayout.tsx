@@ -33,7 +33,7 @@ import { BsArrowsCollapse, BsArrowsExpand } from 'react-icons/bs'
 
 import { Link, routes } from '@redwoodjs/router'
 
-import { SERVICES_MAP, SERVICE_TAGS } from 'src/app-constants'
+import { SERVICES_CONFIG, SERVICE_TAGS } from 'src/app-constants'
 import { useStore } from 'src/state'
 import { ServiceTag } from 'src/types'
 import { emitter } from 'src/utils'
@@ -232,7 +232,7 @@ export const Sidebar = () => {
                 <ServiceInput
                   key={tag}
                   tag={tag}
-                  icon={SERVICES_MAP[tag].Icon}
+                  icon={SERVICES_CONFIG[tag].Icon}
                 />
               )
             })}

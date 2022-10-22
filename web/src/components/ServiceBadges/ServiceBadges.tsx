@@ -11,7 +11,7 @@ import {
   AlertIcon,
 } from '@chakra-ui/react'
 
-import { SERVICES_MAP } from '~/app-constants'
+import { SERVICES_CONFIG } from '~/app-constants'
 import { ServiceTag, UISnippet } from '~/types'
 import { getKeys, renderNull } from '~/utils'
 
@@ -54,7 +54,7 @@ export const ServiceBadges = ({
         return (
           <Wrapper key={svc} service={svc}>
             <Tag borderRadius={'full'} {...getBadgeProps(svc)}>
-              <TagLeftIcon boxSize="12px" as={SERVICES_MAP[svc].Icon} />
+              <TagLeftIcon boxSize="12px" as={SERVICES_CONFIG[svc].Icon} />
               <TagLabel>{svc}</TagLabel>
             </Tag>
           </Wrapper>
