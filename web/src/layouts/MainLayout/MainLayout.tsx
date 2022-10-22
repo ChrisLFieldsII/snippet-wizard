@@ -38,6 +38,8 @@ import { useStore } from 'src/state'
 import { ServiceTag } from 'src/types'
 import { emitter } from 'src/utils'
 
+import { Logo } from '~/components'
+
 type MainLayoutProps = {
   children?: React.ReactNode
 }
@@ -148,15 +150,6 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
 
 export default MainLayout
 
-export const Logo = () => (
-  <Link to={routes.home()}>
-    <HStack>
-      <img src={'wizard-64x64.png'} alt="logo" />
-      <Text fontWeight={'bold'}>Snippet Wizard</Text>
-    </HStack>
-  </Link>
-)
-
 const Bar = chakra('span', {
   baseStyle: {
     display: 'block',
@@ -232,7 +225,7 @@ export const Sidebar = () => {
       >
         <Stack justify="space-between" spacing="1">
           <Stack spacing={{ base: '5', sm: '6' }} shouldWrapChildren>
-            <Logo />
+            <Logo showTitle />
 
             {SERVICE_TAGS.map((tag) => {
               return (

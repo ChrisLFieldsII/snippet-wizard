@@ -1,3 +1,5 @@
+import { useEffect } from 'react'
+
 import {
   Alert,
   AlertIcon,
@@ -10,8 +12,17 @@ import {
   VStack,
   Spinner,
   Center,
+  useToast,
+  Container,
+  Wrap,
+  WrapItem,
+  HStack,
+  Avatar,
+  Divider,
 } from '@chakra-ui/react'
 import { createView } from 'react-create-view'
+import { AiFillGitlab, AiFillGithub } from 'react-icons/ai'
+import { BiLinkExternal } from 'react-icons/bi'
 
 import { MetaTags } from '@redwoodjs/web'
 
@@ -28,9 +39,12 @@ import {
   UpdateSnippetDrawer,
   DeleteSnippetDrawer,
   CloneSnippetDrawer,
+  Spacer,
+  Card,
+  Logo,
 } from '~/components'
 import { UISnippet } from '~/types'
-import { isEmpty } from '~/utils'
+import { emitter, isEmpty } from '~/utils'
 
 const IS_DEBUG = true
 const initValues: SnippetFormValues | undefined = IS_DEBUG
@@ -80,11 +94,15 @@ const HomeView = createView<HomeViewSuccessModel>({
 
     return (
       <>
-        <InfiniteList
-          {...infiniteQuery}
-          renderItem={(item, index) => renderItem({ item, index })}
-          renderLoading={renderLoading}
-        />
+        {/* Main content */}
+        <>
+          <InfiniteList
+            {...infiniteQuery}
+            renderItem={(item, index) => renderItem({ item, index })}
+            renderLoading={renderLoading}
+          />
+          <Spacer size={60} />
+        </>
 
         <CreateSnippetDrawer
           isOpen={drawers.drawer === 'create-snippet'}
@@ -141,39 +159,127 @@ const HomeView = createView<HomeViewSuccessModel>({
     )
   },
   Empty() {
+    const introOptions: {
+      type: 'c' | 'r' | 'u' | 'd' | 'more'
+      title: string
+      description: string
+    }[] = [
+      {
+        type: 'c',
+        title: 'Summon',
+        description: `
+          Create a snippet in one form and select the services you
+          want the snippet to be created in. Create once, create
+          everywhere!
+        `,
+      },
+      {
+        type: 'r',
+        title: 'Read',
+        description: `
+          Read snippets from your desired services and combine them all into one infinite list.
+          Your snippets are grouped by their contents.
+        `,
+      },
+      {
+        type: 'u',
+        title: 'Transmute',
+        description: `
+          Update snippets across your many different services in one place.
+        `,
+      },
+      {
+        type: 'd',
+        title: 'Disintegrate',
+        description: `
+          Delete snippets across your many different services in one place.
+        `,
+      },
+      {
+        type: 'more',
+        title: 'More...',
+        description: `
+          There are more useful features too like cloning a snippet from one service to others and more
+          to be added!
+        `,
+      },
+    ]
+
     return (
       <>
-        <Alert status="info">
-          <VStack spacing={3} alignItems="start">
-            <AlertIcon />
-            <Text>No snippets found.</Text>
+        <Container p={30}>
+          <VStack spacing={12} alignItems={'start'}>
+            <HStack>
+              <Heading size="md">Welcome to Snippet Wizard </Heading>
+              <Logo />
+            </HStack>
+
             <Text>
-              {`Enter your personal access tokens (PAT) for each service you want to use
-              and press the "Get Snippets" button.`}
+              Snippet Wizard is a convenience site that helps you in the case
+              that you need to manage code snippets across the many different
+              snippet sites like GitHub (gists), GitLab, etc.
             </Text>
-            <Text>Make sure your PAT has access to snippets/gists!</Text>
+
+            <Text>
+              In Snippet Wizard, you can do the following for the many different
+              snippet services you require (and we support)...
+            </Text>
+
+            <Wrap spacing={12}>
+              {introOptions.map(({ description, title, type }) => {
+                const isMore = type === 'more'
+                return (
+                  <WrapItem key={type}>
+                    <Card width={300} height={250}>
+                      <VStack alignItems={'start'}>
+                        <HStack>
+                          {!isMore ? (
+                            <Avatar name={type} bg="gray.500" size="sm" />
+                          ) : null}
+                          <Heading as="h6" size="xs">
+                            {title}
+                          </Heading>
+                        </HStack>
+
+                        <Spacer size={3} />
+                        <Divider />
+                        <Spacer size={3} />
+
+                        <Text>{description}</Text>
+                      </VStack>
+                    </Card>
+                  </WrapItem>
+                )
+              })}
+            </Wrap>
+
+            <Divider />
+
+            <HStack>
+              <Heading size="md">Snippet Wizard is open source!</Heading>
+              <ChakraLink
+                href="https://github.com/ChrisLFieldsII/snippet-wizard"
+                isExternal
+              >
+                <AiFillGithub size={'2em'} />
+              </ChakraLink>
+            </HStack>
+
+            <Text>
+              Snippet Wizard is powered by API Plugins that are responsible for
+              doing the CRUD operations per service. If a service you require is
+              not supported, head over to the{' '}
+              <ChakraLink
+                href="https://github.com/ChrisLFieldsII/snippet-wizard"
+                isExternal
+                color={'accent'}
+              >
+                GitHub <BiLinkExternal style={{ display: 'inline-block' }} />
+              </ChakraLink>{' '}
+              repo and learn how to create and contribute a plugin!
+            </Text>
           </VStack>
-        </Alert>
-
-        <Flex p={10} direction="column">
-          <Heading as="h6" size="xs">
-            How to get PAT links!
-          </Heading>
-          <UnorderedList>
-            {SERVICE_TAGS.map((tag) => {
-              const service = SERVICES_MAP[tag]
-
-              return (
-                <ListItem key={tag}>
-                  {service.Icon}
-                  <ChakraLink href={service.patLink} isExternal>
-                    {service.name}
-                  </ChakraLink>
-                </ListItem>
-              )
-            })}
-          </UnorderedList>
-        </Flex>
+        </Container>
       </>
     )
   },
@@ -191,7 +297,10 @@ const HomePage = () => {
 
   return (
     <MainLayout>
-      <MetaTags title="Home" description="Home page" />
+      <MetaTags
+        title="Snippet Wizard"
+        description="An app to CRUD snippets in one place across the many different snippet sites like github, gitlab, etc"
+      />
 
       <HomeView {...viewModel} />
     </MainLayout>
