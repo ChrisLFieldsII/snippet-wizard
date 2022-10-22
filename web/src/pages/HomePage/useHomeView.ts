@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef, useCallback } from 'react'
 
+import { useToast } from '@chakra-ui/react'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import cuid from 'cuid'
 import { ViewModelProps } from 'react-create-view'
@@ -72,6 +73,7 @@ export const useHomeView = (): HomeViewModelProps => {
   const [perPage] = useState(5) // TODO: create UI
 
   const pageRef = useRef(1)
+  // console.log(`page is ${pageRef.current}`)
   const setSnippet = useStore((store) => store.setSnippet)
   const selectedSnippetNullable = useStore((store) => store.snippet)
   const selectedSnippet: UISnippet = (() => {
@@ -131,8 +133,9 @@ export const useHomeView = (): HomeViewModelProps => {
       // cacheTime is infinite to preserve data. will manage cache on operations
       cacheTime: Infinity,
       staleTime: 1000 * 60 * 30,
+      refetchOnWindowFocus: false,
       // my page params are just numbers like page 1, 2, 3, ...
-      getNextPageParam: (lastPage, pages) => {
+      getNextPageParam: (lastPage) => {
         // we know there might be a next page if one of the services still returned some snippets
         const hasNextPage = getEntries(lastPage).some(([service, snippets]) => {
           if (snippets.length) {
@@ -162,35 +165,26 @@ export const useHomeView = (): HomeViewModelProps => {
 
   useEffect(() => {
     return emitter.on('getSnippets', () => {
+      pageRef.current = 1 // TODO: should we refetch from page 1
+
       query.refetch()
     })
   }, [query])
 
-  if (query.isLoading) {
-    return {
-      status: 'loading',
-    }
-  }
-
-  if (query.isError) {
-    return {
-      status: 'error',
-    }
-  }
-
   console.log('raw infinite query data', query.data)
 
   // reduce each pages snippet map into one big array
-  let combinedSnippets: Snippet[] = query.data.pages?.reduce((accum, page) => {
-    const pageCombinedSnippets = getKeys(page).reduce<Snippet[]>(
-      (accum, key) => {
-        return accum.concat(page[key])
-      },
-      [],
-    )
+  let combinedSnippets: Snippet[] =
+    query.data?.pages?.reduce((accum, page) => {
+      const pageCombinedSnippets = getKeys(page).reduce<Snippet[]>(
+        (accum, key) => {
+          return accum.concat(page[key])
+        },
+        [],
+      )
 
-    return accum.concat(pageCombinedSnippets)
-  }, [])
+      return accum.concat(pageCombinedSnippets)
+    }, []) || []
 
   if (IS_DEBUG) combinedSnippets = mockSnippets
 
@@ -245,6 +239,36 @@ export const useHomeView = (): HomeViewModelProps => {
 
   const uiSnippets = Object.values(snippetsMapByContents)
   console.log('ui snippets array', uiSnippets)
+
+  const toast = useToast()
+
+  useEffect(() => {
+    return emitter.on('clickedCreate', () => {
+      if (uiSnippets.length) {
+        drawers.openDrawer('create-snippet')
+      } else {
+        toast({
+          status: 'warning',
+          title: 'Warning',
+          description:
+            'You must enter a token for a service to create snippets',
+          position: 'top',
+        })
+      }
+    })
+  }, [uiSnippets.length])
+
+  if (query.isLoading) {
+    return {
+      status: 'loading',
+    }
+  }
+
+  if (query.isError) {
+    return {
+      status: 'error',
+    }
+  }
 
   if (!uiSnippets.length) {
     return {

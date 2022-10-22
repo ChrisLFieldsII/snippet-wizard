@@ -1,5 +1,6 @@
 {
   "private": true,
+  "description": "An app to CRUD snippets in one place across the many different snippet sites like github, gitlab, etc",
   "workspaces": {
     "packages": [
       "api",

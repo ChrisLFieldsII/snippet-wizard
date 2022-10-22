@@ -1,9 +1,14 @@
-# README
+# Snippet Wizard
+
+An app to CRUD snippets in one place across the many different snippet sites like github, gitlab, etc
 
 ## Resources
 - [react syntax highlighter languages](https://github.com/react-syntax-highlighter/react-syntax-highlighter/blob/05300e67cfadeb25fbd6125a2df0c820db3d0673/AVAILABLE_LANGUAGES_HLJS.MD)
+- [wizard logo](https://www.flaticon.com/free-icon/wizard_2332801#)
 
-# Redwood
+
+<details>
+<summary>Redwood Docs</summary>
 
 Welcome to [RedwoodJS](https://redwoodjs.com)!
 
@@ -124,3 +129,4 @@ The best way to learn Redwood is by going through the comprehensive [tutorial](h
 
 - Stay updated: read [Forum announcements](https://community.redwoodjs.com/c/announcements/5), follow us on [Twitter](https://twitter.com/redwoodjs), and subscribe to the [newsletter](https://redwoodjs.com/newsletter)
 - [Learn how to contribute](https://redwoodjs.com/docs/contributing)
+</details>

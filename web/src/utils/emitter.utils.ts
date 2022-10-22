@@ -6,6 +6,7 @@ type EventMap = {
   toggleCode: {
     isOpen: boolean
   }
+  clickedCreate: undefined
 }
 
 export const emitter = new Emittery<EventMap>()

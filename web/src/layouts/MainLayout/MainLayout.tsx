@@ -2,7 +2,6 @@ import * as React from 'react'
 
 import {
   chakra,
-  HTMLChakraProps,
   Box,
   IconButton,
   IconButtonProps,
@@ -31,7 +30,6 @@ import {
 } from '@chakra-ui/react'
 import { IconType } from 'react-icons'
 import { BsArrowsCollapse, BsArrowsExpand } from 'react-icons/bs'
-import { FaHatWizard } from 'react-icons/fa'
 
 import { Link, routes } from '@redwoodjs/router'
 
@@ -135,7 +133,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
 
           <Button
             variant="primary"
-            onClick={() => openDrawer('create-snippet')}
+            onClick={() => emitter.emit('clickedCreate')}
           >
             Create
           </Button>
@@ -153,8 +151,8 @@ export default MainLayout
 export const Logo = () => (
   <Link to={routes.home()}>
     <HStack>
-      <FaHatWizard size={'2em'} />
-      <Text>Snippet Wizard</Text>
+      <img src={'wizard-64x64.png'} alt="logo" />
+      <Text fontWeight={'bold'}>Snippet Wizard</Text>
     </HStack>
   </Link>
 )
