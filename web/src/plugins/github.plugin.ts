@@ -12,13 +12,13 @@ import {
   GetSnippetsInput,
 } from 'src/types'
 
-import { getKeys } from '../utils/general.utils'
-
 import { SnippetPlugin } from './plugin'
+
+import { getKeys } from '~/utils'
 
 class GitHubSnippetPlugin extends SnippetPlugin {
   async createSnippet(
-    input: CreateSnippetInput
+    input: CreateSnippetInput,
   ): Promise<CreateSnippetResponse> {
     if (!this.isEnabled()) {
       return {
@@ -45,7 +45,7 @@ class GitHubSnippetPlugin extends SnippetPlugin {
         isSuccess: true,
         data: {
           snippet: await this.transformSnippet(
-            rawSnippet.data as GitHubSnippet
+            rawSnippet.data as GitHubSnippet,
           ),
         },
       }
@@ -87,7 +87,7 @@ class GitHubSnippetPlugin extends SnippetPlugin {
   }
 
   async updateSnippet(
-    input: UpdateSnippetInput
+    input: UpdateSnippetInput,
   ): Promise<UpdateSnippetResponse> {
     if (!this.isEnabled()) {
       return {
@@ -140,7 +140,7 @@ class GitHubSnippetPlugin extends SnippetPlugin {
         page,
       })
       return Promise.all(
-        rawSnippets.data.map((rawSnippet) => this.transformSnippet(rawSnippet))
+        rawSnippets.data.map((rawSnippet) => this.transformSnippet(rawSnippet)),
       )
     } catch (error) {
       console.error(this.tag, 'failed to get snippets')

@@ -31,7 +31,7 @@ export class SnippetPluginManager implements ISnippetPluginManager {
 
   async getSnippets(input: GetSnippetsInput): Promise<SnippetMap> {
     const promises = await this.plugins.map((plugin) =>
-      plugin.getSnippets(input)
+      plugin.getSnippets(input),
     )
     // TODO: improve with allSettled
     const snippets = await Promise.all(promises)
@@ -78,7 +78,7 @@ export class SnippetPluginManager implements ISnippetPluginManager {
     const promises = await this.plugins
       .filter((plugin) => tags.includes(plugin.getTag()))
       .map((plugin) =>
-        plugin.deleteSnippet({ id: services[plugin.getTag()].id })
+        plugin.deleteSnippet({ id: services[plugin.getTag()].id }),
       )
     // TODO: improve with allSettled
     const responses = await Promise.all(promises)
@@ -106,7 +106,7 @@ export class SnippetPluginManager implements ISnippetPluginManager {
         plugin.updateSnippet({
           ...input,
           id: services[plugin.getTag()].id,
-        })
+        }),
       )
 
     // TODO: improve with allSettled

@@ -24,15 +24,15 @@ export abstract class SnippetPlugin implements ISnippetPlugin {
   abstract getSnippets(input: GetSnippetsInput): Promise<Snippet[]>
 
   abstract createSnippet(
-    input: CreateSnippetInput
+    input: CreateSnippetInput,
   ): Promise<CreateSnippetResponse>
 
   abstract deleteSnippet(
-    input: SnippetMutationInput
+    input: SnippetMutationInput,
   ): Promise<SnippetMutationResponse<DeleteSnippetResponse>>
 
   abstract updateSnippet(
-    input: UpdateSnippetInput
+    input: UpdateSnippetInput,
   ): Promise<UpdateSnippetResponse>
 
   abstract transformSnippet(rawSnippet: unknown): Promise<Snippet>

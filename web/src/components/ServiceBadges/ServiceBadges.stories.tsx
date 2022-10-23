@@ -49,7 +49,7 @@ export const WithLinks = () => {
 }
 
 export const SelectServices: ComponentStory<typeof ServiceSelector> = (
-  args
+  args,
 ) => {
   return <ServiceSelector {...args} />
 }

@@ -19,7 +19,7 @@ export const useServices = () => {
       }
       return accum
     },
-    []
+    [],
   )
 
   return {

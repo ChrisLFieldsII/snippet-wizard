@@ -23,9 +23,9 @@ export type InfiniteQueryAdapter<TData, TError = unknown> = {
 export const mutationAdapter = <
   TData = unknown,
   TError = unknown,
-  TVariables = void
+  TVariables = void,
 >(
-  mutation: UseMutationResult<TData, TError, TVariables>
+  mutation: UseMutationResult<TData, TError, TVariables>,
 ): MutationAdapter<TData, TError, TVariables> => {
   return {
     mutate: mutation.mutateAsync,

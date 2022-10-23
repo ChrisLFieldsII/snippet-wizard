@@ -122,7 +122,7 @@ export const SnippetForm = ({
           onChange={(e) =>
             formik.setFieldValue(
               'privacy',
-              e.currentTarget.checked ? 'public' : 'private'
+              e.currentTarget.checked ? 'public' : 'private',
             )
           }
         />

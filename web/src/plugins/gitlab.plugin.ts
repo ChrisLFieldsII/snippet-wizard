@@ -32,10 +32,10 @@ class GitLabSnippetPlugin extends SnippetPlugin {
         `${API_URL}/snippets?${params}`,
         {
           headers: this.getHeaders(),
-        }
+        },
       )
       return Promise.all(
-        rawSnippets.data.map((rawSnippet) => this.transformSnippet(rawSnippet))
+        rawSnippets.data.map((rawSnippet) => this.transformSnippet(rawSnippet)),
       )
     } catch (error) {
       console.error(this.tag, 'failed to get snippets')
@@ -44,7 +44,7 @@ class GitLabSnippetPlugin extends SnippetPlugin {
   }
 
   async createSnippet(
-    input: CreateSnippetInput
+    input: CreateSnippetInput,
   ): Promise<CreateSnippetResponse> {
     if (!this.isEnabled()) {
       return {
@@ -73,7 +73,7 @@ class GitLabSnippetPlugin extends SnippetPlugin {
             ...this.getHeaders(),
             'Content-Type': 'application/json',
           },
-        }
+        },
       )
 
       if (!res.data.id) {
@@ -131,7 +131,7 @@ class GitLabSnippetPlugin extends SnippetPlugin {
     }
   }
   async updateSnippet(
-    input: UpdateSnippetInput
+    input: UpdateSnippetInput,
   ): Promise<UpdateSnippetResponse> {
     if (!this.isEnabled()) {
       return {
@@ -165,7 +165,7 @@ class GitLabSnippetPlugin extends SnippetPlugin {
             },
           ],
         },
-        { headers: this.getHeaders() }
+        { headers: this.getHeaders() },
       )
 
       res.data.contents = contents
