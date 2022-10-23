@@ -29,7 +29,7 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <FatalErrorBoundary page={FatalErrorPage}>
         <RedwoodProvider titleTemplate="%PageTitle | %AppTitle">
-          <ColorModeScript />
+          <ColorModeScript initialColorMode="system" />
           <ChakraProvider theme={theme}>
             <RedwoodApolloProvider>
               <Routes />
