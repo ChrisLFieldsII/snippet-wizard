@@ -83,6 +83,7 @@ export const Snippet = (props: SnippetProps) => {
 
     return (
       <Card
+        bg={'bg-subtle'}
         p={2}
         borderBottomRadius={0}
         w="full"

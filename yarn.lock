@@ -8230,6 +8230,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@uiw/codemirror-theme-github@npm:^4.12.4":
+  version: 4.12.4
+  resolution: "@uiw/codemirror-theme-github@npm:4.12.4"
+  dependencies:
+    "@uiw/codemirror-themes": 4.12.4
+  checksum: 7f806a8045071b2dea6cd2920714ea25e0dfc4285427d3079c47ad3721b64de490839d49ebde52f815de7754d8ddaf67967c3b8ffba6b02c0d5f624c1b98fd25
+  languageName: node
+  linkType: hard
+
+"@uiw/codemirror-themes@npm:4.12.4":
+  version: 4.12.4
+  resolution: "@uiw/codemirror-themes@npm:4.12.4"
+  dependencies:
+    "@codemirror/language": ^6.0.0
+    "@codemirror/state": ^6.0.0
+    "@codemirror/view": ^6.0.0
+  peerDependencies:
+    "@codemirror/language": ">=6.0.0"
+    "@codemirror/state": ">=6.0.0"
+    "@codemirror/view": ">=6.0.0"
+  checksum: 896ae6460a2b615aca95642896007a2efec9b8b6551932bb064e1deaef2a26818e92be83d53656d898c0386c2a9d8bfa27675c585dce58be4c5b4e1ae1317b0e
+  languageName: node
+  linkType: hard
+
 "@uiw/react-codemirror@npm:^4.12.4":
   version: 4.12.4
   resolution: "@uiw/react-codemirror@npm:4.12.4"
@@ -25726,6 +25750,7 @@ __metadata:
     "@tanstack/react-query": ^4.10.3
     "@types/react-syntax-highlighter": ^15.5.5
     "@uiw/codemirror-extensions-langs": ^4.12.4
+    "@uiw/codemirror-theme-github": ^4.12.4
     "@uiw/react-codemirror": ^4.12.4
     axios: ^1.1.2
     babel-plugin-module-resolver: ^4.1.0

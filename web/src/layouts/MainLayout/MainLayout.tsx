@@ -27,9 +27,12 @@ import {
   Wrap,
   Tooltip,
   Code,
+  useColorMode,
+  WrapItem,
 } from '@chakra-ui/react'
 import { IconType } from 'react-icons'
 import { BsArrowsCollapse, BsArrowsExpand } from 'react-icons/bs'
+import { FaSun, FaMoon } from 'react-icons/fa'
 
 import { Link, routes } from '@redwoodjs/router'
 
@@ -96,49 +99,60 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
           boxShadow={useColorModeValue('sm', 'sm-dark')}
         >
           <Wrap>
-            <Tooltip
-              aria-label="Open all code blocks"
-              label={
-                <HStack>
-                  <Text>{'Open all code blocks'}</Text>
-                  <Code fontWeight={'extrabold'} colorScheme={'blue'}>
-                    {'['}
-                  </Code>
-                </HStack>
-              }
-            >
-              <IconButton
+            <WrapItem>
+              <Tooltip
                 aria-label="Open all code blocks"
-                icon={<BsArrowsExpand />}
-                onClick={() => onToggleCode(true)}
-              />
-            </Tooltip>
+                label={
+                  <HStack>
+                    <Text>{'Open all code blocks'}</Text>
+                    <Code fontWeight={'extrabold'} colorScheme={'blue'}>
+                      {'['}
+                    </Code>
+                  </HStack>
+                }
+              >
+                <IconButton
+                  aria-label="Open all code blocks"
+                  icon={<BsArrowsExpand />}
+                  onClick={() => onToggleCode(true)}
+                />
+              </Tooltip>
+            </WrapItem>
 
-            <Tooltip
-              aria-label="Close all code blocks"
-              label={
-                <HStack>
-                  <Text>{'Close all code blocks'}</Text>
-                  <Code fontWeight={'extrabold'} colorScheme={'blue'}>
-                    {']'}
-                  </Code>
-                </HStack>
-              }
-            >
-              <IconButton
+            <WrapItem>
+              <Tooltip
                 aria-label="Close all code blocks"
-                icon={<BsArrowsCollapse />}
-                onClick={() => onToggleCode(false)}
-              />
-            </Tooltip>
+                label={
+                  <HStack>
+                    <Text>{'Close all code blocks'}</Text>
+                    <Code fontWeight={'extrabold'} colorScheme={'blue'}>
+                      {']'}
+                    </Code>
+                  </HStack>
+                }
+              >
+                <IconButton
+                  aria-label="Close all code blocks"
+                  icon={<BsArrowsCollapse />}
+                  onClick={() => onToggleCode(false)}
+                />
+              </Tooltip>
+            </WrapItem>
           </Wrap>
 
-          <Button
-            variant="primary"
-            onClick={() => emitter.emit('clickedCreate')}
-          >
-            Create
-          </Button>
+          <Wrap>
+            <WrapItem>
+              <DarkModeToggle />
+            </WrapItem>
+            <WrapItem>
+              <Button
+                variant="primary"
+                onClick={() => emitter.emit('clickedCreate')}
+              >
+                Create
+              </Button>
+            </WrapItem>
+          </Wrap>
         </Flex>
 
         {/* main content */}
@@ -252,6 +266,20 @@ export const Sidebar = () => {
         </Stack>
       </Flex>
     </Flex>
+  )
+}
+
+const DarkModeToggle = () => {
+  const { colorMode, toggleColorMode } = useColorMode()
+  const isDark = colorMode === 'dark'
+
+  return (
+    <IconButton
+      icon={isDark ? <FaSun /> : <FaMoon />}
+      aria-label="toggle dark mode"
+      onClick={toggleColorMode}
+      variant="ghost"
+    />
   )
 }
 
