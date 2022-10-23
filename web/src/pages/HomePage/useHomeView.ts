@@ -140,6 +140,8 @@ export const useHomeView = (): HomeViewModelProps => {
       cacheTime: Infinity,
       staleTime: 1000 * 60 * 30,
       refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      refetchOnReconnect: false,
       // my page params are just numbers like page 1, 2, 3, ...
       getNextPageParam: (lastPage) => {
         // we know there might be a next page if one of the services still returned some snippets
@@ -183,8 +185,8 @@ export const useHomeView = (): HomeViewModelProps => {
   let combinedSnippets: Snippet[] =
     query.data?.pages?.reduce((accum, page) => {
       const pageCombinedSnippets = getKeys(page).reduce<Snippet[]>(
-        (accum, key) => {
-          return accum.concat(page[key])
+        (accum, service) => {
+          return accum.concat(page[service])
         },
         [],
       )
@@ -245,8 +247,11 @@ export const useHomeView = (): HomeViewModelProps => {
 
     return accum
   }, {})
+  console.log(snippetsMapByContents)
 
-  const uiSnippets = Object.values(snippetsMapByContents)
+  const uiSnippets = Object.values(snippetsMapByContents).sort(
+    (a, b) => b.updatedAt.getTime() - a.updatedAt.getTime(),
+  )
   console.log('ui snippets array', uiSnippets)
 
   const toast = useToast()
