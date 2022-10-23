@@ -2,7 +2,13 @@ import { langs } from '@uiw/codemirror-extensions-langs'
 import { IconType } from 'react-icons'
 import { AiFillFileUnknown } from 'react-icons/ai'
 import { GrDocumentText } from 'react-icons/gr'
-import { SiGnubash, SiTypescript, SiJavascript, SiSwift } from 'react-icons/si'
+import {
+  SiGnubash,
+  SiTypescript,
+  SiJavascript,
+  SiSwift,
+  SiMarkdown,
+} from 'react-icons/si'
 import { VscJson } from 'react-icons/vsc'
 
 type CodeLanguage = keyof typeof langs
@@ -40,6 +46,10 @@ export const FILE_UI_MAP: Record<
   },
   '.txt': {
     Icon: GrDocumentText,
+    language: 'markdown',
+  },
+  '.md': {
+    Icon: SiMarkdown,
     language: 'markdown',
   },
 }
