@@ -1,18 +1,12 @@
-import { useEffect } from 'react'
-
 import {
   Alert,
   AlertIcon,
-  ListItem,
-  UnorderedList,
   Link as ChakraLink,
-  Flex,
   Heading,
   Text,
   VStack,
   Spinner,
   Center,
-  useToast,
   Container,
   Wrap,
   WrapItem,
@@ -23,7 +17,7 @@ import {
   AlertDescription,
 } from '@chakra-ui/react'
 import { createView } from 'react-create-view'
-import { AiFillGitlab, AiFillGithub } from 'react-icons/ai'
+import { AiFillGithub } from 'react-icons/ai'
 import { BiLinkExternal } from 'react-icons/bi'
 
 import { MetaTags } from '@redwoodjs/web'
@@ -32,7 +26,7 @@ import MainLayout from 'src/layouts/MainLayout/MainLayout'
 
 import { useHomeView, HomeViewSuccessModel } from './useHomeView'
 
-import { SERVICES_CONFIG, SERVICE_TAGS } from '~/app-constants'
+import { SERVICES_CONFIG } from '~/app-constants'
 import {
   Snippet,
   InfiniteList,
@@ -47,7 +41,7 @@ import {
   ServiceBadgesWithLinks,
 } from '~/components'
 import { UISnippet } from '~/types'
-import { emitter, getEntries, isEmpty } from '~/utils'
+import { getEntries, isEmpty } from '~/utils'
 
 const REPO_LINK = 'https://github.com/ChrisLFieldsII/snippet-wizard'
 
@@ -62,9 +56,56 @@ const initValues: SnippetFormValues | undefined = IS_DEBUG
     }
   : undefined
 
+const introOptions: {
+  type: 'c' | 'r' | 'u' | 'd' | 'more'
+  title: string
+  description: string
+}[] = [
+  {
+    type: 'c',
+    title: 'Summon',
+    description: `
+      Create a snippet in one form and select the services you
+      want the snippet to be created in. Create once, create
+      everywhere!
+    `,
+  },
+  {
+    type: 'r',
+    title: 'Read',
+    description: `
+      Read snippets from your desired services and combine them all into one infinite list.
+      Your snippets are grouped by their contents.
+    `,
+  },
+  {
+    type: 'u',
+    title: 'Transmute',
+    description: `
+      Update snippets across your many different services in one place.
+    `,
+  },
+  {
+    type: 'd',
+    title: 'Disintegrate',
+    description: `
+      Delete snippets across your many different services in one place.
+    `,
+  },
+  {
+    type: 'more',
+    title: 'More...',
+    description: `
+      There are more useful features too like cloning a snippet from one service to others and more
+      to be added!
+    `,
+  },
+]
+
 const HomeView = createView<HomeViewSuccessModel, {}, {}, HomeViewSuccessModel>(
   {
     Success({
+      isEmpty: hasNoItems,
       infiniteQuery,
       selectedSnippet,
       onDelete,
@@ -98,136 +139,24 @@ const HomeView = createView<HomeViewSuccessModel, {}, {}, HomeViewSuccessModel>(
         </Center>
       )
 
-      return (
-        <>
-          {/* Main content */}
-          <>
-            <InfiniteList
-              {...infiniteQuery}
-              renderItem={(item, index) => renderItem({ item, index })}
-              renderLoading={renderLoading}
-            />
-            <Spacer size={60} />
-          </>
+      const renderEmpty = () => {
+        /** convert services config to services map w/ pat link as url */
+        const convertServicesConfig = (): UISnippet['servicesMap'] => {
+          return getEntries(SERVICES_CONFIG).reduce<UISnippet['servicesMap']>(
+            (accum, [service, config]) => {
+              return {
+                ...accum,
+                [service]: {
+                  url: config.patLink,
+                  id: '', // not needed
+                },
+              }
+            },
+            {},
+          )
+        }
 
-          <CreateSnippetDrawer
-            isOpen={drawers.drawer === 'create-snippet'}
-            onClose={drawers.closeDrawer}
-            onSave={(input) =>
-              createSnippetMutation.mutate({
-                input,
-                services: isEmpty(userServices.selectedServices)
-                  ? userServices.registeredServices
-                  : userServices.selectedServices,
-              })
-            }
-            initValues={initValues}
-            {...userServices}
-          />
-
-          <UpdateSnippetDrawer
-            isOpen={drawers.drawer === 'update-snippet'}
-            onClose={drawers.closeDrawer}
-            onSave={(formValues: SnippetFormValues) => {
-              updateSnippetMutation
-                .mutate({
-                  input: {
-                    ...formValues,
-                    oldFilename: selectedSnippet.filename,
-                    newFilename: formValues.filename,
-                  },
-                  services: selectedSnippet.servicesMap,
-                })
-                .then(console.log)
-                .catch(console.error)
-            }}
-            initValues={selectedSnippet}
-            snippet={selectedSnippet}
-          />
-
-          {/* TODO: pass delete mutation adapater. compose delete mutation from hook with ability to determine which services to delete! (the drawer shouldnt do this logic) */}
-          <DeleteSnippetDrawer
-            isOpen={drawers.drawer === 'delete-snippet'}
-            onClose={drawers.closeDrawer}
-            snippet={selectedSnippet}
-            {...userServices}
-            deleteSnippetMutation={deleteSnippetMutation}
-          />
-
-          <CloneSnippetDrawer
-            isOpen={drawers.drawer === 'clone-snippet'}
-            onClose={drawers.closeDrawer}
-            snippet={selectedSnippet}
-            {...userServices}
-            cloneSnippetMutation={createSnippetMutation}
-          />
-        </>
-      )
-    },
-    Empty({ createSnippetMutation, drawers, userServices }) {
-      const convertServicesConfig = (): UISnippet['servicesMap'] => {
-        return getEntries(SERVICES_CONFIG).reduce<UISnippet['servicesMap']>(
-          (accum, [service, config]) => {
-            return {
-              ...accum,
-              [service]: {
-                url: config.patLink,
-                id: '', // not needed
-              },
-            }
-          },
-          {},
-        )
-      }
-
-      const introOptions: {
-        type: 'c' | 'r' | 'u' | 'd' | 'more'
-        title: string
-        description: string
-      }[] = [
-        {
-          type: 'c',
-          title: 'Summon',
-          description: `
-          Create a snippet in one form and select the services you
-          want the snippet to be created in. Create once, create
-          everywhere!
-        `,
-        },
-        {
-          type: 'r',
-          title: 'Read',
-          description: `
-          Read snippets from your desired services and combine them all into one infinite list.
-          Your snippets are grouped by their contents.
-        `,
-        },
-        {
-          type: 'u',
-          title: 'Transmute',
-          description: `
-          Update snippets across your many different services in one place.
-        `,
-        },
-        {
-          type: 'd',
-          title: 'Disintegrate',
-          description: `
-          Delete snippets across your many different services in one place.
-        `,
-        },
-        {
-          type: 'more',
-          title: 'More...',
-          description: `
-          There are more useful features too like cloning a snippet from one service to others and more
-          to be added!
-        `,
-        },
-      ]
-
-      return (
-        <>
+        return (
           <Container p={30}>
             <VStack spacing={8} alignItems={'start'}>
               <HStack>
@@ -344,6 +273,32 @@ const HomeView = createView<HomeViewSuccessModel, {}, {}, HomeViewSuccessModel>(
             {/* space from bottom */}
             <Spacer size={60} />
           </Container>
+        )
+      }
+
+      const renderMain = () => {
+        return (
+          <>
+            <InfiniteList
+              {...infiniteQuery}
+              renderItem={(item, index) => renderItem({ item, index })}
+              renderLoading={renderLoading}
+            />
+            <Spacer size={60} />
+          </>
+        )
+      }
+
+      const renderContent = () => {
+        if (hasNoItems) return renderEmpty()
+
+        return renderMain()
+      }
+
+      return (
+        <>
+          {/* render content */}
+          {renderContent()}
 
           <CreateSnippetDrawer
             isOpen={drawers.drawer === 'create-snippet'}
@@ -358,6 +313,43 @@ const HomeView = createView<HomeViewSuccessModel, {}, {}, HomeViewSuccessModel>(
             }
             initValues={initValues}
             {...userServices}
+          />
+
+          <UpdateSnippetDrawer
+            isOpen={drawers.drawer === 'update-snippet'}
+            onClose={drawers.closeDrawer}
+            onSave={(formValues: SnippetFormValues) => {
+              updateSnippetMutation
+                .mutate({
+                  input: {
+                    ...formValues,
+                    oldFilename: selectedSnippet.filename,
+                    newFilename: formValues.filename,
+                  },
+                  services: selectedSnippet.servicesMap,
+                })
+                .then(console.log)
+                .catch(console.error)
+            }}
+            initValues={selectedSnippet}
+            snippet={selectedSnippet}
+          />
+
+          {/* TODO: pass delete mutation adapater. compose delete mutation from hook with ability to determine which services to delete! (the drawer shouldnt do this logic) */}
+          <DeleteSnippetDrawer
+            isOpen={drawers.drawer === 'delete-snippet'}
+            onClose={drawers.closeDrawer}
+            snippet={selectedSnippet}
+            {...userServices}
+            deleteSnippetMutation={deleteSnippetMutation}
+          />
+
+          <CloneSnippetDrawer
+            isOpen={drawers.drawer === 'clone-snippet'}
+            onClose={drawers.closeDrawer}
+            snippet={selectedSnippet}
+            {...userServices}
+            cloneSnippetMutation={createSnippetMutation}
           />
         </>
       )

@@ -34,6 +34,7 @@ import {
 const MAX_LOC_TO_DISPLAY = 10
 
 export type HomeViewSuccessModel = {
+  isEmpty: boolean
   selectedSnippet: UISnippet | null
   infiniteQuery: InfiniteQueryAdapter<UISnippet>
   onDelete(snippet: UISnippet): void
@@ -226,7 +227,10 @@ export const useHomeView = (): HomeViewModelProps => {
       accum[contents].services = [
         ...new Set<ServiceTag>(services.concat(currSnippet.service)),
       ]
-      accum[contents].description = currSnippet.description
+      // some services (github) dont use a description, so dont overwrite description if its empty
+      if (currSnippet.description) {
+        accum[contents].description = currSnippet.description
+      }
 
       const mapping = accum[contents].servicesMap[currSnippet.service]
       if (mapping) {
@@ -278,8 +282,9 @@ export const useHomeView = (): HomeViewModelProps => {
   const isEmpty = !uiSnippets.length
 
   return {
-    status: isEmpty ? 'empty' : 'success',
+    status: 'success',
     model: {
+      isEmpty,
       selectedSnippet,
       infiniteQuery: {
         hasNextPage: query.hasNextPage || false,
