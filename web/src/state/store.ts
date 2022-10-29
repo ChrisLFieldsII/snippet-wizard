@@ -10,6 +10,7 @@ import {
   DrawerType,
 } from 'src/types'
 
+import { AppFilters } from '~/types/filter.types'
 import { getKeys } from '~/utils'
 
 // const defaultServicesMap: ServicesMap =
@@ -26,17 +27,19 @@ const createEmptyServicesMap = (): ServicesMap => {
   }, {} as ServicesMap)
 }
 
-type AppState = Drawers<DrawerType> & {
-  services: ServicesMap
-  setToken(service: ServiceTag, token: string): void
+type AppState = Drawers<DrawerType> &
+  AppFilters & {
+    services: ServicesMap
+    setToken(service: ServiceTag, token: string): void
 
-  /** reps the current selected snippet if any */
-  snippet: UISnippet | null
-  /** sets selected snippet. set to null if none selected */
-  setSnippet(snippet: UISnippet | null): void
-}
+    /** reps the current selected snippet if any */
+    snippet: UISnippet | null
+    /** sets selected snippet. set to null if none selected */
+    setSnippet(snippet: UISnippet | null): void
+  }
 
 export const useStore = create<AppState>()((set, get) => ({
+  // services and token state
   services: createEmptyServicesMap(),
   setToken(service, token: string) {
     set(
@@ -46,6 +49,7 @@ export const useStore = create<AppState>()((set, get) => ({
     )
   },
 
+  // selected snippet state
   snippet: null,
   setSnippet(snippet) {
     set(
@@ -55,6 +59,7 @@ export const useStore = create<AppState>()((set, get) => ({
     )
   },
 
+  // drawer state
   drawer: undefined,
   openDrawer(drawer) {
     set(
@@ -67,6 +72,36 @@ export const useStore = create<AppState>()((set, get) => ({
     set(
       produce<AppState>((draft) => {
         draft.drawer = undefined
+      }),
+    )
+  },
+
+  filters: {
+    fileType: [],
+    privacy: [],
+    services: [],
+  },
+  addFilter(key, values) {
+    const currState = get()
+    const currFilters = currState.filters[key]
+    // @ts-ignore
+    const newFilters = [...new Set(currFilters.concat(values))]
+    set(
+      produce<AppState>((draft) => {
+        // @ts-ignore
+        draft.filters[key] = newFilters
+      }),
+    )
+  },
+  removeFilter(key, values) {
+    const currState = get()
+    const currFilters = currState.filters[key]
+    // @ts-ignore
+    const newFilters = currFilters.filter((f) => !values.includes(f))
+    set(
+      produce<AppState>((draft) => {
+        // @ts-ignore
+        draft.filters[key] = newFilters
       }),
     )
   },
