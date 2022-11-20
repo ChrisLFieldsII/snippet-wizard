@@ -7496,6 +7496,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/file-saver@npm:^2.0.5":
+  version: 2.0.5
+  resolution: "@types/file-saver@npm:2.0.5"
+  checksum: 9d9ed75327f0e93cadc106e0acf952089436f495c52e0bcf690b1b07597038a44033a8c19af7bd6854016537d68e1086d604961c6277e25b09c89938093b7761
+  languageName: node
+  linkType: hard
+
 "@types/glob@npm:*":
   version: 8.0.0
   resolution: "@types/glob@npm:8.0.0"
@@ -14328,6 +14335,13 @@ __metadata:
   peerDependencies:
     webpack: ^4.0.0 || ^5.0.0
   checksum: e176a57c2037ab0f78e5755dbf293a6b7f0f8392350a120bd03cc2ce2525bea017458ba28fea14ca535ff1848055e86d1a3a216bdb2561ef33395b27260a1dd3
+  languageName: node
+  linkType: hard
+
+"file-saver@npm:^2.0.5":
+  version: 2.0.5
+  resolution: "file-saver@npm:2.0.5"
+  checksum: 0a361f683786c34b2574aea53744cb70d0a6feb0fa5e3af00f2fcb6c9d40d3049cc1470e38c6c75df24219f247f6fb3076f86943958f580e62ee2ffe897af8b1
   languageName: node
   linkType: hard
 
@@ -25748,6 +25762,7 @@ __metadata:
     "@redwoodjs/router": 3.1.1
     "@redwoodjs/web": 3.1.1
     "@tanstack/react-query": ^4.10.3
+    "@types/file-saver": ^2.0.5
     "@types/react-syntax-highlighter": ^15.5.5
     "@uiw/codemirror-extensions-langs": ^4.12.4
     "@uiw/codemirror-theme-github": ^4.12.4
@@ -25756,6 +25771,7 @@ __metadata:
     babel-plugin-module-resolver: ^4.1.0
     cuid: ^2.1.8
     emittery: ^1.0.0
+    file-saver: ^2.0.5
     formik: ^2.2.9
     framer-motion: ^6
     immer: ^9.0.15

@@ -30,6 +30,7 @@ import {
   useColorMode,
   WrapItem,
 } from '@chakra-ui/react'
+import { saveAs } from 'file-saver'
 import { IconType } from 'react-icons'
 import { BsArrowsCollapse, BsArrowsExpand } from 'react-icons/bs'
 import { FaSun, FaMoon } from 'react-icons/fa'
@@ -39,9 +40,10 @@ import { Link, routes } from '@redwoodjs/router'
 import { SERVICES_CONFIG, SERVICE_TAGS } from 'src/app-constants'
 import { useStore } from 'src/state'
 import { ServiceTag } from 'src/types'
-import { emitter } from 'src/utils'
+import { emitter, getEntries } from 'src/utils'
 
 import { Logo } from '~/components'
+import { useServices } from '~/hooks'
 
 type MainLayoutProps = {
   children?: React.ReactNode
@@ -226,6 +228,26 @@ export const ToggleButton = (props: ToggleButtonProps) => {
 export const Sidebar = () => {
   const services = useStore((store) => store.services)
 
+  const { registeredServicesWithTokens } = useServices()
+
+  const saveTokens = async () => {
+    // reduce array into object
+    const tokensObj = registeredServicesWithTokens.reduce<
+      Partial<Record<ServiceTag, string>>
+    >((accum, { tag, token }) => {
+      return {
+        ...accum,
+        [tag]: token,
+      }
+    }, {})
+
+    const blob = new Blob([JSON.stringify(tokensObj, null, 2)], {
+      type: 'application/json',
+    })
+
+    saveAs(blob, 'snippet-wizard-tokens.json')
+  }
+
   return (
     <Flex as="section" h="100vh" bg="bg-canvas" pos="sticky" top={0}>
       <Flex
@@ -250,6 +272,18 @@ export const Sidebar = () => {
                 />
               )
             })}
+
+            <Tooltip
+              aria-label="Save tokens as JSON"
+              label="Save tokens to file system as .json for easy upload later!"
+            >
+              <Button onClick={saveTokens} w="full">
+                Save tokens as JSON
+              </Button>
+            </Tooltip>
+
+            {/* input for json file to upload PATs */}
+            <Input type="file" placeholder="Upload json" />
           </Stack>
           <Stack spacing={{ base: '5', sm: '6' }}>
             <Divider />
