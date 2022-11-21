@@ -301,13 +301,18 @@ export const Sidebar = () => {
             </Tooltip>
 
             {/* input for json file to upload PATs */}
-            <Input
-              type="file"
-              placeholder="Upload json"
-              onChange={(e) => {
-                onUploadTokens(e.currentTarget.files[0])
-              }}
-            />
+            <Tooltip
+              aria-label="Upload tokens"
+              label="Upload tokens json file to quickly fill out inputs"
+            >
+              <Input
+                type="file"
+                placeholder="Upload json"
+                onChange={(e) => {
+                  onUploadTokens(e.currentTarget.files[0])
+                }}
+              />
+            </Tooltip>
           </Stack>
           <Stack spacing={{ base: '5', sm: '6' }}>
             <Divider />
