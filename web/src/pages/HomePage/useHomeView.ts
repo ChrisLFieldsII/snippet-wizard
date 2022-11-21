@@ -76,7 +76,7 @@ const IS_DEBUG = false
  * Reduce `SnippetMap` down to UI models.
  */
 export const useHomeView = (): HomeViewModelProps => {
-  const [perPage] = useState(5) // TODO: create UI
+  const [perPage] = useState(20) // TODO: create UI
 
   const pageRef = useRef(1)
   // console.log(`page is ${pageRef.current}`)
