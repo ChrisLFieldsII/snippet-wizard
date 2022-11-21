@@ -29,8 +29,9 @@ import {
   Code,
   useColorMode,
   WrapItem,
+  useToast,
 } from '@chakra-ui/react'
-import { saveAs } from 'file-saver'
+import { saveAs as saveFile } from 'file-saver'
 import { IconType } from 'react-icons'
 import { BsArrowsCollapse, BsArrowsExpand } from 'react-icons/bs'
 import { FaSun, FaMoon } from 'react-icons/fa'
@@ -227,25 +228,42 @@ export const ToggleButton = (props: ToggleButtonProps) => {
 
 export const Sidebar = () => {
   const services = useStore((store) => store.services)
+  const setToken = useStore((store) => store.setToken)
+  const toast = useToast()
 
   const { registeredServicesWithTokens } = useServices()
 
-  const saveTokens = async () => {
-    // reduce array into object
-    const tokensObj = registeredServicesWithTokens.reduce<
-      Partial<Record<ServiceTag, string>>
-    >((accum, { tag, token }) => {
-      return {
-        ...accum,
-        [tag]: token,
+  const onSaveTokens = async () => {
+    const blob = new Blob(
+      [JSON.stringify(registeredServicesWithTokens, null, 2)],
+      {
+        type: 'application/json',
+      },
+    )
+
+    saveFile(blob, 'snippet-wizard-tokens.json')
+  }
+
+  const onUploadTokens = async (file: File) => {
+    const fileReader = new FileReader()
+    fileReader.readAsText(file, 'utf8')
+    fileReader.addEventListener('load', () => {
+      try {
+        const tokensArr = JSON.parse(
+          fileReader.result as string,
+        ) as typeof registeredServicesWithTokens
+        tokensArr.forEach(({ tag, token }) => {
+          setToken(tag, token)
+        })
+        emitter.emit('getSnippets')
+      } catch (error) {
+        toast({
+          status: 'error',
+          title: 'Error',
+          description: 'Failed to parse tokens file',
+        })
       }
-    }, {})
-
-    const blob = new Blob([JSON.stringify(tokensObj, null, 2)], {
-      type: 'application/json',
     })
-
-    saveAs(blob, 'snippet-wizard-tokens.json')
   }
 
   return (
@@ -277,13 +295,19 @@ export const Sidebar = () => {
               aria-label="Save tokens as JSON"
               label="Save tokens to file system as .json for easy upload later!"
             >
-              <Button onClick={saveTokens} w="full">
+              <Button onClick={onSaveTokens} w="full">
                 Save tokens as JSON
               </Button>
             </Tooltip>
 
             {/* input for json file to upload PATs */}
-            <Input type="file" placeholder="Upload json" />
+            <Input
+              type="file"
+              placeholder="Upload json"
+              onChange={(e) => {
+                onUploadTokens(e.currentTarget.files[0])
+              }}
+            />
           </Stack>
           <Stack spacing={{ base: '5', sm: '6' }}>
             <Divider />
