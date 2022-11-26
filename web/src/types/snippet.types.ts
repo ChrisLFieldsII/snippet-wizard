@@ -1,12 +1,6 @@
 /** tag for a snippet service */
 export type ServiceTag = 'gitlab' | 'github'
 
-export type ServiceState = {
-  token: string
-}
-
-export type ServicesMap = Record<ServiceTag, ServiceState>
-
 export type SnippetMutationInput = {
   id: string
 }

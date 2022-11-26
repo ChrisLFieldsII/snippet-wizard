@@ -2,18 +2,16 @@ import produce from 'immer'
 import create from 'zustand'
 
 import { SERVICES_CONFIG } from 'src/app-constants'
-import {
-  ServiceTag,
-  ServicesMap,
-  UISnippet,
-  Drawers,
-  DrawerType,
-} from 'src/types'
+import { ServiceTag, UISnippet, Drawers, DrawerType } from 'src/types'
 
 import { AppFilters } from '~/types/filter.types'
 import { getKeys } from '~/utils'
 
-// const defaultServicesMap: ServicesMap =
+type ServiceState = {
+  token: string
+}
+
+type ServicesMap = Record<ServiceTag, ServiceState>
 
 const createEmptyServicesMap = (): ServicesMap => {
   const keys = getKeys(SERVICES_CONFIG)

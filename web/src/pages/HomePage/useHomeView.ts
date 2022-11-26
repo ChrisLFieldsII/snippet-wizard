@@ -167,7 +167,9 @@ export const useHomeView = (): HomeViewModelProps => {
   )
 
   const fetchNextPage = useCallback(async () => {
-    console.log(`fetching page: ${++pageRef.current}`)
+    // this is where we increment pageRef
+    pageRef.current = pageRef.current + 1
+    console.log(`fetching page: ${pageRef.current}`)
     await query.fetchNextPage()
   }, [])
 
